@@ -1,0 +1,95 @@
+from __future__ import annotations
+
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from engineering_guidance.catalog import ProjectLayout, load_catalog, project_root
+from engineering_guidance.render import artifact_digest, build
+from engineering_guidance.sync import LOCK_PATH, SyncConflict, synchronize, update_agents
+from engineering_guidance.validation import validate
+
+
+class EngineeringGuidancePublisherTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.layout = ProjectLayout(project_root())
+        cls.catalog = load_catalog(cls.layout.catalog)
+
+    def test_catalog_and_blueprints_are_valid(self) -> None:
+        self.assertEqual([], validate(self.layout, self.catalog))
+
+    def test_every_reference_is_traceable_to_a_standards_heading(self) -> None:
+        for skill in self.catalog["skills"]:
+            for reference in skill["references"]:
+                source_path, heading = reference["source"].split("#", 1)
+                source = self.layout.root / source_path
+                self.assertTrue(source.is_file())
+                self.assertIn(heading, source.read_text(encoding="utf-8"))
+
+    def test_build_is_deterministic_and_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            first = build(self.layout, self.catalog, Path(temporary) / "first")
+            second = build(self.layout, self.catalog, Path(temporary) / "second")
+            self.assertEqual(artifact_digest(first), artifact_digest(second))
+            for skill in self.catalog["skills"]:
+                skill_root = first / "skills" / skill["name"]
+                self.assertTrue((skill_root / "SKILL.md").is_file())
+                self.assertTrue((skill_root / "agents" / "openai.yaml").is_file())
+                for reference in skill["references"]:
+                    content = (skill_root / "references" / reference["file"]).read_text(encoding="utf-8")
+                    self.assertIn(reference["title"], content)
+
+    def test_agents_update_preserves_project_content(self) -> None:
+        current = "# Project\n\nKeep this rule.\n"
+        fragment = "<!-- engineering-standards:begin version=1.0.0 -->\nmanaged\n<!-- engineering-standards:end -->\n"
+        first = update_agents(current, fragment)
+        self.assertIn("Keep this rule.", first)
+        replacement = fragment.replace("managed", "updated")
+        second = update_agents(first, replacement)
+        self.assertIn("Keep this rule.", second)
+        self.assertIn("updated", second)
+        self.assertNotIn("\nmanaged\n", second)
+
+    def test_sync_writes_lock_agents_and_skills(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "consumer"
+            target.mkdir()
+            (target / "AGENTS.md").write_text("# Consumer\n\nLocal rule.\n", encoding="utf-8")
+            lock = synchronize(self.layout, self.catalog, target)
+            persisted = json.loads((target / LOCK_PATH).read_text(encoding="utf-8"))
+            self.assertEqual(lock, persisted)
+            self.assertEqual(self.catalog["version"], persisted["version"])
+            self.assertIn("Local rule.", (target / "AGENTS.md").read_text(encoding="utf-8"))
+            for name in persisted["managed_skills"]:
+                self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())
+
+    def test_sync_refuses_to_adopt_unmanaged_skill_without_force(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "consumer"
+            collision = target / ".agents" / "skills" / self.catalog["skills"][0]["name"]
+            collision.mkdir(parents=True)
+            with self.assertRaises(SyncConflict):
+                synchronize(self.layout, self.catalog, target)
+
+    def test_sync_removes_only_retired_managed_skills(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "consumer"
+            target.mkdir()
+            synchronize(self.layout, self.catalog, target)
+            retired = target / ".agents" / "skills" / "retired-managed-skill"
+            unrelated = target / ".agents" / "skills" / "project-owned-skill"
+            retired.mkdir()
+            unrelated.mkdir()
+            lock_path = target / LOCK_PATH
+            lock = json.loads(lock_path.read_text(encoding="utf-8"))
+            lock["managed_skills"].append(retired.name)
+            lock_path.write_text(json.dumps(lock), encoding="utf-8")
+            synchronize(self.layout, self.catalog, target)
+            self.assertFalse(retired.exists())
+            self.assertTrue(unrelated.exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,39 @@
+name: Validate engineering guidance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate catalog and blueprints
+        run: PYTHONPATH=src python3 -m engineering_guidance validate
+      - name: Run tests
+        run: PYTHONPATH=src python3 -m unittest discover -s tests -v
+      - name: Build release artifact
+        run: PYTHONPATH=src python3 -m engineering_guidance build --output dist
+      - name: Validate release tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          catalog_version="$(python3 -c 'import json; print(json.load(open("catalog.json"))["version"])')"
+          test "v${catalog_version}" = "${GITHUB_REF_NAME}"
+      - name: Archive release artifact
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: tar -C dist -czf "engineering-guidance-${GITHUB_REF_NAME}.tar.gz" .
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: engineering-guidance-${{ github.ref_name }}
+          path: engineering-guidance-${{ github.ref_name }}.tar.gz
+          if-no-files-found: error

@@ -1,31 +1,29 @@
-# IntelliJ IDEA
+# IDEs
 .idea/
 *.iml
-out/
+.vscode/
 
-# Maven
-target/
-.flattened-pom.xml
-dependency-reduced-pom.xml
-release.properties
-pom.xml.releaseBackup
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.venv/
+venv/
 
-# Logs and JVM diagnostics
-*.log
-logs/
-hs_err_pid*
-replay_pid*
-*.hprof
+# Generated artifacts
+dist/
+build/
 
 # Local environment
 .env
 .env.*
 !.env.example
 !.env.template
-
-# Local Spring Boot configuration
-application-local.yml
-application-local.yaml
 
 # Operating systems
 .DS_Store
