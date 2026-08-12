@@ -12,6 +12,10 @@ BEGIN_MARKER = "<!-- engineering-standards:begin"
 END_MARKER = "<!-- engineering-standards:end -->"
 
 
+def skills_for_scope(catalog: dict[str, Any], scope: str) -> list[dict[str, Any]]:
+    return [skill for skill in catalog["skills"] if skill["scope"] == scope]
+
+
 def render_reference(title: str, sections: list[dict[str, Any]]) -> str:
     lines = [f"# {title}", ""]
     if len(sections) > 2:
@@ -38,7 +42,7 @@ def render_agents(catalog: dict[str, Any]) -> str:
     for rule in catalog["agents"]["rules"]:
         lines.append(f"- **{rule['id']}** — {rule['text']}")
     lines.extend(["", "## Skill routing", ""])
-    for skill in catalog["skills"]:
+    for skill in skills_for_scope(catalog, "consumer"):
         lines.append(f"- {skill['when']}: use `${skill['name']}`.")
     lines.extend(["", END_MARKER, ""])
     return "\n".join(lines)
@@ -69,6 +73,12 @@ def build(layout: ProjectLayout, catalog: dict[str, Any], output: Path) -> Path:
         "source": catalog["source"],
         "version": catalog["version"],
         "skills": [skill["name"] for skill in catalog["skills"]],
+        "consumer_skills": [
+            skill["name"] for skill in skills_for_scope(catalog, "consumer")
+        ],
+        "publisher_skills": [
+            skill["name"] for skill in skills_for_scope(catalog, "publisher")
+        ],
     }
     (output / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

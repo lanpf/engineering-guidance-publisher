@@ -15,6 +15,7 @@ This repository publishes shared engineering guidance as generated Skills and ma
 - Keep every rule ID stable after publication. Never reuse an ID for a different meaning.
 - Add a new rule ID for a new constraint. Preserve removed IDs in release history rather than reassigning them.
 - Keep Skill names stable unless a migration explicitly handles the rename.
+- Declare every Skill as `consumer` or `publisher`; consumer synchronization must never install publisher-only maintenance Skills.
 - Every catalog reference declares a `source` in `<document>#<heading>` form and must remain traceable to an existing heading in `standards/COMMON.md` or `standards/SERVICE.md`.
 - Increment the semantic version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py` for every published change.
 - Published Git tags are immutable.
@@ -27,6 +28,7 @@ Run from the repository root:
 PYTHONPATH=src python3 -m engineering_guidance validate
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 PYTHONPATH=src python3 -m engineering_guidance build --output dist
+PYTHONPATH=src python3 -m engineering_guidance install-publisher-skills
 ```
 
 Validate every generated Skill with the Skill validator before release.

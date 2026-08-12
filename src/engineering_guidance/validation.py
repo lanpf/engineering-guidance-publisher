@@ -64,6 +64,9 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
         if name in seen_skills:
             errors.append(f"{location}: duplicate skill {name}")
         seen_skills.add(name)
+        scope = skill.get("scope")
+        if scope not in {"consumer", "publisher"}:
+            errors.append(f"{location}: scope must be 'consumer' or 'publisher'")
         blueprint = layout.blueprints / name
         skill_md = blueprint / "SKILL.md"
         openai_yaml = blueprint / "agents" / "openai.yaml"

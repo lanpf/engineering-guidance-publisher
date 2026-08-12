@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -18,6 +18,7 @@
   "skills": [
     {
       "name": "develop-java-code",
+      "scope": "consumer",
       "when": "Creating, modifying, refactoring, or reviewing Java code",
       "references": [
         {
@@ -127,6 +128,7 @@
     },
     {
       "name": "manage-java-dependencies",
+      "scope": "consumer",
       "when": "Changing Maven dependencies, versions, scopes, BOMs, starters, modules, or runtime implementations",
       "references": [
         {
@@ -182,6 +184,7 @@
     },
     {
       "name": "test-java-service",
+      "scope": "consumer",
       "when": "Creating, modifying, reviewing, or diagnosing unit, contract, or integration tests",
       "references": [
         {
@@ -224,6 +227,7 @@
     },
     {
       "name": "develop-layered-service",
+      "scope": "consumer",
       "when": "Adding service functionality, modules, contracts, domain behavior, adapters, protocols, or reviewing service architecture",
       "references": [
         {
@@ -400,6 +404,7 @@
     },
     {
       "name": "manage-service-error-codes",
+      "scope": "consumer",
       "when": "Allocating, changing, documenting, or reviewing service error codes",
       "references": [
         {
@@ -444,11 +449,13 @@
     },
     {
       "name": "update-engineering-standards",
+      "scope": "publisher",
       "when": "Reconciling changes in COMMON.md or SERVICE.md with catalog.json and preparing a standards release",
       "references": []
     },
     {
       "name": "sync-engineering-standards",
+      "scope": "publisher",
       "when": "Installing or upgrading generated engineering guidance in one named project",
       "references": []
     }

@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
 
 from engineering_guidance.catalog import ProjectLayout, load_catalog, project_root
 from engineering_guidance.render import artifact_digest, build
-from engineering_guidance.sync import LOCK_PATH, SyncConflict, synchronize, update_agents
+from engineering_guidance.sync import (
+    LOCK_PATH,
+    PUBLISHER_LOCK_PATH,
+    SyncConflict,
+    install_publisher_skills,
+    synchronize,
+    update_agents,
+)
 from engineering_guidance.validation import validate
 
 
@@ -40,6 +48,11 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 for reference in skill["references"]:
                     content = (skill_root / "references" / reference["file"]).read_text(encoding="utf-8")
                     self.assertIn(reference["title"], content)
+            manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                ["update-engineering-standards", "sync-engineering-standards"],
+                manifest["publisher_skills"],
+            )
 
     def test_agents_update_preserves_project_content(self) -> None:
         current = "# Project\n\nKeep this rule.\n"
@@ -62,8 +75,39 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             self.assertEqual(lock, persisted)
             self.assertEqual(self.catalog["version"], persisted["version"])
             self.assertIn("Local rule.", (target / "AGENTS.md").read_text(encoding="utf-8"))
+            self.assertNotIn(
+                "update-engineering-standards",
+                (target / "AGENTS.md").read_text(encoding="utf-8"),
+            )
             for name in persisted["managed_skills"]:
                 self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())
+            self.assertNotIn("update-engineering-standards", persisted["managed_skills"])
+            self.assertFalse(
+                (target / ".agents" / "skills" / "update-engineering-standards").exists()
+            )
+
+    def test_install_publisher_skills_installs_only_publisher_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "publisher"
+            root.mkdir()
+            layout = ProjectLayout(root)
+            layout.blueprints.parent.mkdir(parents=True)
+            for skill in self.catalog["skills"]:
+                source = self.layout.blueprints / skill["name"]
+                destination = layout.blueprints / skill["name"]
+                shutil.copytree(source, destination)
+            (root / "catalog.json").write_text(
+                json.dumps(self.catalog, ensure_ascii=False), encoding="utf-8"
+            )
+            lock = install_publisher_skills(layout, self.catalog)
+
+            persisted = json.loads((root / PUBLISHER_LOCK_PATH).read_text(encoding="utf-8"))
+            self.assertEqual(lock, persisted)
+            self.assertEqual(
+                ["update-engineering-standards", "sync-engineering-standards"],
+                persisted["managed_skills"],
+            )
+            self.assertFalse((root / ".agents" / "skills" / "develop-java-code").exists())
 
     def test_sync_refuses_to_adopt_unmanaged_skill_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

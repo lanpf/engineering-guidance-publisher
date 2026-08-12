@@ -7,6 +7,7 @@ This repository turns versioned engineering standards into deterministic Skills 
 ```bash
 python3 -m engineering_guidance validate
 python3 -m engineering_guidance build
+python3 -m engineering_guidance install-publisher-skills
 python3 -m engineering_guidance sync --target ../user-auth
 python3 -m unittest discover -s tests
 ```
@@ -16,12 +17,17 @@ The generated `$update-engineering-standards` Skill reconciles Git changes in
 `$sync-engineering-standards` Skill accepts a sibling project name and runs the
 validated synchronization workflow for that project.
 
+Skills have an explicit publication scope:
+
+- `consumer` Skills are rendered into consumer `AGENTS.md`, installed by `sync`, and recorded in the consumer lock.
+- `publisher` Skills are installed only into this repository by `install-publisher-skills`; they are not distributed to business projects.
+
 For local development without installing the package, set `PYTHONPATH=src` before the command.
 
 ## Release model
 
 1. Change `standards/COMMON.md` or `standards/SERVICE.md`, then reconcile the semantic changes into `catalog.json`; when workflow behavior changes, also update the matching Skill blueprint.
-2. Increment the version in both `catalog.json` and `pyproject.toml`.
+2. Increment the version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py`.
 3. Run validation, tests, and a clean build.
 4. Publish an immutable Git tag matching the catalog version.
 5. Consumer repositories synchronize the tagged version and commit the resulting PR.
