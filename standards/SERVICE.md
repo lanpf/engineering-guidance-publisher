@@ -142,25 +142,29 @@ DOMAIN 公共错误统一使用 `DOMAIN_` 前缀，前两个错误固定为 `DOM
 
 - 接口直接按业务角色、端口或技术契约命名，不使用 `I*`、`*Interface`；抽象类使用 `Abstract*`，`Base*` 仅用于框架基础类型或通用父类型。
 - 实现类不使用笼统的 `*Impl`，使用默认实现、技术、适配角色或实现策略命名。
-- 各层 payload、command output、view 和 outcome 不使用 `*Result` 后缀，避免与 framework 响应 `Result<T>`、`PageResult<T>` 混淆。
+- 各层 payload、command output + query view 和 outcome 不使用 `*Result` 后缀，避免与 framework 响应 `Result<T>`、`PageResult<T>` 混淆。
+- api 层的 payload 可以使用 `*ApiResponse`， application 层可使用 `*Response`，其它层都不使用 `*Response` 后缀。
+- rest client 远程调用的返回 使用 `*Payload` 后缀。
 - 转换器契约按层级职责命名，例如 `ApplicationMapper`、`ApiMapper`；MapStruct 实现放在契约包的 `mapstruct` 子包，统一使用 `*MapStructMapper`。
 
 ### api
 
-- `api.command` 入参使用 `*ApiCommand`，返回 payload 使用 `*ApiCommandResponse`。
-- `api.query` 入参使用 `*ApiQuery`，返回 payload 使用 `*ApiQueryResponse`。
+- `api.command` 入参使用 `*ApiCommand`，返回 payload 使用 `*ApiCommandOutput`。
+- `api.query` 入参使用 `*ApiQuery`，返回 payload 使用 `*ApiQueryView`。
+- `api.command` 和`api.query`的返回 payload 需要复用时，使用 `*ApiResponse`。
 - `api.enums` 使用 `*ApiEnum`，`api.constants` 使用 `*ApiConstants`，`api.event` 使用 `*ApiEvent`。
 - Facade API 接口使用 `*Facade`。
 
 ### domain
 
-- 领域服务返回使用 `*Outcome`。
+- 领域服务返回使用 `*Effect`，实现 `DomainEffect` 接口。
 - Repository 契约使用 `*Repository`，领域事件使用 `*Event`。
 
 ### application
 
-- `application.command` 入参使用 `*Command`，返回使用 `*CommandOutput`，服务使用 `*CommandService`。
+- `application.command` 入参使用 `*Command`，返回使用 `*Output`，服务使用 `*CommandService`。
 - `application.query` 使用领域 ID、值对象或 query condition 作为入参，返回 `*View`，分页返回 `PagedList<*View>`，服务使用 `*QueryService`。
+- `application.command` 和`application.query` 的返回需要复用时，使用 `*Response`。
 
 ### infrastructure
 
