@@ -1,6 +1,6 @@
 ---
 name: update-engineering-standards
-description: Reconcile Git changes in standards/COMMON.md and standards/SERVICE.md with the engineering guidance catalog, generated Skill references, and release metadata. Use after editing either standards document, when adding, changing, moving, or retiring rules, or when preparing a new engineering guidance release.
+description: Reconcile Git changes in Markdown standards documents with the engineering guidance catalog, generated Skill references, and release metadata. Use after editing files under standards/, when adding, changing, moving, or retiring rules, or when preparing a standards release.
 ---
 
 # Update Engineering Standards
@@ -9,19 +9,19 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 
 ## Locate inputs
 
-1. Locate the `engineering-guidance-publisher` repository containing `standards/COMMON.md`, `standards/SERVICE.md`, and `catalog.json`.
-2. Treat `COMMON.md` and `SERVICE.md` as the human-authored policy sources and `catalog.json` as the structured publishing source.
+1. Locate the `engineering-guidance-publisher` repository containing `standards/` and `catalog.json`.
+2. Treat every Markdown file under `standards/` as a human-authored policy source and `catalog.json` as the structured publishing source.
 3. Read the repository `AGENTS.md` and `README.md` before editing.
 4. Record the initial Git status so a later commit can exclude unrelated pre-existing changes.
 
 ## Inspect the change
 
-1. Use Git status and diff from this repository for `standards/COMMON.md` and `standards/SERVICE.md`.
+1. Discover every Markdown file recursively under `standards/`, then use Git status and diff for that complete file set.
 2. Compare against the user-specified base revision when one is supplied.
 3. Without a user-specified base, select the baseline automatically:
-   - If either standards document has staged or unstaged changes, compare the working tree against `HEAD`, including staged changes.
-   - Otherwise, find the most recent commit that modified either standards document and compare that commit against its first parent. Report the selected commit range before reconciling.
-4. If the documents are not yet tracked, no matching commit exists, or the selected commit has no parent, stop and ask for a base revision or initial commit. Do not infer a historical diff from file timestamps.
+   - If any standards Markdown file has staged or unstaged changes, compare the working tree against `HEAD`, including staged changes.
+   - Otherwise, find the most recent commit that modified any standards Markdown file and compare that commit against its first parent. Report the selected commit range before reconciling.
+4. If the Markdown files are not yet tracked, no matching commit exists, or the selected commit has no parent, stop and ask for a base revision or initial commit. Do not infer a historical diff from file timestamps.
 5. Classify every semantic change as added, tightened, relaxed, moved, reworded without semantic change, or retired.
 
 ## Reconcile the catalog
@@ -33,6 +33,10 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 5. Update the matching Skill blueprint only when the workflow or reference-routing behavior changes. Do not duplicate detailed rule text in `SKILL.md`.
 6. Keep every catalog reference's `<path>#<heading>` source traceable to the standards document that owns it.
 7. Increment the semantic version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py`. Use a patch increment unless the user requests or the compatibility impact requires a larger increment.
+
+## Track consumer changes
+
+Before pushing, compare the selected baseline and the updated `catalog.json`. For every Skill whose `scope` is `consumer`, record whether its catalog entry or references changed. For each changed consumer Skill, list added, changed, and retired rule IDs; also record reference, routing, or metadata changes that do not alter a rule. Preserve this consumer change list for the post-push report.
 
 ## Verify and report
 
@@ -62,6 +66,6 @@ When the user explicitly confirms, review the Git status and diff, stage only ch
 
 ## Synchronize after push
 
-Only after a successful push, ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid.
+After a successful push, inspect the preserved consumer change list. If no consumer Skill changed, report that no consumer synchronization is required and do not ask for project names. Otherwise, first list every changed consumer Skill and its added, changed, and retired rules, including any non-rule reference, routing, or metadata changes. Then ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid.
 
 Invoke `$sync-engineering-standards` separately for each validated project and follow its complete validation, synchronization, and consumer-verification workflow. If one synchronization fails, report the failed project and stop before beginning any remaining projects until the user gives direction. Do not infer project names or start synchronization when the push did not succeed.
