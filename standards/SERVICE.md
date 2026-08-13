@@ -164,7 +164,6 @@ DOMAIN 公共错误统一使用 `DOMAIN_` 前缀，前两个错误固定为 `DOM
 
 - `application.command` 入参使用 `*Command`，返回使用 `*Output`，服务使用 `*CommandService`。
 - `application.query` 使用领域 ID、值对象或 query condition 作为入参，返回 `*View`，分页返回 `PagedList<*View>`，服务使用 `*QueryService`。
-- `application.command` 和`application.query` 的返回需要复用时，使用 `*Response`。
 
 ### infrastructure
 
