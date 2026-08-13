@@ -12,13 +12,17 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 1. Locate the `engineering-guidance-publisher` repository containing `standards/COMMON.md`, `standards/SERVICE.md`, and `catalog.json`.
 2. Treat `COMMON.md` and `SERVICE.md` as the human-authored policy sources and `catalog.json` as the structured publishing source.
 3. Read the repository `AGENTS.md` and `README.md` before editing.
+4. Record the initial Git status so a later commit can exclude unrelated pre-existing changes.
 
 ## Inspect the change
 
 1. Use Git status and diff from this repository for `standards/COMMON.md` and `standards/SERVICE.md`.
-2. Compare against the user-specified base revision; when none is supplied, use the current Git diff against `HEAD`, including staged and unstaged changes.
-3. If the documents are not yet tracked or have no usable Git baseline, stop and ask for a base revision or initial commit. Do not infer a historical diff from file timestamps.
-4. Classify every semantic change as added, tightened, relaxed, moved, reworded without semantic change, or retired.
+2. Compare against the user-specified base revision when one is supplied.
+3. Without a user-specified base, select the baseline automatically:
+   - If either standards document has staged or unstaged changes, compare the working tree against `HEAD`, including staged changes.
+   - Otherwise, find the most recent commit that modified either standards document and compare that commit against its first parent. Report the selected commit range before reconciling.
+4. If the documents are not yet tracked, no matching commit exists, or the selected commit has no parent, stop and ask for a base revision or initial commit. Do not infer a historical diff from file timestamps.
+5. Classify every semantic change as added, tightened, relaxed, moved, reworded without semantic change, or retired.
 
 ## Reconcile the catalog
 
@@ -49,3 +53,9 @@ Validate every generated Skill under `dist/skills` with the available Skill vali
 - blueprint changes;
 - consumer/publisher Skill scope changes;
 - verification commands and results.
+
+## Commit and push
+
+After every required verification succeeds, ask whether the user wants the reconciled changes committed and pushed to GitHub. Do not stage, commit, or push unless the user explicitly confirms.
+
+When the user explicitly confirms, review the Git status and diff, stage only changes made by this workflow, including the managed publisher Skill and its lock file, commit them with an accurate message, and push the current branch to its configured upstream. If no upstream is configured, ask the user for the remote and branch instead of choosing one. Report the commit and push results.

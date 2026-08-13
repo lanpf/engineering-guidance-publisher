@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.1.1",
+  "version": "1.1.4",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -359,7 +359,7 @@
               "rules": [
                 {"id": "DATA-API-001", "text": "Prefer records for API commands and queries, and always use records for API responses; these contracts are complete, immutable, and independent of HTTP binding and header injection. Use records for API events when serialization, RPC, OpenFeign, and client compatibility support immutable constructor binding."},
                 {"id": "DATA-API-COMPAT-001", "text": "For public Java APIs, evaluate the binary-constructor compatibility impact before adding a record component."},
-                {"id": "DATA-DOMAIN-001", "text": "Prefer records for domain IDs, value objects, outcomes, and immutable domain events when inheritance is unnecessary; use classes for aggregate roots, entities, framework bases, mutable state, and complex behavior."},
+                {"id": "DATA-DOMAIN-001", "text": "Prefer records for domain IDs, value objects, effects, and immutable domain events when inheritance is unnecessary; use classes for aggregate roots, entities, framework bases, mutable state, and complex behavior."},
                 {"id": "DATA-INTERFACES-001", "text": "Use ordinary mutable classes for interfaces HTTP requests so JSON binding and Client, Channel, or Device header injection can populate them; they may extend the required Client context type but must not be used as Facade inputs."}
               ]
             },
@@ -382,16 +382,20 @@
               "rules": [
                 {"id": "NAME-INTERFACE-001", "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`; use `Abstract*` for abstract classes and reserve `Base*` for framework or shared base types."},
                 {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy."},
-                {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, views, or outcomes with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers."},
+                {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers."},
+                {"id": "NAME-RESPONSE-001", "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix."},
+                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Suffix REST-client remote-call return types with `*Payload`."},
                 {"id": "NAME-MAPPER-001", "text": "Name mapper contracts by layer responsibility, place MapStruct implementations in the contract package's `mapstruct` subpackage, and name them `*MapStructMapper`."}
               ]
             },
             {
               "title": "Layer names",
               "rules": [
-                {"id": "NAME-API-001", "text": "Use `*ApiCommand`, `*ApiCommandResponse`, `*ApiQuery`, `*ApiQueryResponse`, `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, and `*Facade` in API."},
-                {"id": "NAME-DOMAIN-001", "text": "Use `*Outcome` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events."},
-                {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*CommandOutput`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
+                {"id": "NAME-API-001", "text": "Use `*ApiCommand` with `*ApiCommandOutput`, `*ApiQuery` with `*ApiQueryView`, `*ApiResponse` for reusable command/query payloads, plus `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, and `*Facade` in API."},
+                {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events."},
+                {"id": "NAME-DOMAIN-EFFECT-001", "text": "Domain-service result types implement `DomainEffect`."},
+                {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
+                {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."},
