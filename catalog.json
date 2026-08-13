@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -395,7 +395,6 @@
                 {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events."},
                 {"id": "NAME-DOMAIN-EFFECT-001", "text": "Domain-service result types implement `DomainEffect`."},
                 {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
-                {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."},
