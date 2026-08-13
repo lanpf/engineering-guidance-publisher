@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -460,7 +460,7 @@
     {
       "name": "update-engineering-standards",
       "scope": "publisher",
-      "when": "Reconciling changes in COMMON.md or SERVICE.md with catalog.json and preparing a standards release",
+      "when": "Reconciling Markdown standards changes with catalog.json and preparing a standards release",
       "references": []
     },
     {
