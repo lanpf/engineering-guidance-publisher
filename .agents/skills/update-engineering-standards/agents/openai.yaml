@@ -1,4 +1,4 @@
 interface:
   display_name: "Update Engineering Standards"
   short_description: "Reconcile standards docs with the rule catalog"
-  default_prompt: "Use $update-engineering-standards to compare COMMON.md and SERVICE.md changes and update the catalog and generated guidance."
+  default_prompt: "Use $update-engineering-standards to reconcile standards changes, publish them, and synchronize named projects after a successful push."

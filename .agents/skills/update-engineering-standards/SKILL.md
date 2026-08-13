@@ -59,3 +59,9 @@ Validate every generated Skill under `dist/skills` with the available Skill vali
 After every required verification succeeds, ask whether the user wants the reconciled changes committed and pushed to GitHub. Do not stage, commit, or push unless the user explicitly confirms.
 
 When the user explicitly confirms, review the Git status and diff, stage only changes made by this workflow, including the managed publisher Skill and its lock file, commit them with an accurate message, and push the current branch to its configured upstream. If no upstream is configured, ask the user for the remote and branch instead of choosing one. Report the commit and push results.
+
+## Synchronize after push
+
+Only after a successful push, ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid.
+
+Invoke `$sync-engineering-standards` separately for each validated project and follow its complete validation, synchronization, and consumer-verification workflow. If one synchronization fails, report the failed project and stop before beginning any remaining projects until the user gives direction. Do not infer project names or start synchronization when the push did not succeed.
