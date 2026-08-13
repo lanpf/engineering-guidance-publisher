@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -450,6 +450,12 @@
           ]
         }
       ]
+    },
+    {
+      "name": "refactor-java-service",
+      "scope": "consumer",
+      "when": "Planning or applying cross-layer Java service refactors, including changes driven by updated engineering standards",
+      "references": []
     },
     {
       "name": "update-engineering-standards",
