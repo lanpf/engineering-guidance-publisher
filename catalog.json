@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -186,10 +186,12 @@
               "title": "Boundary, concurrency, and transactions",
               "rules": [
                 {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters translate domain repository contracts to data access, while persistence repositories expose data-access capability only."},
-                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA or MyBatis-Plus repositories, SQL/XML, and technical assembly in the matching persistence implementation module."},
+                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA, MyBatis, or MyBatis-Plus repositories, mapper statements, and technical assembly in the matching persistence implementation module."},
                 {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure, and DOs declare only necessary entity, identifier, and enum mapping annotations."},
                 {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
-                {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository; select JPA for aggregate/lifecycle mapping or MyBatis-Plus for explicit SQL, complex queries, and bulk work based on documented access patterns."},
+                {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
+                {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
+                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same infrastructure-owned SQL XML fragments through `classpath*:/META-INF/mybatis/**/*.xml` and include shared table names, column lists, and reusable predicates rather than copying them."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
                 {"id": "PERSISTENCE-CONCURRENCY-001", "text": "Do not use pessimistic database locks as the default cross-instance write mutex; use a distributed lock plus a unique constraint for creation, and prefer version/conditional updates with explicit conflict handling for updates."},
                 {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."}
@@ -203,6 +205,15 @@
                 {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
                 {"id": "PERSISTENCE-JPA-001", "text": "Do not rely on Open Session in View to hide JPA lazy loading; design aggregate fetch boundaries and read projections explicitly."},
                 {"id": "PERSISTENCE-MYBATIS-001", "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules."}
+              ]
+            },
+            {
+              "title": "Unique constraint violations",
+              "rules": [
+                {"id": "PERSISTENCE-DUPLICATE-001", "text": "At the persistence-adapter boundary, translate a known business unique-constraint conflict into an explicit domain/application exception or, after verifying equivalent existing data, an idempotent success; do not leak the database exception."},
+                {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, but it must identify the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify every integrity violation as a duplicate key."},
+                {"id": "PERSISTENCE-JPA-FLUSH-001", "text": "To catch a JPA unique-constraint failure inside an adapter, flush within that catch boundary; otherwise translate the deferred exception at a boundary that covers transaction commit."},
+                {"id": "PERSISTENCE-DUPLICATE-LOG-001", "text": "Log every unique-constraint conflict once at the translation boundary with constraint/scene, sanitized business key, and outcome; use INFO or WARN for expected idempotency and ERROR plus rethrow for unknown or unclassified integrity failures."}
               ]
             }
           ]
@@ -305,7 +316,7 @@
               "title": "Test boundaries",
               "rules": [
                 {"id": "TEST-LOCATION-001", "text": "Keep unit and module contract tests in the tested module's `src/test`."},
-                {"id": "TEST-INTEGRATION-001", "text": "Treat cross-module, full auto-configuration, real database, or real middleware scenarios as integration tests and keep them out of production modules."},
+                {"id": "TEST-INTEGRATION-001", "text": "Treat cross-module, full auto-configuration, real database, or real middleware scenarios as integration tests; in a service, place them in the architecture-defined `<service>-integration-tests` module and keep them out of production modules."},
                 {"id": "TEST-BEHAVIOR-001", "text": "Verify observable behavior and public contracts rather than unnecessary implementation details."},
                 {"id": "TEST-MOCK-001", "text": "In unit tests, mock only injected external collaborators; do not partially mock or spy on the subject under test."},
                 {"id": "TEST-CONTAINERS-001", "text": "Prefer Testcontainers for isolated and repeatable real-infrastructure scenarios."}
@@ -362,7 +373,8 @@
                 {"id": "ARCH-MODULE-TECH-001", "text": "Concrete persistence, scheduler, and message implementations live in `<service>-infrastructure-<kind>-<technology>` modules."},
                 {"id": "ARCH-MODULE-INTERFACES-001", "text": "`<service>-interfaces` implements protocol-neutral Facades and hosts REST, RPC, and message subscription adapters."},
                 {"id": "ARCH-MODULE-CLIENT-001", "text": "`<service>-openfeign-client` provides the OpenFeign client for the service API."},
-                {"id": "ARCH-MODULE-BOOT-001", "text": "`<service>-boot` starts, configures, packages, and assembles runtime implementations."}
+                {"id": "ARCH-MODULE-BOOT-001", "text": "`<service>-boot` starts, configures, and packages the service."},
+                {"id": "ARCH-MODULE-INTEGRATION-TESTS-001", "text": "`<service>-integration-tests` is a standalone test module for cross-module, full-auto-configuration, and real database or middleware integration tests; production modules must not depend on it."}
               ]
             },
             {
@@ -371,6 +383,7 @@
                 {"id": "ARCH-DEP-API-001", "text": "API does not depend on business implementations; domain does not depend on other business layers; application depends on domain."},
                 {"id": "ARCH-DEP-INFRA-001", "text": "Infrastructure implements domain and application ports; concrete persistence, scheduler, and message modules depend on infrastructure."},
                 {"id": "ARCH-DEP-OUTER-001", "text": "Interfaces depends on API and application, OpenFeign client depends on API, and boot performs final assembly."},
+                {"id": "ARCH-DEP-INTEGRATION-TESTS-001", "text": "Integration-tests may depend on boot and observed service modules in test scope only; those verification dependencies never participate in production dependency direction."},
                 {"id": "ARCH-DEP-INWARD-001", "text": "No inner module may depend on outer protocol types, persistence objects, concrete technologies, or boot."}
               ]
             }
@@ -495,6 +508,7 @@
                 {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
                 {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
+                {"id": "NAME-MYBATIS-SQL-001", "text": "Store shared MyBatis/MyBatis-Plus fragments at `<service>-infrastructure/src/main/resources/META-INF/mybatis/<service>/fragments/<Aggregate>SqlFragments.xml`, use namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`, name concrete mapper files `<Aggregate>Mapper.xml`, and reference shared `<sql>` elements with fully qualified `refid`."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."}
               ]

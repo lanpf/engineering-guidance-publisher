@@ -19,12 +19,14 @@
 - `<工程名>-interfaces` 提供协议无关 Facade 实现及 REST、RPC、消息订阅等协议入口。
 - `<工程名>-openfeign-client` 提供调用本服务的 OpenFeign 客户端。
 - `<工程名>-boot` 只负责启动、运行时配置和打包。
+- `<工程名>-integration-tests` 是独立测试 module，承载跨 module、完整自动装配以及依赖真实数据库或中间件的集成测试；生产 module 不得依赖它。
 
 ### 依赖方向
 
 - api 不依赖业务实现；domain 不依赖其他业务层；application 依赖 domain。
 - infrastructure 实现 domain/application 定义的端口，具体技术实现 module 依赖 infrastructure。
 - interfaces 依赖 api/application，openfeign-client 依赖 api，boot 只做最终装配。
+- integration-tests 可以用 test scope 依赖 boot 和被观测的服务 module；该依赖只用于验证，不得形成生产代码依赖方向的一部分。
 - 内层 module 不得反向依赖外层协议、持久化实现、持久化对象或 boot。
 
 ## 层内约定

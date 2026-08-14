@@ -6,8 +6,9 @@
 
 - repository adapter 完成领域 Repository 与数据访问能力之间的适配，persistence repository 只表达数据访问能力；具体 JPA 或 MyBatis-Plus repository、SQL/XML 和装配放在独立 persistence 实现 module。领域 Repository 契约遵循[服务分层最佳实践](bp_layered_service.md#domain)。
 - persistence mapper 负责 domain、application read model 与 persistence object 之间的转换。
-- 同一 repository 只使用一种持久化技术，不得混用 JPA 和 MyBatis-Plus；制品级实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
-- JPA 适合聚合映射和以实体生命周期为中心的访问；MyBatis-Plus 适合显式 SQL、复杂查询和批量操作。技术选择必须基于访问模式并记录理由，不得仅因个人偏好选择。
+- 同一 repository 只使用一种持久化技术，不得混用 JPA、MyBatis 和 MyBatis-Plus；制品级实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
+- 持久化实现可以选择 JPA、MyBatis 或 MyBatis-Plus；使用 MyBatis-Plus 的工程在许可证策略不允许时可以降级为 MyBatis，降级不得改变数据库 schema、表名、字段名、查询语义和 repository 可观察行为。
+- MyBatis 与 MyBatis-Plus 实现必须通过 `classpath*:/META-INF/mybatis/**/*.xml` 共同加载 `<工程名>-infrastructure` 中的共享 SQL XML 片段；表名、字段列表和可复用查询条件只在共享片段中声明，具体 mapper statement 通过 `<include>` 引用，不得在两套实现中分别复制。
 
 ## 数据模型与命名
 
@@ -22,6 +23,13 @@
 - 事务必须短小，只覆盖同一数据库内必要读写，不得在事务中执行可避免的 RPC、消息发送、长计算或等待锁；事务边界的分层归属遵循[服务分层最佳实践](bp_layered_service.md#application)。
 - 数据写入涉及集成事件时，原子提交与发布遵循[消息中间件最佳实践](bp_messaging.md#事件与发布)。
 - 重试写操作必须幂等，并显式处理唯一约束冲突、乐观锁冲突、死锁和瞬时连接故障；不得无界重试。
+
+## 唯一约束异常
+
+- 已知业务唯一约束冲突必须在 persistence adapter 边界转换为明确的领域/应用异常，或在确认请求语义与既有数据一致后按幂等成功处理；不得把数据库异常直接泄漏到 application、interfaces 或 API。
+- MyBatis 经 Spring 异常转换抛出的 `DuplicateKeyException` 是 `DataIntegrityViolationException` 的子类，因此 JPA 和 MyBatis 可以统一捕获 `DataIntegrityViolationException`；但必须依据已知约束名、SQLState/厂商错误码或冲突后的业务键回查确认它确实是目标唯一约束冲突，不得把非空、外键、检查约束等其他完整性错误当成重复键。
+- JPA 若要在 adapter 内捕获唯一约束异常，必须在该捕获边界内执行 `flush`；否则异常可能推迟到事务提交时才抛出，应改由覆盖提交边界的统一转换器处理。
+- 无论转换为业务异常还是按幂等成功处理，都必须在唯一的转换边界记录日志，包含约束或场景、脱敏后的业务键和处理结果；预期幂等冲突使用 `INFO` 或 `WARN`，未知或无法分类的完整性错误使用 `ERROR` 并继续抛出。
 
 ## 查询与性能
 
