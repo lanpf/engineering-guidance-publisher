@@ -1,6 +1,6 @@
 # Engineering Guidance Publisher
 
-This repository turns versioned engineering standards into deterministic Skills and managed guidance for coding agents. `standards/COMMON.md` and `standards/SERVICE.md` are the human-authored policy sources; `catalog.json` is their structured publishing representation and the direct source of generated `AGENTS.md` guidance and Skill references.
+This repository turns versioned engineering best practices into deterministic Skills and managed guidance for coding agents. The `standards/bp_*.md` series contains the human-authored policy sources; `catalog.json` is their structured publishing representation and the direct source of generated `AGENTS.md` guidance and Skill references.
 
 ## Commands
 
@@ -13,7 +13,7 @@ python3 -m unittest discover -s tests
 ```
 
 The generated `$update-engineering-standards` Skill reconciles Git changes in
-`standards/COMMON.md` and `standards/SERVICE.md` with the catalog. The generated
+all Markdown documents under `standards/` with the catalog. The generated
 `$sync-engineering-standards` Skill accepts a sibling project name and runs the
 validated synchronization workflow for that project.
 
@@ -26,7 +26,7 @@ For local development without installing the package, set `PYTHONPATH=src` befor
 
 ## Release model
 
-1. Change `standards/COMMON.md` or `standards/SERVICE.md`, then reconcile the semantic changes into `catalog.json`; when workflow behavior changes, also update the matching Skill blueprint.
+1. Change one or more `standards/bp_*.md` documents, then reconcile semantic changes into `catalog.json`; when workflow behavior changes, also update the matching Skill blueprint.
 2. Increment the version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py`.
 3. Run validation, tests, and a clean build.
 4. Publish an immutable Git tag matching the catalog version.

@@ -36,6 +36,15 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 self.assertTrue(source.is_file())
                 self.assertIn(heading, source.read_text(encoding="utf-8"))
 
+    def test_every_standard_uses_the_best_practice_filename_prefix(self) -> None:
+        standards = sorted((self.layout.root / "standards").rglob("*.md"))
+        self.assertTrue(standards)
+        self.assertTrue(all(path.name.startswith("bp_") for path in standards))
+        for skill in self.catalog["skills"]:
+            for reference in skill["references"]:
+                source_path, _ = reference["source"].split("#", 1)
+                self.assertTrue(Path(source_path).name.startswith("bp_"))
+
     def test_build_is_deterministic_and_complete(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             first = build(self.layout, self.catalog, Path(temporary) / "first")
