@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -265,6 +265,13 @@
                 {"id": "ARCH-DEP-INTEGRATION-TESTS-001", "text": "Integration-tests may depend on boot and observed service modules in test scope only; those verification dependencies never participate in production dependency direction."},
                 {"id": "ARCH-DEP-INWARD-001", "text": "No inner module may depend on outer protocol types, persistence objects, concrete technologies, or boot."}
               ]
+            },
+            {
+              "title": "Project configuration",
+              "rules": [
+                {"id": "ARCH-PROJECT-CONFIG-001", "text": "Create a root-level `config/` directory beside service modules and prefer it for independently updateable application profiles, MyBatis SQL fragments and mapper XML, database schema or migration files, Dubbo XML, and similar configuration rather than packaging them in a module by default."},
+                {"id": "ARCH-PROJECT-CONFIG-002", "text": "Load root-level `config/` resources explicitly through Spring or technology-specific location settings and make build, deployment, and local startup provide and validate them; package a resource under a module only when external loading is unsupported, code and resource versions are inseparable, or the artifact must be self-contained."}
+              ]
             }
           ]
         },
@@ -508,10 +515,10 @@
                 {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
                 {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
                 {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
-                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same infrastructure-owned SQL XML fragments through `classpath*:/META-INF/mybatis/**/*.xml` and include shared table names, column lists, and reusable predicates rather than copying them."},
+                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same SQL XML fragments from the project-root `config/` directory and include shared table names, column lists, and reusable predicates rather than copying them; follow the layered-service external-resource loading rules and the naming standard for files and namespaces."},
                 {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "Shared DOs must map directly across JPA, MyBatis, and MyBatis-Plus and therefore declare no collection properties or collection-mapping annotations; model multi-value relationships as master/detail DOs, or use a shared mapper converter to join them into one string only when they need no independent query, index, or foreign-key constraint."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
-                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Shared or operations-managed `schema.sql` and configuration may live in a project-level directory beside service modules; `schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration, and a prefix or suffix change must update schema scripts or migration configuration."},
+                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules; `schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration, and a prefix or suffix change must update schema scripts or migration configuration."},
                 {"id": "PERSISTENCE-CONCURRENCY-SCENARIO-001", "text": "Choose concurrency controls from actual contention and business risk; do not add versions, distributed locks, or pessimistic database locks to very-low-contention operational APIs for hypothetical races."},
                 {"id": "PERSISTENCE-CONCURRENCY-STATE-001", "text": "When a business state machine or explicit precondition already exists, prefer a conditional update on the current state or business condition and treat an unexpected affected-row count as a state change or concurrency conflict."},
                 {"id": "PERSISTENCE-CONCURRENCY-001", "text": "For real cross-instance conflicts not resolved by business conditions, prefer a distributed lock to reduce contention and add version-based optimistic concurrency only when residual conflicts still require detection; never make versions, pessimistic database locks, or distributed locks the default for every write."},
@@ -547,7 +554,7 @@
             {
               "title": "Shared SQL XML",
               "rules": [
-                {"id": "NAME-MYBATIS-SQL-001", "text": "Store shared MyBatis/MyBatis-Plus fragments at `<service>-infrastructure/src/main/resources/META-INF/mybatis/<service>/fragments/<Aggregate>SqlFragments.xml`, use namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`, name concrete mapper files `<Aggregate>Mapper.xml`, and reference shared `<sql>` elements with fully qualified `refid`."}
+                {"id": "NAME-MYBATIS-SQL-001", "text": "Name shared MyBatis/MyBatis-Plus fragment files `<Aggregate>SqlFragments.xml` with namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`; name concrete mapper files `<Aggregate>Mapper.xml` and reference shared `<sql>` elements with fully qualified `refid`."}
               ]
             }
           ]

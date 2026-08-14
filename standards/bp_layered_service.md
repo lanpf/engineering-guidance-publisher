@@ -29,6 +29,12 @@
 - integration-tests 可以用 test scope 依赖 boot 和被观测的服务 module；该依赖只用于验证，不得形成生产代码依赖方向的一部分。
 - 内层 module 不得反向依赖外层协议、持久化实现、持久化对象或 boot。
 
+### 项目级配置目录
+
+- 工程根目录必须设置与各 module 平级的 `config/` 目录，作为可独立更新资源的首选存放位置。项目级 `application.yml`、`application-*.yml` 或对应 properties、MyBatis 共享 SQL 片段与 mapper XML、数据库 schema/迁移脚本、Dubbo XML 等配置优先放在该目录，不得仅因某个 module 负责装配就默认打入其制品。
+- boot 必须通过 `spring.config.location`、`spring.config.additional-location`、`spring.config.import`、框架专属 location 配置或等效启动参数显式加载 `config/` 中的资源；构建、部署和本地启动流程必须保证这些资源可用，并验证缺失或无效配置能够按预期失败。
+- 只有框架不支持外部加载、资源与代码在版本和类路径上不可拆分，或制品必须自包含且无法由部署环境提供时，才可以把资源放在对应 module 的 `src/main/resources`。不得为了开发便利牺牲配置的独立发布能力，避免仅修改资源文件就重新打包 module。
+
 ## 层内约定
 
 ### api

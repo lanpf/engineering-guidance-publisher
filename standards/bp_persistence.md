@@ -8,14 +8,14 @@
 - persistence mapper 负责 domain、application read model 与 persistence object 之间的转换。
 - 同一 repository 只使用一种持久化技术，不得混用 JPA、MyBatis 和 MyBatis-Plus；制品级实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
 - 持久化实现可以选择 JPA、MyBatis 或 MyBatis-Plus；使用 MyBatis-Plus 的工程在许可证策略不允许时可以降级为 MyBatis，降级不得改变数据库 schema、表名、字段名、查询语义和 repository 可观察行为。
-- MyBatis 与 MyBatis-Plus 实现必须通过 `classpath*:/META-INF/mybatis/**/*.xml` 共同加载 `<工程名>-infrastructure` 中的共享 SQL XML 片段；表名、字段列表和可复用查询条件只在共享片段中声明，具体 mapper statement 通过 `<include>` 引用，不得在两套实现中分别复制。
+- MyBatis 与 MyBatis-Plus 实现必须共同加载工程根目录 `config/` 中的共享 SQL XML 片段；表名、字段列表和可复用查询条件只在共享片段中声明，具体 mapper statement 通过 `<include>` 引用，不得在两套实现中分别复制。具体加载位置与外部配置要求遵循[服务分层最佳实践](bp_layered_service.md#项目级配置目录)，文件和 namespace 命名遵循[服务命名最佳实践](bp_naming.md#命名约定)。
 
 ## 数据模型与命名
 
 - 共享 DO 位于 infrastructure 的 `persistence.model`，只保留必要的实体、主键和枚举映射注解。
 - 共享 DO 必须同时考虑 JPA、MyBatis 和 MyBatis-Plus 的直接适配性，不得声明集合属性及 `@ElementCollection`、`@CollectionTable` 等集合映射注解。多值关系拆分为主从 DO 和关联表；只有在这些值始终整体读写且不需要独立查询、索引或外键约束时，才可以在 persistence mapper 中通过公共 converter join 为单个字符串字段。
 - 表名遵循统一 `framework.persistence.naming.table-prefix` 和 `table-suffix` 策略；业务代码不得为规避命名策略在 DO 上重复硬编码表名。
-- 由多个 module 共用或由运维统一管理的 `schema.sql` 和配置文件可以放在与各 module 平级的项目级目录；`schema.sql` 文件开头必须注释声明其中表名前缀、后缀需要与运行配置保持一致。修改表名前缀或后缀属于 schema 变更，必须同步修改建表脚本或迁移配置，不得只修改运行配置。
+- `schema.sql` 和数据库迁移配置优先放在工程根目录 `config/`，路径和加载方式遵循[服务分层最佳实践](bp_layered_service.md#项目级配置目录)；`schema.sql` 文件开头必须注释声明其中表名前缀、后缀需要与运行配置保持一致。修改表名前缀或后缀属于 schema 变更，必须同步修改建表脚本或迁移配置，不得只修改运行配置。
 - 主键、业务唯一键和所有业务不变量必须有数据库约束；应用校验和分布式协调不能替代最终约束。
 
 ## 并发写与事务
