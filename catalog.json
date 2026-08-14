@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -295,6 +295,7 @@
               "rules": [
                 {"id": "DOMAIN-MODEL-001", "text": "Use aggregate roots as consistency boundaries and define entities, value objects, domain services, repository contracts, and domain events around the domain model."},
                 {"id": "DOMAIN-BEHAVIOR-001", "text": "Aggregate roots and entities change state only through domain behavior; value objects are immutable; domain services contain only cross-aggregate rules or rules that do not belong to one aggregate."},
+                {"id": "NAME-DOMAIN-EFFECT-001", "text": "Domain-service `*Effect` result types implement `DomainEffect` and return the domain events produced by that behavior through `events()`; return an empty collection rather than null when no event is produced."},
                 {"id": "DOMAIN-CLOCK-001", "text": "Domain objects and services must not call system time directly; application services inject `Clock`, obtain business time once per use case, and pass the same value to related state changes and events."},
                 {"id": "DOMAIN-REPOSITORY-001", "text": "Domain repositories express domain-object persistence contracts without exposing a persistence technology."},
                 {"id": "DOMAIN-EVENT-001", "text": "Domain events represent facts that already occurred and receive a trend-increasing Long event ID at creation."},
@@ -390,7 +391,6 @@
               "rules": [
                 {"id": "NAME-API-001", "text": "Use `*ApiCommand` with `*ApiCommandOutput`, `*ApiQuery` with `*ApiQueryView`, `*ApiResponse` for reusable command/query payloads, plus `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, and `*Facade` in API."},
                 {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events."},
-                {"id": "NAME-DOMAIN-EFFECT-001", "text": "Domain-service result types implement `DomainEffect`."},
                 {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
                 {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},

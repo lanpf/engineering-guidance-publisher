@@ -10,7 +10,7 @@
 - 只有 API payload 可以使用 `*ApiResponse`，只有 application 返回类型可以使用 `*Response`；REST client 远程返回使用 `*Payload`。
 - mapper 契约按层级职责命名；MapStruct 实现放入契约包的 `mapstruct` 子包并命名为 `*MapStructMapper`。
 - API 使用 `*ApiCommand`、`*ApiCommandOutput`、`*ApiQuery`、`*ApiQueryView`、可复用的 `*ApiResponse`、`*ApiEnum`、`*ApiConstants`、`*ApiEvent` 和 `*Facade`。
-- 领域服务返回使用实现 `DomainEffect` 的 `*Effect`；Repository 契约使用 `*Repository`；领域事件使用 `*Event`。
+- 领域服务返回使用 `*Effect`；Repository 契约使用 `*Repository`；领域事件使用 `*Event`。
 - application 使用 `*Command`、`*Output`、`*CommandService`、`*View`、`*QueryService`；分页返回 `PagedList<*View>`，command/query 共用返回类型时才使用 `*Response`。
 - infrastructure 类型使用 `*RepositoryAdapter`、技术化 `*PersistenceRepository`、`*DO` 和 `*PersistenceConfiguration`。
 - MyBatis 与 MyBatis-Plus 共享 SQL 片段文件使用 `<Aggregate>SqlFragments.xml`，namespace 使用 `<工程包>.persistence.sql.<Aggregate>SqlFragments`；具体 mapper XML 使用 `<Aggregate>Mapper.xml`，并通过完全限定的 `refid` 引用共享 `<sql>` 片段。
