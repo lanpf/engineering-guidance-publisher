@@ -18,7 +18,7 @@
 - 具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`。
 - `<工程名>-interfaces` 提供协议无关 Facade 实现及 REST、RPC、消息订阅等协议入口。
 - `<工程名>-openfeign-client` 提供调用本服务的 OpenFeign 客户端。
-- `<工程名>-boot` 只负责启动、配置、打包和运行时实现装配。
+- `<工程名>-boot` 只负责启动、运行时配置和打包。
 
 ### 依赖方向
 
@@ -50,20 +50,16 @@
 - application 编排用例并协调领域模型和端口，不实现领域规则。
 - command service 是写用例和事务边界，接收 application command，返回 command output 或 `void`。
 - query service 只读，接收领域 ID、值对象或 query condition，返回 view，分页使用 `PagedList<T>`。
-- 集成事件通过 `IntegrationEventOutbox` 端口提交，不得绑定具体消息中间件。
+- application 的事件发布遵循[消息中间件最佳实践](bp_messaging.md#事件与发布)。
 - application 可以依赖 domain、API 集成事件契约和 framework 端口，不得依赖 API command/query/response、协议实现、持久化 DO 或外部响应包装。
 
 ### infrastructure
 
 - infrastructure 提供 repository、gateway、ID、事件存储、消息和调度适配，不承载领域规则或用例编排。
+- 领域事件存储通过 framework 端口适配，domain 和 application 不得依赖具体存储实现。
 - JavaBean 配置绑定中的集合和嵌套对象字段声明为 `final`，只暴露 getter，并初始化为空绑定容器；必填集合使用 `@NotEmpty` 使缺失配置启动失败。
 - `Duration` 独立最小值同时使用 `@NotNull` 和带明确单位的 `@DurationMin`，module 直接依赖 `hibernate-validator`；`@AssertTrue` 等类型级校验只表达字段间关系。
-- repository adapter 实现领域 Repository 或 application 端口；persistence repository 只表达数据访问能力。
-- 具体 repository、SQL XML 和技术装配保持在对应持久化实现 module；打包依赖决定运行时实现。
-- 通用 persistence model 位于 infrastructure；DO 只声明必要的实体、主键和枚举映射，字段约束和索引由建表 SQL 管理。
-- mapper 转换 domain、application read model 和 persistence object；helper 保持 mapper 专用和技术中立。
-- 持久化查询按条件、范围和排序命名，不按单一调用场景命名。
-- 领域事件存储、outbox、分区消息遵循 framework 端口；调度 module 只提供任务入口，补偿逻辑保留在通用 infrastructure 服务。
+- persistence、消息和调度适配分别遵循对应主题最佳实践；本层只约束这些能力属于 infrastructure，不在此重复其实现规则。
 
 ### interfaces、client 与 boot
 
@@ -73,9 +69,9 @@
 - controller 的业务请求收敛为一个普通可变 `@Valid` HTTP Request；按需继承 `ClientRequest` 或仅在需要渠道时继承 `ClientChannelRequest`。不得把业务字段拆成 path/query 参数再附加独立客户端上下文参数。
 - Header 回填和校验后，必须转换成完整不可变 API command/query；Facade 不得接收 interfaces HTTP Request。
 - RPC 能直接暴露 Facade 时发布同一个 Facade Bean；只有协议模型、语义、元数据或异常不兼容时增加技术专属 adapter。
-- 消息 listener 完成入站转换后调用 application，不强制经过 Facade。
+- 消息 listener 属于 interfaces 协议入口，不强制经过 Facade；消费可靠性和处理流程遵循[消息中间件最佳实践](bp_messaging.md#消费与可靠性)。
 - OpenFeign 客户端签名与 Facade 一致，只复用 API 契约和响应包装，不定义业务模型、用例或转换规则。
-- boot 未依赖某技术实现 module 时不得拥有该能力；boot 不承载领域规则、应用编排、协议适配或业务类型。
+- boot 不承载领域规则、应用编排、协议适配或业务类型；技术实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
 
 ## 不可变数据载体
 

@@ -45,6 +45,20 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 source_path, _ = reference["source"].split("#", 1)
                 self.assertTrue(Path(source_path).name.startswith("bp_"))
 
+    def test_standard_bullets_are_not_declared_in_multiple_documents(self) -> None:
+        owners: dict[str, Path] = {}
+        for standard in sorted((self.layout.root / "standards").rglob("bp_*.md")):
+            for line in standard.read_text(encoding="utf-8").splitlines():
+                rule = line.strip()
+                if not rule.startswith("- "):
+                    continue
+                self.assertNotIn(
+                    rule,
+                    owners,
+                    f"duplicate standard bullet in {owners.get(rule)} and {standard}",
+                )
+                owners[rule] = standard
+
     def test_build_is_deterministic_and_complete(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             first = build(self.layout, self.catalog, Path(temporary) / "first")

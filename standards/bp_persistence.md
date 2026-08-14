@@ -4,13 +4,14 @@
 
 ## 持久化边界
 
-- domain Repository 只表达聚合存取语义；repository adapter 完成领域对象与数据访问能力适配；具体 JPA 或 MyBatis-Plus repository、SQL/XML 和装配放在独立 persistence 实现 module。
-- 同一 boot 制品只装配一种持久化实现；不得通过运行时属性在 JPA 和 MyBatis-Plus 之间切换，也不得在同一 repository 中混用两套技术。
+- repository adapter 完成领域 Repository 与数据访问能力之间的适配，persistence repository 只表达数据访问能力；具体 JPA 或 MyBatis-Plus repository、SQL/XML 和装配放在独立 persistence 实现 module。领域 Repository 契约遵循[服务分层最佳实践](bp_layered_service.md#domain)。
+- persistence mapper 负责 domain、application read model 与 persistence object 之间的转换。
+- 同一 repository 只使用一种持久化技术，不得混用 JPA 和 MyBatis-Plus；制品级实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
 - JPA 适合聚合映射和以实体生命周期为中心的访问；MyBatis-Plus 适合显式 SQL、复杂查询和批量操作。技术选择必须基于访问模式并记录理由，不得仅因个人偏好选择。
 
 ## 数据模型与命名
 
-- 共享 DO 位于 infrastructure 的 `persistence.model`，只保留必要的实体、主键和枚举映射注解；字段非空、唯一约束、外键和索引以 schema migration/建表 SQL 为准。
+- 共享 DO 位于 infrastructure 的 `persistence.model`，只保留必要的实体、主键和枚举映射注解。
 - 表名遵循统一 `framework.persistence.naming.table-prefix` 和 `table-suffix` 策略；业务代码不得为规避命名策略在 DO 上重复硬编码表名。
 - 主键、业务唯一键和所有业务不变量必须有数据库约束；应用校验和分布式协调不能替代最终约束。
 
@@ -18,14 +19,15 @@
 
 - 对数据并发写入，不得依赖数据库悲观锁作为默认跨实例互斥；使用分布式锁串行化竞争，并以数据库唯一索引作为最终防线。
 - 更新已有数据优先使用版本号或条件更新实现乐观并发；受影响行数不符合预期必须作为并发冲突处理，不得静默覆盖。
-- application command service 定义事务边界；事务必须短小，只覆盖同一数据库内必要读写，不得在事务中执行可避免的 RPC、消息发送、长计算或等待锁。
-- 数据写入与集成事件必须在同一本地事务写入 outbox，事务提交后异步发布；不得用“先写库再直接发消息”假装原子性。
+- 事务必须短小，只覆盖同一数据库内必要读写，不得在事务中执行可避免的 RPC、消息发送、长计算或等待锁；事务边界的分层归属遵循[服务分层最佳实践](bp_layered_service.md#application)。
+- 数据写入涉及集成事件时，原子提交与发布遵循[消息中间件最佳实践](bp_messaging.md#事件与发布)。
 - 重试写操作必须幂等，并显式处理唯一约束冲突、乐观锁冲突、死锁和瞬时连接故障；不得无界重试。
 
 ## 查询与性能
 
 - 分页必须有稳定且唯一的排序，深分页或持续扫描优先使用游标；不得依赖数据库未指定顺序。
 - 查询条件、排序和关联路径必须由匹配索引支持；新增高频或大表查询前验证执行计划。
+- 持久化查询接口按查询条件、范围和排序命名，不按单一调用场景命名。
 - 禁止 N+1 查询和无界结果集；批量读写必须限制批次大小，避免一次性加载全部数据。
 - MyBatis-Plus 的数据库类型必须显式正确配置，不支持的类型必须启动失败；自定义 interceptor 必须保持确定顺序并验证不会绕过分页或命名策略。
 - JPA 不得在接口层依赖 Open Session in View 补偿懒加载；聚合加载边界和只读 projection 必须显式设计。

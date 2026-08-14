@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -94,8 +94,8 @@
             {
               "title": "Type-specific use",
               "rules": [
-                {"id": "LOMBOK-ENTITY-001", "text": "Aggregate roots and entities use only `@Getter`; state changes go through domain behavior, and equality based on the unique identifier is implemented explicitly without `@Data` or Lombok `@EqualsAndHashCode`."},
-                {"id": "LOMBOK-VALUE-001", "text": "Prefer `record` for value objects; otherwise use final fields, getters, an appropriate all-arguments constructor, and full-field equality when suitable."},
+                {"id": "LOMBOK-ENTITY-001", "text": "Aggregate roots and entities use only `@Getter`, avoid `@Data` and Lombok `@EqualsAndHashCode`, and implement equality explicitly from the unique identifier."},
+                {"id": "LOMBOK-VALUE-001", "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality."},
                 {"id": "LOMBOK-SPRING-001", "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`."}
               ]
             }
@@ -111,7 +111,7 @@
               "rules": [
                 {"id": "MAPSTRUCT-CONVERSION-001", "text": "Use MapStruct for object conversion; do not hand-write field copying or use `BeanUtils.copyProperties`."},
                 {"id": "MAPSTRUCT-CONTRACT-001", "text": "Define the conversion contract independently; MapStruct is an implementation mechanism rather than the contract itself."},
-                {"id": "MAPSTRUCT-IMPLEMENTATION-001", "text": "Place implementations in the contract package's `mapstruct` subpackage, name them `*MapStructMapper`, implement the contract, and annotate implemented methods with `@Override`."}
+                {"id": "MAPSTRUCT-IMPLEMENTATION-001", "text": "MapStruct implementation classes implement the independent conversion contract and annotate implemented methods with `@Override`; naming is governed by the service naming rules."}
               ]
             },
             {
@@ -136,8 +136,7 @@
                 {"id": "ID-NAME-001", "text": "Pass a stable, configured, low-cardinality ID-space name to `nextId(name)`; do not derive generator names from user input, request IDs, or per-record business keys."},
                 {"id": "ID-FAILFAST-001", "text": "Register and validate every generator name before deployment; missing configuration fails startup or the use case and must not silently fall back to a local algorithm or database sequence."},
                 {"id": "ID-BOUNDARY-001", "text": "Generate IDs through the framework port in application/infrastructure and pass the value into domain; domain must not depend on CosId or starter implementation types."},
-                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."},
-                {"id": "ID-CONSTRAINT-001", "text": "Back generated identifiers with a database primary-key or unique constraint; generator guarantees do not replace the database's final constraint."}
+                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."}
               ]
             }
           ]
@@ -150,8 +149,7 @@
             {
               "title": "Correctness and execution",
               "rules": [
-                {"id": "LOCK-CONCURRENCY-001", "text": "For concurrent data writes, do not use database row/table locks or check-then-insert as the cross-instance coordination mechanism; serialize competition with a distributed lock and retain a database unique constraint as the final defense."},
-                {"id": "LOCK-DEFENSE-001", "text": "A distributed lock is never the sole correctness guarantee; combine it with idempotency, uniqueness, or optimistic concurrency and handle expiry, pauses, partitions, and duplicate execution."},
+                {"id": "LOCK-DEFENSE-001", "text": "A distributed lock is never the sole correctness guarantee; handle expiry, pauses, partitions, and duplicate execution and use the independent correctness protection defined by the persistence concurrency rule."},
                 {"id": "LOCK-PORT-001", "text": "Use the injected `LockExecutor` and `LockContext(scene, key, waitTime)`; business code must not depend directly on Redisson, Spring Integration Redis Lock, or raw Redis lock commands."},
                 {"id": "LOCK-KEY-001", "text": "Use a stable low-cardinality scene and a canonical business-unique resource key; never use random values, sensitive data, or multiple formats for the same resource."},
                 {"id": "LOCK-WAIT-001", "text": "Bound lock wait time by the use-case SLA, prefer immediate acquisition, and return an explicit retry/conflict/degradation result on failure; never wait indefinitely or spin without backoff."},
@@ -169,9 +167,9 @@
             {
               "title": "Job design and operation",
               "rules": [
-                {"id": "JOB-PURPOSE-001", "text": "Use XXL-JOB for fallback, compensation, reconciliation, cleanup, and batch work; core real-time correctness must not depend on a job running on schedule."},
+                {"id": "SERVICE-SCHEDULER-001", "text": "Use XXL-JOB by default for fallback, compensation, reconciliation, cleanup, and batch work; do not make scheduled execution a prerequisite for core real-time correctness."},
                 {"id": "JOB-BOUNDARY-001", "text": "Keep scheduler modules and handlers as framework entry adapters that delegate to application use cases or shared infrastructure services; handlers contain no domain rules."},
-                {"id": "JOB-IDEMPOTENCY-001", "text": "Jobs must be reentrant, retryable, and idempotent; protect effects with stable idempotency keys, state transitions, unique constraints, or optimistic concurrency rather than assuming one trigger."},
+                {"id": "JOB-IDEMPOTENCY-001", "text": "Jobs must be reentrant, retryable, and idempotent rather than assuming one trigger; data-writing effects follow the persistence concurrency rule."},
                 {"id": "JOB-BATCH-001", "text": "Process bounded pages or shards with a stable cursor and bounded runtime; do not load all data or hold a transaction across batches."},
                 {"id": "JOB-CHECKPOINT-001", "text": "Persist a recoverable checkpoint after each committed batch so retries resume at a committed boundary without amplifying side effects."},
                 {"id": "JOB-OBSERVABILITY-001", "text": "Configure timeouts, alerts, log retention, and failure handling; log job, executor, shard, batch, count, and result context without sensitive data."}
@@ -187,12 +185,14 @@
             {
               "title": "Boundary, concurrency, and transactions",
               "rules": [
-                {"id": "PERSISTENCE-BOUNDARY-001", "text": "Domain repositories expose aggregate semantics, adapters translate them, and concrete JPA or MyBatis-Plus repositories, SQL/XML, and assembly remain in a separate persistence implementation module."},
-                {"id": "PERSISTENCE-SELECTION-001", "text": "Package one persistence implementation per boot artifact; select JPA for aggregate/lifecycle mapping or MyBatis-Plus for explicit SQL, complex queries, and bulk work based on documented access patterns, and do not mix technologies in one repository."},
+                {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters translate domain repository contracts to data access, while persistence repositories expose data-access capability only."},
+                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA or MyBatis-Plus repositories, SQL/XML, and technical assembly in the matching persistence implementation module."},
+                {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure, and DOs declare only necessary entity, identifier, and enum mapping annotations."},
+                {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
+                {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository; select JPA for aggregate/lifecycle mapping or MyBatis-Plus for explicit SQL, complex queries, and bulk work based on documented access patterns."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
                 {"id": "PERSISTENCE-CONCURRENCY-001", "text": "Do not use pessimistic database locks as the default cross-instance write mutex; use a distributed lock plus a unique constraint for creation, and prefer version/conditional updates with explicit conflict handling for updates."},
-                {"id": "PERSISTENCE-TRANSACTION-001", "text": "Application command services own short local-database transactions; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."},
-                {"id": "PERSISTENCE-OUTBOX-001", "text": "Persist state and integration-event outbox records in one local transaction and publish after commit; do not claim atomicity for write-then-direct-send."}
+                {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."}
               ]
             },
             {
@@ -200,6 +200,7 @@
               "rules": [
                 {"id": "PERSISTENCE-PAGE-001", "text": "Paginate with a stable unique order and prefer cursors for deep or continuous scans; never rely on unspecified database order."},
                 {"id": "PERSISTENCE-QUERY-001", "text": "Support frequent and large-table conditions, ordering, and joins with verified indexes and query plans; prohibit N+1 access and unbounded result sets."},
+                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
                 {"id": "PERSISTENCE-JPA-001", "text": "Do not rely on Open Session in View to hide JPA lazy loading; design aggregate fetch boundaries and read projections explicitly."},
                 {"id": "PERSISTENCE-MYBATIS-001", "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules."}
               ]
@@ -215,7 +216,7 @@
               "title": "Publication and ordering",
               "rules": [
                 {"id": "MESSAGE-OUTBOX-001", "text": "Application submits integration events only through `IntegrationEventOutbox`; persist state and outbox in one local transaction and signal publication only after commit."},
-                {"id": "MESSAGE-CONTRACT-001", "text": "Integration events are stable service contracts with unique event ID, event type, aggregate type, aggregate ID, and occurrence time; never serialize domain entities or reuse domain event types directly."},
+                {"id": "MESSAGE-CONTRACT-001", "text": "Integration events are stable service contracts with unique event ID, event type, aggregate type, aggregate ID, and occurrence time; never serialize domain entities directly."},
                 {"id": "MESSAGE-BATCH-001", "text": "An outbox batch contains events from one aggregate and preserves batch sequence; split cross-aggregate events and never promise global ordering."},
                 {"id": "MESSAGE-PARTITION-001", "text": "When aggregate ordering is required, use its stable ID as the partition key; do not use random or mutable keys and do not depend on global ordering."},
                 {"id": "MESSAGE-EVOLUTION-001", "text": "Evolve event contracts backward-compatibly; new fields need compatible defaults, while deletion, rename, or semantic changes require a versioned migration."}
@@ -226,7 +227,7 @@
               "rules": [
                 {"id": "MESSAGE-IDEMPOTENCY-001", "text": "Design consumers for at-least-once delivery and deduplicate by event ID or a stable business idempotency key; never assume a broker, outbox, or listener delivers once."},
                 {"id": "MESSAGE-ACK-001", "text": "Acknowledge only after business processing and the local transaction succeed; use classified bounded retry/backoff and route exhausted or non-recoverable messages to dead-letter or manual handling."},
-                {"id": "MESSAGE-LISTENER-001", "text": "Listeners deserialize, validate, enter idempotency control, and call application; they contain no domain rules and must not swallow failures before acknowledgement."},
+                {"id": "MESSAGE-LISTENER-001", "text": "Listeners deserialize, validate, enter idempotency control, and must not swallow failures before acknowledgement; their layer responsibility follows the interfaces rules."},
                 {"id": "MESSAGE-DELAY-001", "text": "Use delayed messages only for error-tolerant retry, reminder, and auxiliary workflows, never as a precise timer or sole core-business deadline guarantee; consumers recheck state and idempotency on arrival."},
                 {"id": "MESSAGE-OBSERVABILITY-001", "text": "Monitor publisher confirms/returns, outbox backlog, retries, consumer lag, and dead letters with event ID, aggregate ID, and destination trace context."}
               ]
@@ -282,9 +283,8 @@
             {
               "title": "Runtime assembly",
               "rules": [
-                {"id": "SERVICE-ASSEMBLY-001", "text": "Put replaceable persistence, messaging, and scheduling technologies in separate modules; the boot packaging dependency selects the runtime implementation."},
-                {"id": "SERVICE-ASSEMBLY-002", "text": "Do not switch multiple technology implementations inside one artifact using runtime properties."},
-                {"id": "SERVICE-SCHEDULER-001", "text": "Use XXL-JOB by default for fallback, compensation, and batch work; do not make it a prerequisite for the core real-time business path."}
+                {"id": "SERVICE-ASSEMBLY-001", "text": "Select replaceable persistence, messaging, and scheduling implementations through boot packaging dependencies."},
+                {"id": "SERVICE-ASSEMBLY-002", "text": "Do not switch multiple technology implementations inside one artifact using runtime properties."}
               ]
             }
           ]
@@ -408,7 +408,6 @@
                 {"id": "APPLICATION-RESPONSIBILITY-001", "text": "Application orchestrates use cases, coordinates domain objects and ports, and does not implement domain rules."},
                 {"id": "APPLICATION-COMMAND-001", "text": "Command services are write-use-case entry points, accept application commands, return command outputs or void, and own transaction boundaries."},
                 {"id": "APPLICATION-QUERY-001", "text": "Query services are read-only, accept domain IDs, value objects, or query conditions, return application views, and use `PagedList<T>` for pagination."},
-                {"id": "APPLICATION-EVENT-001", "text": "Submit integration events through an `IntegrationEventOutbox` port rather than binding application code to a message broker."},
                 {"id": "APPLICATION-BOUNDARY-001", "text": "Application may depend on domain, API integration-event contracts, and framework ports, but not API command/query/response types, protocol implementations, persistence DOs, or external response wrappers."}
               ]
             }
@@ -423,21 +422,11 @@
               "title": "Infrastructure and configuration",
               "rules": [
                 {"id": "INFRA-RESPONSIBILITY-001", "text": "Infrastructure provides repository, gateway, ID, event storage, messaging, scheduling, and other technical adapters without domain rules or use-case orchestration."},
+                {"id": "INFRA-ASYNC-001", "text": "Adapt domain event storage through framework ports; domain and application must not depend on a concrete event-store implementation."},
                 {"id": "INFRA-CONFIG-001", "text": "For JavaBean configuration binding, collection and nested-object fields are final, expose getters without setters, and begin as empty binding containers without business defaults."},
                 {"id": "INFRA-CONFIG-002", "text": "Required configuration collections use `@NotEmpty` so missing configuration fails startup rather than running silently with an empty value."},
                 {"id": "INFRA-DURATION-001", "text": "A standalone minimum for `Duration` uses both `@NotNull` and Hibernate Validator `@DurationMin` with explicit units; the module declares `hibernate-validator` directly."},
                 {"id": "INFRA-CROSS-FIELD-001", "text": "Use `@AssertTrue` and similar type-level validation only for relationships between fields."}
-              ]
-            },
-            {
-              "title": "Persistence and asynchronous adapters",
-              "rules": [
-                {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters implement domain repositories or application ports; persistence repositories expose data-access capability only."},
-                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete repository implementations, SQL XML, and technical assembly in the matching persistence implementation module; the packaged dependency determines the runtime implementation."},
-                {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure; DOs declare only necessary entity, identifier, and enum mapping annotations, while table constraints and indexes live in schema SQL."},
-                {"id": "INFRA-MAPPER-001", "text": "Mappers convert domain objects, application read models, and persistence objects; generic helpers remain mapper-only and technology-neutral."},
-                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
-                {"id": "INFRA-ASYNC-001", "text": "Domain event storage, outbox, and partitioned messaging follow framework ports; scheduler modules expose task entries while compensation logic remains in shared infrastructure services."}
               ]
             },
             {
@@ -450,9 +439,9 @@
                 {"id": "INTERFACES-REST-CONTEXT-001", "text": "After the gateway supplies client context, each controller business request is one mutable `@Valid` HTTP request class extending `ClientRequest`, or `ClientChannelRequest` only when channel context is required; `ClientRequest` requires `clientAppId`, while `ClientChannelRequest` additionally requires `channelCode`. Do not split business fields into path or query parameters alongside a separate client-context argument. For endpoints without a business body, declare the concrete request-context type and let the shared argument resolver build and validate it from protected headers."},
                 {"id": "INTERFACES-FACADE-BOUNDARY-001", "text": "After header injection and validation, interfaces converts its mutable HTTP request into a complete immutable API command/query record; Facades must not accept interfaces HTTP request types."},
                 {"id": "INTERFACES-RPC-001", "text": "Publish the same Facade Bean directly when the RPC technology supports it; add a technology-specific RPC adapter only for incompatible models, semantics, metadata, or exception handling."},
-                {"id": "INTERFACES-MESSAGE-001", "text": "Message listeners convert inbound contracts and invoke application services without being required to pass through a Facade."},
+                {"id": "INTERFACES-MESSAGE-001", "text": "Message listeners are interfaces-layer protocol entries and are not required to pass through a Facade; messaging rules own consumption reliability and processing flow."},
                 {"id": "CLIENT-FEIGN-001", "text": "OpenFeign clients match Facade method signatures, reuse API contract types and response wrappers, and contain no business model, use case, or conversion rules."},
-                {"id": "BOOT-RESPONSIBILITY-001", "text": "Boot owns startup, runtime configuration, implementation selection, and packaging; absent implementation-module dependencies mean the capability is unavailable at runtime."},
+                {"id": "BOOT-RESPONSIBILITY-001", "text": "Boot owns startup, runtime configuration, and packaging; dependency rules own technology implementation selection."},
                 {"id": "BOOT-BOUNDARY-001", "text": "Boot contains no domain rules, application orchestration, protocol adapters, or business types."}
               ]
             }
@@ -507,8 +496,7 @@
                 {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
-                {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."},
-                {"id": "NAME-BOOT-001", "text": "Do not define business types in the boot module."}
+                {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."}
               ]
             }
           ]

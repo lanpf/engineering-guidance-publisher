@@ -12,6 +12,6 @@
 - API 使用 `*ApiCommand`、`*ApiCommandOutput`、`*ApiQuery`、`*ApiQueryView`、可复用的 `*ApiResponse`、`*ApiEnum`、`*ApiConstants`、`*ApiEvent` 和 `*Facade`。
 - 领域服务返回使用实现 `DomainEffect` 的 `*Effect`；Repository 契约使用 `*Repository`；领域事件使用 `*Event`。
 - application 使用 `*Command`、`*Output`、`*CommandService`、`*View`、`*QueryService`；分页返回 `PagedList<*View>`，command/query 共用返回类型时才使用 `*Response`。
-- infrastructure 使用 `*RepositoryAdapter`、技术化 `*PersistenceRepository`、`*DO` 和 `*PersistenceConfiguration`；具体实现 module 命名为 `<工程名>-infrastructure-persistence-<技术>`。
+- infrastructure 类型使用 `*RepositoryAdapter`、技术化 `*PersistenceRepository`、`*DO` 和 `*PersistenceConfiguration`。
 - 协议无关 Facade 默认实现位于 `interfaces.facade` 并命名为 `Default*Facade`；必要的技术专属 RPC 适配器使用 `*RpcAdapter`。
-- OpenFeign 客户端使用 `*FeignClient`；boot module 不定义业务类型。
+- OpenFeign 客户端使用 `*FeignClient`。
