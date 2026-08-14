@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "1.3.2",
+  "version": "2.0.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -19,7 +19,7 @@
     {
       "name": "develop-java-code",
       "scope": "consumer",
-      "when": "Creating, modifying, refactoring, or reviewing Java code",
+      "when": "Creating, modifying, refactoring, or reviewing Java language and common-tool code",
       "references": [
         {
           "file": "java-language.md",
@@ -123,132 +123,11 @@
               ]
             }
           ]
-        },
-        {
-          "file": "distributed-id.md",
-          "source": "standards/bp_distributed_id.md#分布式 ID",
-          "title": "Distributed ID Rules",
-          "sections": [
-            {
-              "title": "Generation and use",
-              "rules": [
-                {"id": "ID-GENERATOR-001", "text": "Generate globally unique aggregate, domain-event, integration-event, and distributed-data identifiers through the injected `LongIdGenerator`; do not use database auto-increment, random values, timestamp concatenation, or a business-owned generator."},
-                {"id": "ID-NAME-001", "text": "Pass a stable, configured, low-cardinality ID-space name to `nextId(name)`; do not derive generator names from user input, request IDs, or per-record business keys."},
-                {"id": "ID-FAILFAST-001", "text": "Register and validate every generator name before deployment; missing configuration fails startup or the use case and must not silently fall back to a local algorithm or database sequence."},
-                {"id": "ID-BOUNDARY-001", "text": "Generate IDs through the framework port in application/infrastructure and pass the value into domain; domain must not depend on CosId or starter implementation types."},
-                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."}
-              ]
-            }
-          ]
-        },
-        {
-          "file": "distributed-lock.md",
-          "source": "standards/bp_distributed_lock.md#分布式锁",
-          "title": "Distributed Lock Rules",
-          "sections": [
-            {
-              "title": "Correctness and execution",
-              "rules": [
-                {"id": "LOCK-DEFENSE-001", "text": "A distributed lock is never the sole correctness guarantee; handle expiry, pauses, partitions, and duplicate execution and use the independent correctness protection defined by the persistence concurrency rule."},
-                {"id": "LOCK-PORT-001", "text": "Use the injected `LockExecutor` and `LockContext(scene, key, waitTime)`; business code must not depend directly on Redisson, Spring Integration Redis Lock, or raw Redis lock commands."},
-                {"id": "LOCK-KEY-001", "text": "Use a stable low-cardinality scene and a canonical business-unique resource key; never use random values, sensitive data, or multiple formats for the same resource."},
-                {"id": "LOCK-WAIT-001", "text": "Bound lock wait time by the use-case SLA, prefer immediate acquisition, and return an explicit retry/conflict/degradation result on failure; never wait indefinitely or spin without backoff."},
-                {"id": "LOCK-LEASE-001", "text": "Configure a lease longer than the normal critical-section bound, keep critical sections short, and avoid remote calls, bulk work, and long transactions even when automatic renewal is enabled."},
-                {"id": "LOCK-RELEASE-001", "text": "Use `LockExecutor`-managed execution so only the owning flow unlocks in `finally`; do not transfer lock ownership across threads."}
-              ]
-            }
-          ]
-        },
-        {
-          "file": "distributed-job.md",
-          "source": "standards/bp_distributed_job.md#分布式任务",
-          "title": "Distributed Job Rules",
-          "sections": [
-            {
-              "title": "Job design and operation",
-              "rules": [
-                {"id": "SERVICE-SCHEDULER-001", "text": "Use XXL-JOB by default for fallback, compensation, reconciliation, cleanup, and batch work; do not make scheduled execution a prerequisite for core real-time correctness."},
-                {"id": "JOB-BOUNDARY-001", "text": "Keep scheduler modules and handlers as framework entry adapters that delegate to application use cases or shared infrastructure services; handlers contain no domain rules."},
-                {"id": "JOB-IDEMPOTENCY-001", "text": "Jobs must be reentrant, retryable, and idempotent rather than assuming one trigger; data-writing effects follow the persistence concurrency rule."},
-                {"id": "JOB-BATCH-001", "text": "Process bounded pages or shards with a stable cursor and bounded runtime; do not load all data or hold a transaction across batches."},
-                {"id": "JOB-CHECKPOINT-001", "text": "Persist a recoverable checkpoint after each committed batch so retries resume at a committed boundary without amplifying side effects."},
-                {"id": "JOB-OBSERVABILITY-001", "text": "Configure timeouts, alerts, log retention, and failure handling; log job, executor, shard, batch, count, and result context without sensitive data."}
-              ]
-            }
-          ]
-        },
-        {
-          "file": "persistence.md",
-          "source": "standards/bp_persistence.md#持久化边界",
-          "title": "Persistence Rules",
-          "sections": [
-            {
-              "title": "Boundary, concurrency, and transactions",
-              "rules": [
-                {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters translate domain repository contracts to data access, while persistence repositories expose data-access capability only."},
-                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA, MyBatis, or MyBatis-Plus repositories, mapper statements, and technical assembly in the matching persistence implementation module."},
-                {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure, and DOs declare only necessary entity, identifier, and enum mapping annotations."},
-                {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
-                {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
-                {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
-                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same infrastructure-owned SQL XML fragments through `classpath*:/META-INF/mybatis/**/*.xml` and include shared table names, column lists, and reusable predicates rather than copying them."},
-                {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
-                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "Do not use pessimistic database locks as the default cross-instance write mutex; use a distributed lock plus a unique constraint for creation, and prefer version/conditional updates with explicit conflict handling for updates."},
-                {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."}
-              ]
-            },
-            {
-              "title": "Queries",
-              "rules": [
-                {"id": "PERSISTENCE-PAGE-001", "text": "Paginate with a stable unique order and prefer cursors for deep or continuous scans; never rely on unspecified database order."},
-                {"id": "PERSISTENCE-QUERY-001", "text": "Support frequent and large-table conditions, ordering, and joins with verified indexes and query plans; prohibit N+1 access and unbounded result sets."},
-                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
-                {"id": "PERSISTENCE-JPA-001", "text": "Do not rely on Open Session in View to hide JPA lazy loading; design aggregate fetch boundaries and read projections explicitly."},
-                {"id": "PERSISTENCE-MYBATIS-001", "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules."}
-              ]
-            },
-            {
-              "title": "Unique constraint violations",
-              "rules": [
-                {"id": "PERSISTENCE-DUPLICATE-001", "text": "At the persistence-adapter boundary, translate a known business unique-constraint conflict into an explicit domain/application exception or, after verifying equivalent existing data, an idempotent success; do not leak the database exception."},
-                {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, but it must identify the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify every integrity violation as a duplicate key."},
-                {"id": "PERSISTENCE-JPA-FLUSH-001", "text": "To catch a JPA unique-constraint failure inside an adapter, flush within that catch boundary; otherwise translate the deferred exception at a boundary that covers transaction commit."},
-                {"id": "PERSISTENCE-DUPLICATE-LOG-001", "text": "Log every unique-constraint conflict once at the translation boundary with constraint/scene, sanitized business key, and outcome; use INFO or WARN for expected idempotency and ERROR plus rethrow for unknown or unclassified integrity failures."}
-              ]
-            }
-          ]
-        },
-        {
-          "file": "messaging.md",
-          "source": "standards/bp_messaging.md#事件与发布",
-          "title": "Messaging Rules",
-          "sections": [
-            {
-              "title": "Publication and ordering",
-              "rules": [
-                {"id": "MESSAGE-OUTBOX-001", "text": "Application submits integration events only through `IntegrationEventOutbox`; persist state and outbox in one local transaction and signal publication only after commit."},
-                {"id": "MESSAGE-CONTRACT-001", "text": "Integration events are stable service contracts with unique event ID, event type, aggregate type, aggregate ID, and occurrence time; never serialize domain entities directly."},
-                {"id": "MESSAGE-BATCH-001", "text": "An outbox batch contains events from one aggregate and preserves batch sequence; split cross-aggregate events and never promise global ordering."},
-                {"id": "MESSAGE-PARTITION-001", "text": "When aggregate ordering is required, use its stable ID as the partition key; do not use random or mutable keys and do not depend on global ordering."},
-                {"id": "MESSAGE-EVOLUTION-001", "text": "Evolve event contracts backward-compatibly; new fields need compatible defaults, while deletion, rename, or semantic changes require a versioned migration."}
-              ]
-            },
-            {
-              "title": "Consumption and delay",
-              "rules": [
-                {"id": "MESSAGE-IDEMPOTENCY-001", "text": "Design consumers for at-least-once delivery and deduplicate by event ID or a stable business idempotency key; never assume a broker, outbox, or listener delivers once."},
-                {"id": "MESSAGE-ACK-001", "text": "Acknowledge only after business processing and the local transaction succeed; use classified bounded retry/backoff and route exhausted or non-recoverable messages to dead-letter or manual handling."},
-                {"id": "MESSAGE-LISTENER-001", "text": "Listeners deserialize, validate, enter idempotency control, and must not swallow failures before acknowledgement; their layer responsibility follows the interfaces rules."},
-                {"id": "MESSAGE-DELAY-001", "text": "Use delayed messages only for error-tolerant retry, reminder, and auxiliary workflows, never as a precise timer or sole core-business deadline guarantee; consumers recheck state and idempotency on arrival."},
-                {"id": "MESSAGE-OBSERVABILITY-001", "text": "Monitor publisher confirms/returns, outbox backlog, retries, consumer lag, and dead letters with event ID, aggregate ID, and destination trace context."}
-              ]
-            }
-          ]
         }
       ]
     },
     {
-      "name": "manage-java-dependencies",
+      "name": "manage-maven-dependencies",
       "scope": "consumer",
       "when": "Changing Maven dependencies, versions, scopes, BOMs, starters, modules, or runtime implementations",
       "references": [
@@ -303,14 +182,14 @@
       ]
     },
     {
-      "name": "test-java-service",
+      "name": "test-service",
       "scope": "consumer",
-      "when": "Creating, modifying, reviewing, or diagnosing unit, contract, or integration tests",
+      "when": "Creating, modifying, reviewing, or diagnosing unit, contract, or service integration tests",
       "references": [
         {
           "file": "testing.md",
           "source": "standards/bp_testing.md#测试边界",
-          "title": "Java Testing Rules",
+          "title": "Service Testing Rules",
           "sections": [
             {
               "title": "Test boundaries",
@@ -348,7 +227,7 @@
     {
       "name": "develop-layered-service",
       "scope": "consumer",
-      "when": "Adding service functionality, modules, contracts, domain behavior, adapters, protocols, or reviewing service architecture",
+      "when": "Adding or reviewing layered service modules, contracts, domain behavior, adapters, protocols, data carriers, or naming",
       "references": [
         {
           "file": "architecture.md",
@@ -508,9 +387,163 @@
                 {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`."},
                 {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused."},
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
-                {"id": "NAME-MYBATIS-SQL-001", "text": "Store shared MyBatis/MyBatis-Plus fragments at `<service>-infrastructure/src/main/resources/META-INF/mybatis/<service>/fragments/<Aggregate>SqlFragments.xml`, use namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`, name concrete mapper files `<Aggregate>Mapper.xml`, and reference shared `<sql>` elements with fully qualified `refid`."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "develop-distributed-capabilities",
+      "scope": "consumer",
+      "when": "Implementing or reviewing distributed identifiers, locking, event publication, or message consumption",
+      "references": [
+        {
+          "file": "distributed-id.md",
+          "source": "standards/bp_distributed_id.md#分布式 ID",
+          "title": "Distributed ID Rules",
+          "sections": [
+            {
+              "title": "Generation and use",
+              "rules": [
+                {"id": "ID-GENERATOR-001", "text": "Generate globally unique aggregate, domain-event, integration-event, and distributed-data identifiers through the injected `LongIdGenerator`; do not use database auto-increment, random values, timestamp concatenation, or a business-owned generator."},
+                {"id": "ID-NAME-001", "text": "Pass a stable, configured, low-cardinality ID-space name to `nextId(name)`; do not derive generator names from user input, request IDs, or per-record business keys."},
+                {"id": "ID-FAILFAST-001", "text": "Register and validate every generator name before deployment; missing configuration fails startup or the use case and must not silently fall back to a local algorithm or database sequence."},
+                {"id": "ID-BOUNDARY-001", "text": "Generate IDs through the framework port in application/infrastructure and pass the value into domain; domain must not depend on CosId or starter implementation types."},
+                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "distributed-lock.md",
+          "source": "standards/bp_distributed_lock.md#分布式锁",
+          "title": "Distributed Lock Rules",
+          "sections": [
+            {
+              "title": "Correctness and execution",
+              "rules": [
+                {"id": "LOCK-DEFENSE-001", "text": "A distributed lock is never the sole correctness guarantee; handle expiry, pauses, partitions, and duplicate execution and use the independent correctness protection defined by the persistence concurrency rule."},
+                {"id": "LOCK-PORT-001", "text": "Use the injected `LockExecutor` and `LockContext(scene, key, waitTime)`; business code must not depend directly on Redisson, Spring Integration Redis Lock, or raw Redis lock commands."},
+                {"id": "LOCK-KEY-001", "text": "Use a stable low-cardinality scene and a canonical business-unique resource key; never use random values, sensitive data, or multiple formats for the same resource."},
+                {"id": "LOCK-WAIT-001", "text": "Bound lock wait time by the use-case SLA, prefer immediate acquisition, and return an explicit retry/conflict/degradation result on failure; never wait indefinitely or spin without backoff."},
+                {"id": "LOCK-LEASE-001", "text": "Configure a lease longer than the normal critical-section bound, keep critical sections short, and avoid remote calls, bulk work, and long transactions even when automatic renewal is enabled."},
+                {"id": "LOCK-RELEASE-001", "text": "Use `LockExecutor`-managed execution so only the owning flow unlocks in `finally`; do not transfer lock ownership across threads."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "distributed-messaging.md",
+          "source": "standards/bp_distributed_messaging.md#事件与发布",
+          "title": "Distributed Messaging Rules",
+          "sections": [
+            {
+              "title": "Publication and ordering",
+              "rules": [
+                {"id": "MESSAGE-OUTBOX-001", "text": "Application submits integration events only through `IntegrationEventOutbox`; persist state and outbox in one local transaction and signal publication only after commit."},
+                {"id": "MESSAGE-CONTRACT-001", "text": "Integration events are stable service contracts with unique event ID, event type, aggregate type, aggregate ID, and occurrence time; never serialize domain entities directly."},
+                {"id": "MESSAGE-BATCH-001", "text": "An outbox batch contains events from one aggregate and preserves batch sequence; split cross-aggregate events and never promise global ordering."},
+                {"id": "MESSAGE-PARTITION-001", "text": "When aggregate ordering is required, use its stable ID as the partition key; do not use random or mutable keys and do not depend on global ordering."},
+                {"id": "MESSAGE-EVOLUTION-001", "text": "Evolve event contracts backward-compatibly; new fields need compatible defaults, while deletion, rename, or semantic changes require a versioned migration."}
+              ]
+            },
+            {
+              "title": "Consumption and delay",
+              "rules": [
+                {"id": "MESSAGE-IDEMPOTENCY-001", "text": "Design consumers for at-least-once delivery and deduplicate by event ID or a stable business idempotency key; never assume a broker, outbox, or listener delivers once."},
+                {"id": "MESSAGE-ACK-001", "text": "Acknowledge only after business processing and the local transaction succeed; use classified bounded retry/backoff and route exhausted or non-recoverable messages to dead-letter or manual handling."},
+                {"id": "MESSAGE-LISTENER-001", "text": "Listeners deserialize, validate, enter idempotency control, and must not swallow failures before acknowledgement; their layer responsibility follows the interfaces rules."},
+                {"id": "MESSAGE-DELAY-001", "text": "Use delayed messages only for error-tolerant retry, reminder, and auxiliary workflows, never as a precise timer or sole core-business deadline guarantee; consumers recheck state and idempotency on arrival."},
+                {"id": "MESSAGE-OBSERVABILITY-001", "text": "Monitor publisher confirms/returns, outbox backlog, retries, consumer lag, and dead letters with event ID, aggregate ID, and destination trace context."}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "develop-compensation-workflows",
+      "scope": "consumer",
+      "when": "Designing, implementing, or reviewing compensation, reconciliation, repair, cleanup, batch recovery, or fallback workflows",
+      "references": [
+        {
+          "file": "business-compensation.md",
+          "source": "standards/bp_business_compensation.md#业务补偿与兜底",
+          "title": "Business Compensation and Fallback Rules",
+          "sections": [
+            {
+              "title": "Compensation design and operation",
+              "rules": [
+                {"id": "SERVICE-SCHEDULER-001", "text": "Use compensation workflows only for fallback, compensation, reconciliation, repair, cleanup, and batch work; core real-time correctness must not depend on timely compensation execution."},
+                {"id": "JOB-BOUNDARY-001", "text": "Keep job, message, startup-recovery, and manual triggers as thin entry adapters that delegate to application use cases or shared infrastructure recovery services; trigger adapters contain no domain rules."},
+                {"id": "JOB-IDEMPOTENCY-001", "text": "Jobs must be reentrant, retryable, and idempotent rather than assuming one trigger; data-writing effects follow the persistence concurrency rule."},
+                {"id": "JOB-BATCH-001", "text": "Process bounded pages or shards with a stable cursor and bounded runtime; do not load all data or hold a transaction across batches."},
+                {"id": "JOB-CHECKPOINT-001", "text": "Persist a recoverable checkpoint after each committed batch so retries resume at a committed boundary without amplifying side effects."},
+                {"id": "JOB-OBSERVABILITY-001", "text": "Configure timeouts, alerts, log retention, and failure handling; log job, executor, shard, batch, count, and result context without sensitive data."}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "develop-service-persistence",
+      "scope": "consumer",
+      "when": "Designing, implementing, migrating, or reviewing repositories, transactions, schemas, constraints, queries, or persistence mappings",
+      "references": [
+        {
+          "file": "persistence.md",
+          "source": "standards/bp_persistence.md#持久化边界",
+          "title": "Persistence Rules",
+          "sections": [
+            {
+              "title": "Boundary, concurrency, and transactions",
+              "rules": [
+                {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters translate domain repository contracts to data access, while persistence repositories expose data-access capability only."},
+                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA, MyBatis, or MyBatis-Plus repositories, mapper statements, and technical assembly in the matching persistence implementation module."},
+                {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure, and DOs declare only necessary entity, identifier, and enum mapping annotations."},
+                {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
+                {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
+                {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
+                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same infrastructure-owned SQL XML fragments through `classpath*:/META-INF/mybatis/**/*.xml` and include shared table names, column lists, and reusable predicates rather than copying them."},
+                {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
+                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "Do not use pessimistic database locks as the default cross-instance write mutex; use a distributed lock plus a unique constraint for creation, and prefer version/conditional updates with explicit conflict handling for updates."},
+                {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."}
+              ]
+            },
+            {
+              "title": "Queries",
+              "rules": [
+                {"id": "PERSISTENCE-PAGE-001", "text": "Paginate with a stable unique order and prefer cursors for deep or continuous scans; never rely on unspecified database order."},
+                {"id": "PERSISTENCE-QUERY-001", "text": "Support frequent and large-table conditions, ordering, and joins with verified indexes and query plans; prohibit N+1 access and unbounded result sets."},
+                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
+                {"id": "PERSISTENCE-JPA-001", "text": "Do not rely on Open Session in View to hide JPA lazy loading; design aggregate fetch boundaries and read projections explicitly."},
+                {"id": "PERSISTENCE-MYBATIS-001", "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules."}
+              ]
+            },
+            {
+              "title": "Unique constraint violations",
+              "rules": [
+                {"id": "PERSISTENCE-DUPLICATE-001", "text": "At the persistence-adapter boundary, translate a known business unique-constraint conflict into an explicit domain/application exception or, after verifying equivalent existing data, an idempotent success; do not leak the database exception."},
+                {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, but it must identify the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify every integrity violation as a duplicate key."},
+                {"id": "PERSISTENCE-JPA-FLUSH-001", "text": "To catch a JPA unique-constraint failure inside an adapter, flush within that catch boundary; otherwise translate the deferred exception at a boundary that covers transaction commit."},
+                {"id": "PERSISTENCE-DUPLICATE-LOG-001", "text": "Log every unique-constraint conflict once at the translation boundary with constraint/scene, sanitized business key, and outcome; use INFO or WARN for expected idempotency and ERROR plus rethrow for unknown or unclassified integrity failures."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "persistence-naming.md",
+          "source": "standards/bp_naming.md#命名约定",
+          "title": "Persistence Naming Rules",
+          "sections": [
+            {
+              "title": "Shared SQL XML",
+              "rules": [
+                {"id": "NAME-MYBATIS-SQL-001", "text": "Store shared MyBatis/MyBatis-Plus fragments at `<service>-infrastructure/src/main/resources/META-INF/mybatis/<service>/fragments/<Aggregate>SqlFragments.xml`, use namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`, name concrete mapper files `<Aggregate>Mapper.xml`, and reference shared `<sql>` elements with fully qualified `refid`."}
               ]
             }
           ]
@@ -563,9 +596,9 @@
       ]
     },
     {
-      "name": "refactor-java-service",
+      "name": "refactor-layered-service",
       "scope": "consumer",
-      "when": "Planning or applying cross-layer Java service refactors, including changes driven by updated engineering standards",
+      "when": "Planning or applying coordinated standards-driven layered service refactors",
       "references": []
     },
     {

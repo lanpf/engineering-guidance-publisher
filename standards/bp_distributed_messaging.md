@@ -1,4 +1,4 @@
-# 消息中间件最佳实践
+# 分布式消息最佳实践
 
 本文基于 `framework-message`、RabbitMQ starter 和可靠 outbox，定义事件发布、分区、消费、延迟及失败恢复约束。
 

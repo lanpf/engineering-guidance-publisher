@@ -1,9 +1,9 @@
 ---
-name: test-java-service
-description: Use when creating, modifying, reviewing, or diagnosing Java unit tests, module contract tests, integration tests, Testcontainers infrastructure, test documentation, or Maven test lifecycle configuration.
+name: test-service
+description: Use when creating, modifying, reviewing, or diagnosing unit tests, module contract tests, service integration tests, Testcontainers infrastructure, test documentation, or Maven test lifecycle configuration.
 ---
 
-# Test Java Service
+# Test Service
 
 ## Workflow
 
@@ -13,4 +13,3 @@ description: Use when creating, modifying, reviewing, or diagnosing Java unit te
 4. Keep infrastructure-backed scenarios isolated, repeatable, and manually observable.
 5. Run Surefire or Failsafe through the lifecycle phase required by the scenario.
 6. Confirm resources are released and integration-test documentation is complete.
-

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Service Testing"
+  short_description: "Design and verify service tests and infrastructure"
+  default_prompt: "Use $test-service to design or update this service's tests and verification workflow."

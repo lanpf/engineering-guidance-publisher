@@ -38,7 +38,7 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 
 Before pushing, compare the selected baseline and the updated `catalog.json`. For every Skill whose `scope` is `consumer`, record whether its catalog entry or references changed. For each changed consumer Skill, list added, changed, and retired rule IDs; also record reference, routing, or metadata changes that do not alter a rule. Preserve this consumer change list for the post-push report.
 
-Classify each consumer change as either synchronization-only or code-conformance-affecting. Treat changes exclusively to `refactor-java-service` itself, including its workflow, routing, or metadata, as synchronization-only. Treat changes to rules or references of every other consumer Skill as code-conformance-affecting unless the change is explicitly documented as non-semantic.
+Classify each consumer change as either synchronization-only or code-conformance-affecting. Treat changes exclusively to `refactor-layered-service` itself, including its workflow, routing, or metadata, as synchronization-only. Treat changes to rules or references of every other consumer Skill as code-conformance-affecting unless the change is explicitly documented as non-semantic.
 
 ## Verify and report
 
@@ -66,7 +66,7 @@ After every required verification succeeds, review the Git status and diff, stag
 
 ## Synchronize after push
 
-After a successful push, inspect the preserved consumer change list. If no consumer Skill changed, report that no consumer synchronization is required and do not ask for project names. Otherwise, first list every changed consumer Skill and its added, changed, and retired rules, including any non-rule reference, routing, or metadata changes. Then ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid. This synchronization prompt applies to every consumer change, including synchronization-only changes to `refactor-java-service`.
+After a successful push, inspect the preserved consumer change list. If no consumer Skill changed, report that no consumer synchronization is required and do not ask for project names. Otherwise, first list every changed consumer Skill and its added, changed, and retired rules, including any non-rule reference, routing, or metadata changes. Then ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid. This synchronization prompt applies to every consumer change, including synchronization-only changes to `refactor-layered-service`.
 
 Invoke `$sync-engineering-standards` separately for each validated project and follow its complete validation, synchronization, and consumer-verification workflow. If one synchronization fails, report the failed project and stop before beginning any remaining projects until the user gives direction. Do not infer project names or start synchronization when the push did not succeed.
 

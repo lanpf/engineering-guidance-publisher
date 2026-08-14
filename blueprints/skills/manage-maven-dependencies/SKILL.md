@@ -1,9 +1,9 @@
 ---
-name: manage-java-dependencies
+name: manage-maven-dependencies
 description: Use when adding, removing, upgrading, or reviewing Maven dependencies, dependency scopes, BOMs, starters, modules, framework versions, runtime adapters, or dependency conflicts.
 ---
 
-# Manage Java Dependencies
+# Manage Maven Dependencies
 
 ## Workflow
 
@@ -13,4 +13,3 @@ description: Use when adding, removing, upgrading, or reviewing Maven dependenci
 4. Prefer the smallest already-managed artifact that provides the required capability.
 5. Reject cycles, hidden version overrides, incorrect scopes, and speculative dependencies.
 6. Run the dependency tree check and the affected module build.
-

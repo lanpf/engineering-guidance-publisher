@@ -1,0 +1,4 @@
+interface:
+  display_name: "Service Persistence"
+  short_description: "Build repositories, transactions, schemas, and queries"
+  default_prompt: "Use $develop-service-persistence to implement or review this service's persistence layer."

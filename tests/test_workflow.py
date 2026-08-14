@@ -157,6 +157,35 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             self.assertFalse(retired.exists())
             self.assertTrue(unrelated.exists())
 
+    def test_sync_replaces_v1_consumer_skill_names(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "consumer"
+            target.mkdir()
+            synchronize(self.layout, self.catalog, target)
+            lock_path = target / LOCK_PATH
+            lock = json.loads(lock_path.read_text(encoding="utf-8"))
+            retired_names = [
+                "manage-java-dependencies",
+                "test-java-service",
+                "refactor-java-service",
+            ]
+            for name in retired_names:
+                (target / ".agents" / "skills" / name).mkdir()
+            lock["managed_skills"].extend(retired_names)
+            lock_path.write_text(json.dumps(lock), encoding="utf-8")
+
+            persisted = synchronize(self.layout, self.catalog, target)
+
+            for name in retired_names:
+                self.assertFalse((target / ".agents" / "skills" / name).exists())
+            for name in (
+                "manage-maven-dependencies",
+                "test-service",
+                "refactor-layered-service",
+            ):
+                self.assertIn(name, persisted["managed_skills"])
+                self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())
+
 
 if __name__ == "__main__":
     unittest.main()
