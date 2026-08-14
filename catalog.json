@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -509,8 +509,12 @@
                 {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
                 {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
                 {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same infrastructure-owned SQL XML fragments through `classpath*:/META-INF/mybatis/**/*.xml` and include shared table names, column lists, and reusable predicates rather than copying them."},
+                {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "Shared DOs must map directly across JPA, MyBatis, and MyBatis-Plus and therefore declare no collection properties or collection-mapping annotations; model multi-value relationships as master/detail DOs, or use a shared mapper converter to join them into one string only when they need no independent query, index, or foreign-key constraint."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
-                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "Do not use pessimistic database locks as the default cross-instance write mutex; use a distributed lock plus a unique constraint for creation, and prefer version/conditional updates with explicit conflict handling for updates."},
+                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Shared or operations-managed `schema.sql` and configuration may live in a project-level directory beside service modules; `schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration, and a prefix or suffix change must update schema scripts or migration configuration."},
+                {"id": "PERSISTENCE-CONCURRENCY-SCENARIO-001", "text": "Choose concurrency controls from actual contention and business risk; do not add versions, distributed locks, or pessimistic database locks to very-low-contention operational APIs for hypothetical races."},
+                {"id": "PERSISTENCE-CONCURRENCY-STATE-001", "text": "When a business state machine or explicit precondition already exists, prefer a conditional update on the current state or business condition and treat an unexpected affected-row count as a state change or concurrency conflict."},
+                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "For real cross-instance conflicts not resolved by business conditions, prefer a distributed lock to reduce contention and add version-based optimistic concurrency only when residual conflicts still require detection; never make versions, pessimistic database locks, or distributed locks the default for every write."},
                 {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them."}
               ]
             },
