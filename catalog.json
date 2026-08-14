@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -248,8 +248,8 @@
                 {"id": "ARCH-MODULE-API-001", "text": "`<service>-api` defines stable external API contracts."},
                 {"id": "ARCH-MODULE-DOMAIN-001", "text": "`<service>-domain` owns the core domain model and rules."},
                 {"id": "ARCH-MODULE-APPLICATION-001", "text": "`<service>-application` orchestrates write use cases and read-only queries."},
-                {"id": "ARCH-MODULE-INFRA-001", "text": "`<service>-infrastructure` contains technical adapters, persistence abstractions, shared conversions, and persistence objects."},
-                {"id": "ARCH-MODULE-TECH-001", "text": "Concrete persistence, scheduler, and message implementations live in `<service>-infrastructure-<kind>-<technology>` modules."},
+                {"id": "ARCH-MODULE-INFRA-001", "text": "`<service>-infrastructure` contains technical adapters, persistence abstractions, and technology-neutral shared conversions, but no DOs or conversion mappers tied to a concrete persistence technology."},
+                {"id": "ARCH-MODULE-TECH-001", "text": "Concrete persistence, scheduler, and message implementations live in `<service>-infrastructure-<kind>-<technology>` modules; each persistence implementation module owns its technology-specific DOs, DO conversion mappers, repositories, SQL/XML, and assembly."},
                 {"id": "ARCH-MODULE-INTERFACES-001", "text": "`<service>-interfaces` implements protocol-neutral Facades and hosts REST, RPC, and message subscription adapters."},
                 {"id": "ARCH-MODULE-CLIENT-001", "text": "`<service>-openfeign-client` provides the OpenFeign client for the service API."},
                 {"id": "ARCH-MODULE-BOOT-001", "text": "`<service>-boot` starts, configures, and packages the service."},
@@ -510,13 +510,13 @@
               "title": "Boundary, concurrency, and transactions",
               "rules": [
                 {"id": "INFRA-REPOSITORY-001", "text": "Repository adapters translate domain repository contracts to data access, while persistence repositories expose data-access capability only."},
-                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA, MyBatis, or MyBatis-Plus repositories, mapper statements, and technical assembly in the matching persistence implementation module."},
-                {"id": "INFRA-DO-001", "text": "Shared persistence models live in infrastructure, and DOs declare only necessary entity, identifier, and enum mapping annotations."},
-                {"id": "INFRA-MAPPER-001", "text": "Persistence mappers convert domain objects, application read models, and persistence objects."},
+                {"id": "INFRA-PERSISTENCE-001", "text": "Keep concrete JPA, MyBatis, or MyBatis-Plus repositories, DOs, DO conversion mappers, mapper statements, and technical assembly in the matching persistence implementation module."},
+                {"id": "INFRA-DO-001", "text": "Do not share DO classes across persistence technologies; each JPA, MyBatis, or MyBatis-Plus implementation module owns `*DO` types with only the mapping annotations required by that technology."},
+                {"id": "INFRA-MAPPER-001", "text": "Each persistence implementation module owns the conversion mappers between domain objects or application read models and that technology's DOs; do not place converters that depend on concrete DOs in shared infrastructure."},
                 {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
                 {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
                 {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same SQL XML fragments from the project-root `config/` directory and include shared table names, column lists, and reusable predicates rather than copying them; follow the layered-service external-resource loading rules and the naming standard for files and namespaces."},
-                {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "Shared DOs must map directly across JPA, MyBatis, and MyBatis-Plus and therefore declare no collection properties or collection-mapping annotations; model multi-value relationships as master/detail DOs, or use a shared mapper converter to join them into one string only when they need no independent query, index, or foreign-key constraint."},
+                {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "For the same logical persistence model, technology-specific JPA, MyBatis, and MyBatis-Plus DOs keep identical business-property names and Java types while declaring no collection properties or collection-mapping annotations; model multi-value relationships as master/detail DOs, or let each technology-specific DO conversion mapper join them consistently into one string only when they need no independent query, index, or foreign-key constraint."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
                 {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules; `schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration, and a prefix or suffix change must update schema scripts or migration configuration."},
                 {"id": "PERSISTENCE-CONCURRENCY-SCENARIO-001", "text": "Choose concurrency controls from actual contention and business risk; do not add versions, distributed locks, or pessimistic database locks to very-low-contention operational APIs for hypothetical races."},

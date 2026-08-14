@@ -14,8 +14,8 @@
 - `<工程名>-api` 定义稳定的对外 API 契约。
 - `<工程名>-domain` 承载核心领域模型和领域规则。
 - `<工程名>-application` 编排写用例和只读查询。
-- `<工程名>-infrastructure` 提供技术适配、持久化抽象、通用转换和持久化对象。
-- 具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`。
+- `<工程名>-infrastructure` 提供技术适配、持久化抽象和与具体技术栈无关的通用转换，不得放置具体持久化技术的 DO 及其转换 Mapper。
+- 具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`；持久化实现 module 同时承载该技术栈的 DO、DO 转换 Mapper、repository、SQL/XML 和装配。
 - `<工程名>-interfaces` 提供协议无关 Facade 实现及 REST、RPC、消息订阅等协议入口。
 - `<工程名>-openfeign-client` 提供调用本服务的 OpenFeign 客户端。
 - `<工程名>-boot` 只负责启动、运行时配置和打包。
