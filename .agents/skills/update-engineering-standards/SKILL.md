@@ -1,6 +1,6 @@
 ---
 name: update-engineering-standards
-description: Reconcile Git changes in Markdown standards documents with the engineering guidance catalog, generated Skill references, and release metadata. Use after editing files under standards/, when adding, changing, moving, or retiring rules, or when preparing a standards release.
+description: Reconcile Git changes in Markdown standards documents with the engineering guidance catalog, generated Skill references, release metadata, consumer synchronization, and confirmed project-specific refactor tasks. Use after editing files under standards/, when adding, changing, moving, or retiring rules, or when preparing a standards release.
 ---
 
 # Update Engineering Standards
@@ -74,8 +74,16 @@ Invoke `$sync-engineering-standards` separately for each validated project and f
 
 After each consumer project synchronizes successfully, inspect the preserved consumer change list. If it contains only synchronization-only changes, report that no project code refactor plan is needed and do not inspect or modify consumer-project code.
 
-Otherwise, use only code-conformance-affecting changes to analyze that project without modifying it. Read the project guidance and the changed consumer Skills, inspect the affected code and tests, and produce a project-specific refactor plan. For every planned item, state the consumer Skill, changed rule IDs, affected files or modules, intended code change, and project verification command. Exclude consumer rules that do not apply to the project and state why.
+Otherwise, list the code-conformance-affecting changes and ask whether the user wants a project-specific refactor plan generated. Do not inspect consumer-project code or generate a plan before the user explicitly confirms plan generation. A synchronization request alone is not confirmation to generate a refactor plan.
 
-Present all project plans together and ask for explicit confirmation before changing any consumer-project code. Do not modify, stage, commit, or push a consumer project while preparing the plan.
+After confirmation, route each project independently to its Codex project and refactor task:
 
-After explicit confirmation, apply only the confirmed project plans. Preserve unrelated pre-existing changes, run the planned verification commands, and report their results. When a project has code changes and verification succeeds, stage only the refactor changes made by this workflow and create one accurate Git commit in that project. Do not push consumer-project commits unless the user separately asks. If a project is not a Git repository, has no applicable refactor, has verification failures, or has unrelated changes that cannot be safely excluded, do not commit it; report the reason and continue only when it is safe to do so.
+1. List Codex projects and resolve the project whose saved path exactly matches the synchronized consumer directory. Do not select a project by label alone.
+2. If no matching Codex project exists, create one for the consumer directory when project-creation capability is available. If the active tools cannot create projects, stop for that consumer and ask the user to add the directory as a Codex project; do not silently use an unrelated or projectless workspace.
+3. List tasks for the resolved project and reuse the most recent non-archived task whose title is exactly `重构`.
+4. If no such task exists, create a project task titled `重构`. Use a worktree for a Git project and the saved project directly for a non-Git project, unless the user explicitly requests another environment.
+5. Send the preserved consumer change list and an instruction to analyze only code-conformance-affecting changes to that task. Require it to read project guidance and changed consumer Skills, inspect affected code and tests without modifying them, and produce a project-specific plan. Every plan item states the consumer Skill, changed rule IDs, affected files or modules, intended code change, compatibility considerations, and verification commands. It excludes inapplicable rules and explains why.
+
+The refactor task presents its plan and asks for explicit user confirmation there before changing consumer code. The publisher task reports the reused or created refactor task and does not duplicate the plan or modify consumer-project code.
+
+After explicit confirmation inside the refactor task, that task applies only the confirmed plan, preserves unrelated pre-existing changes, runs the planned verification commands, and reports results. When code changes and verification succeeds, it stages only its refactor changes and creates one accurate Git commit. It does not push consumer-project commits unless the user separately asks. If the project is not a Git repository, has no applicable refactor, has verification failures, or has unrelated changes that cannot be safely excluded, it does not commit and reports the reason.

@@ -1,8 +1,8 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.0",
-  "artifact_sha256": "3cd1f5d6bdcf6f4d890031986f4bf16627731c3601972a9645667d504d224a5f",
+  "version": "2.0.1",
+  "artifact_sha256": "f69b7ad21f491c609ce438a03e0b081f6a5fce497cb0cfb1c3e85411d85fd1b9",
   "managed_skills": [
     "update-engineering-standards",
     "sync-engineering-standards"
