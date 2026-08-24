@@ -5,7 +5,7 @@
 ## 基础工具类
 
 - 通用技术能力优先使用 JDK、工程已有框架或成熟且持续维护的社区库，不得重复实现已有可靠实现的散列、编码、集合、I/O 或基础设施算法。
-- module 已依赖 Spring Framework 时，字符串和集合的常见判断优先使用 `StringUtils`、`CollectionUtils` 等 Spring 工具类。
+- module 已依赖 Spring Framework 时，字符串的 null、empty、blank 判断统一使用 `org.springframework.util.StringUtils`（如 `hasText`），集合的 null、empty 判断统一使用 `org.springframework.util.CollectionUtils`（如 `isEmpty`），其他基础判断优先复用 `org.springframework.util` 中的对应工具；不得手写等价逻辑，也不得仅为使用这些工具而引入 Spring Framework。
 - 引入新库前必须评估维护活跃度、安全性、许可证和依赖成本；已有依赖能满足需求时不得引入功能重叠的库。版本管理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)。
 
 ## Lombok

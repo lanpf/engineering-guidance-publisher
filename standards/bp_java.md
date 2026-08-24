@@ -5,6 +5,7 @@
 ## Java 语言
 
 - 使用 Java 17 编译和运行。
+- 局部变量的初始化表达式本身已清晰呈现具体类型时可以使用 `var`；如果必须查看被调用方法的声明或依赖泛型推断才能确定变量类型，则不得使用 `var`。
 - 能够在构造时完整确定状态、构造后不再变化，且不依赖继承、代理或 JavaBean setter 绑定的数据载体优先使用 `record`；集合组件必须通过 `List.copyOf`、`Set.copyOf` 等方式防御性复制。
 - 需要继承、可变状态、框架代理、JavaBean 形态或复杂领域行为时使用普通类。
 - 优先使用 `Integer`、`Long`、`Boolean` 等包装类型；仅在明确需要基本类型默认值、性能特性或语义上不允许为空时使用基本类型。
@@ -14,7 +15,7 @@
 ## 参数校验
 
 - 优先使用 Jakarta Bean Validation 表达可绑定 Bean 属性和方法参数约束。
-- 仅在框架校验无法表达约束或内部 API 需要快速失败时，使用 `Assert` 等显式检查。
+- 仅在框架校验无法表达约束，或领域对象构造函数、工厂方法等不经过框架绑定链路的内部 API 需要快速失败时，才使用显式检查；module 已依赖 Spring Framework 时统一使用 `org.springframework.util.Assert`，不得仅为显式检查引入 Spring Framework。
 
 ## 异常与日志
 

@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -30,6 +30,7 @@
               "title": "Language and data design",
               "rules": [
                 {"id": "JAVA-VERSION-002", "text": "Compile and run with Java 17."},
+                {"id": "JAVA-VAR-001", "text": "Use `var` for a local variable only when its initializer itself makes the concrete type clear; use an explicit type when understanding it requires reading a called method declaration or relying on generic type inference."},
                 {"id": "JAVA-RECORD-001", "text": "Prefer `record` for data carriers whose state is complete at construction, remains immutable, and does not require inheritance, proxies, or JavaBean setter binding."},
                 {"id": "JAVA-RECORD-002", "text": "Defensively copy collection record components with `List.copyOf`, `Set.copyOf`, or the corresponding immutable-copy operation."},
                 {"id": "JAVA-CLASS-001", "text": "Use an ordinary class when the type requires inheritance, mutable state, framework proxying, JavaBean shape, or complex domain behavior."},
@@ -44,12 +45,19 @@
                 {"id": "JAVA-OPTIONAL-001", "text": "Use `Optional` for possibly absent return values and chained handling; do not use it as a Bean property or method parameter."},
                 {"id": "JAVA-READABILITY-001", "text": "For complex business rules, nested conditions, and exception flows, prioritize readability over functional style."}
               ]
-            },
+            }
+          ]
+        },
+        {
+          "file": "common-utilities.md",
+          "source": "standards/bp_common_tools.md#基础工具类",
+          "title": "Common Utility Rules",
+          "sections": [
             {
-              "title": "Utilities",
+              "title": "Selection and reuse",
               "rules": [
                 {"id": "JAVA-UTILITY-001", "text": "Prefer the JDK, an already-used framework, or a mature maintained library over reimplementing general technical capabilities."},
-                {"id": "JAVA-UTILITY-002", "text": "When Spring Framework is already present, prefer its string and collection utilities for common null, string, and collection checks."},
+                {"id": "JAVA-UTILITY-002", "text": "When Spring Framework is already present, use `StringUtils` such as `hasText` for null, empty, or blank string checks and `CollectionUtils` such as `isEmpty` for null or empty collection checks, and prefer matching `org.springframework.util` helpers; do not hand-write equivalent checks or add Spring only for these utilities."},
                 {"id": "JAVA-UTILITY-003", "text": "Before adding a library, evaluate maintenance activity, security, license, and dependency cost; do not add overlapping functionality when existing dependencies suffice."}
               ]
             }
@@ -64,7 +72,7 @@
               "title": "Validation",
               "rules": [
                 {"id": "JAVA-VALIDATION-001", "text": "Use Jakarta Bean Validation for constraints on bindable Bean properties and method parameters."},
-                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks such as `Assert` only when framework validation cannot express the constraint or an internal API requires fast failure."}
+                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when framework validation cannot express a constraint or an internal API outside the framework binding path, such as a domain constructor or factory, requires fast failure; when Spring Framework is already present, use `org.springframework.util.Assert`, but do not add Spring only for this purpose."}
               ]
             },
             {
@@ -336,7 +344,7 @@
                 {"id": "INTERFACES-FACADE-001", "text": "Facade implementations convert API/application objects, call application services, and wrap responses with `Result<T>` or `PageResult<T>`."},
                 {"id": "INTERFACES-REST-001", "text": "Controllers handle routing, binding, and necessary protocol context only, convert the HTTP request into an API command/query, then invoke a Facade contract."},
                 {"id": "INTERFACES-HEADER-CONTEXT-001", "text": "Inject or resolve Client, Channel, Device, and other HTTP header context only in interfaces; API, application, and domain must not depend on the HTTP header binding mechanism."},
-                {"id": "INTERFACES-REST-CONTEXT-001", "text": "After the gateway supplies client context, each controller business request is one mutable `@Valid` HTTP request class extending `ClientRequest`, or `ClientChannelRequest` only when channel context is required; `ClientRequest` requires `clientAppId`, while `ClientChannelRequest` additionally requires `channelCode`. Do not split business fields into path or query parameters alongside a separate client-context argument. For endpoints without a business body, declare the concrete request-context type and let the shared argument resolver build and validate it from protected headers."},
+                {"id": "INTERFACES-REST-CONTEXT-001", "text": "After the gateway supplies trusted context, each controller business request is one mutable `@Valid` HTTP request extending `ClientRequest` and implements the composable `ChannelContext` and/or `AuthenticatedSessionContext` only when the endpoint requires those contexts. Do not split business fields into path or query parameters alongside a separate client-context argument. For endpoints without a business body, declare a concrete request type matching the required contexts and let the shared argument resolver build and validate it from protected headers."},
                 {"id": "INTERFACES-FACADE-BOUNDARY-001", "text": "After header injection and validation, interfaces converts its mutable HTTP request into a complete immutable API command/query record; Facades must not accept interfaces HTTP request types."},
                 {"id": "INTERFACES-RPC-001", "text": "Publish the same Facade Bean directly when the RPC technology supports it; add a technology-specific RPC adapter only for incompatible models, semantics, metadata, or exception handling."},
                 {"id": "INTERFACES-MESSAGE-001", "text": "Message listeners are interfaces-layer protocol entries and are not required to pass through a Facade; messaging rules own consumption reliability and processing flow."},
@@ -599,7 +607,8 @@
               "title": "Stability",
               "rules": [
                 {"id": "ERROR-APPEND-001", "text": "Append new errors in local-code order within the owning range."},
-                {"id": "ERROR-STABILITY-002", "text": "Published error codes are immutable and must not be modified, reused, or assigned to a different meaning."}
+                {"id": "ERROR-STABILITY-002", "text": "Published error codes are immutable and must not be modified, reused, or assigned to a different meaning."},
+                {"id": "ERROR-MESSAGE-TEMPLATE-001", "text": "Bind each error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply an arbitrary message. Dynamic context may fill only parameters declared by the template and must not change the error meaning."}
               ]
             }
           ]
