@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -49,6 +49,21 @@
           ]
         },
         {
+          "file": "constants-and-literals.md",
+          "source": "standards/bp_java.md#常量与字面量管理",
+          "title": "Constants and Literal Rules",
+          "sections": [
+            {
+              "title": "Business values",
+              "rules": [
+                {"id": "JAVA-LITERAL-001", "text": "Do not hard-code string literals that carry business meaning, are reused, or participate in branching or state identification, including status codes, type identifiers, channel identifiers, event names, and configuration keys."},
+                {"id": "JAVA-LITERAL-002", "text": "Represent a fixed closed value set with an enum, a reusable single value with a `public static final` constant or dedicated constants type, and a deployment-varying value with external configuration rather than code."},
+                {"id": "JAVA-LITERAL-EXCEPTION-001", "text": "A log message, non-business diagnostic exception message, test fixture value, regular expression, or format template may remain a literal only when it does not drive program decisions or state and needs no cross-class reuse; business exception messages still follow the stable error-message-template rule."}
+              ]
+            }
+          ]
+        },
+        {
           "file": "common-utilities.md",
           "source": "standards/bp_common_tools.md#基础工具类",
           "title": "Common Utility Rules",
@@ -57,7 +72,7 @@
               "title": "Selection and reuse",
               "rules": [
                 {"id": "JAVA-UTILITY-001", "text": "Prefer the JDK, an already-used framework, or a mature maintained library over reimplementing general technical capabilities."},
-                {"id": "JAVA-UTILITY-002", "text": "When Spring Framework is already present, use `StringUtils` such as `hasText` for null, empty, or blank string checks and `CollectionUtils` such as `isEmpty` for null or empty collection checks, and prefer matching `org.springframework.util` helpers; do not hand-write equivalent checks or add Spring only for these utilities."},
+                {"id": "JAVA-UTILITY-002", "text": "When a module already depends on Spring Framework for its responsibility, use `org.springframework.util.StringUtils.hasText`, `CollectionUtils.isEmpty`, and matching Spring utilities. A Spring-decoupled module must not add Spring only for utilities; when the JDK is insufficient, use project-managed Apache Commons `StringUtils.isBlank`/`isNotBlank` and `CollectionUtils.isEmpty`/`isNotEmpty`. Do not hand-write equivalents already provided by these utilities."},
                 {"id": "JAVA-UTILITY-003", "text": "Before adding a library, evaluate maintenance activity, security, license, and dependency cost; do not add overlapping functionality when existing dependencies suffice."}
               ]
             }
@@ -72,7 +87,8 @@
               "title": "Validation",
               "rules": [
                 {"id": "JAVA-VALIDATION-001", "text": "Use Jakarta Bean Validation for constraints on bindable Bean properties and method parameters."},
-                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when framework validation cannot express a constraint or an internal API outside the framework binding path, such as a domain constructor or factory, requires fast failure; when Spring Framework is already present, use `org.springframework.util.Assert`, but do not add Spring only for this purpose."}
+                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when framework validation cannot express a constraint or an internal API outside the binding path requires fast failure. A module already dependent on Spring uses `org.springframework.util.Assert`; a Spring-decoupled module uses project-managed `org.apache.commons.lang3.Validate`. Do not add Spring only for checks or hand-write equivalents these tools provide."},
+                {"id": "JAVA-VALIDATION-MESSAGE-001", "text": "Validation failure exception messages must be written in English and contain no Chinese text."}
               ]
             },
             {
@@ -95,7 +111,8 @@
               "rules": [
                 {"id": "LOMBOK-EXPERIMENTAL-001", "text": "Do not use annotations from `lombok.experimental`."},
                 {"id": "LOMBOK-BUILDER-001", "text": "Do not use `@Builder`; use explicit constructors or factory methods for staged or fluent construction."},
-                {"id": "LOMBOK-CONSTRUCTOR-001", "text": "Use Lombok constructors only for direct field assignment without validation or conversion; write an explicit constructor when initialization contains invariants, transformations, or other logic."},
+                {"id": "LOMBOK-CONSTRUCTOR-001", "text": "Generate constructors that only assign fields and contain no validation, transformation, or initialization logic with Lombok constructor annotations rather than writing them manually; write an explicit constructor when such logic exists."},
+                {"id": "LOMBOK-ACCESSOR-001", "text": "Generate getters and setters that only read or assign fields and contain no validation, transformation, or other behavior with Lombok `@Getter` or `@Setter`; write methods explicitly when behavior exists."},
                 {"id": "LOMBOK-LOG-001", "text": "Use `@Slf4j` instead of declaring a Logger field manually."}
               ]
             },
