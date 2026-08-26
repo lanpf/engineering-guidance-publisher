@@ -19,5 +19,5 @@
 ## 服务技术基线
 
 - 服务使用 Spring Boot `3.5.16` 和 Spring Cloud `2025.0.3`。
-- 使用 `framework-dependencies`、`framework-bom` 和 `framework-starter-bom` 统一版本，并按需选择 `framework-*` 契约和 `framework-starter-*` 实现。
+- 使用 `framework-dependencies`、`framework-starter-dependencies` 统一版本，并按需选择 `framework-*` 契约和 `framework-starter-*` 实现。
 - 持久化、消息和调度等可替换技术由 boot 的打包依赖选择运行时实现；不得在同一制品内通过运行时属性切换多套实现。实现 module 的位置和职责遵循[服务分层最佳实践](bp_layered_service.md#模块职责)。

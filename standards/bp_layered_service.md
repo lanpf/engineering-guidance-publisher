@@ -47,6 +47,7 @@
 ### domain
 
 - 以聚合根为一致性边界组织实体、值对象、领域服务、Repository 契约和领域事件；聚合根和实体只能通过领域行为改变状态。
+- 领域实体的标识必须继承基类 `EntityId`，工程按实际类型提供 `StringEntityId`、`LongEntityId` 等工程级基类，并统一重写 `validate()`，如需额外约束时才再次重写。
 - 值对象不可变；领域服务只承载跨聚合或不适合归属单个聚合的领域规则。
 - 领域服务返回的 `*Effect` 必须实现 `DomainEffect`，并通过其 `events()` 返回该次领域行为产生的领域事件；没有领域事件时返回空集合，不得返回 `null`。
 - 领域对象和服务不得直接读取系统时钟；application 注入 `Clock`，每个用例取得一次业务时间并传入相关状态变化和事件。
@@ -64,8 +65,8 @@
 
 ### infrastructure
 
-- infrastructure 提供 repository、gateway、ID、事件存储、消息和调度适配，不承载领域规则或用例编排。
-- 领域事件存储通过 framework 端口适配，domain 和 application 不得依赖具体存储实现。
+- infrastructure 提供 repository、ID、事件存储、消息和调度等技术适配，并实现 domain/application 定义的端口，不承载领域规则或用例编排。
+- 领域事件存储必须通过 framework-domain 定义的端口适配；domain 和 application 不得依赖具体的领域事件存储实现。
 - JavaBean 配置绑定中的集合和嵌套对象字段声明为 `final`，只暴露 getter，并初始化为空绑定容器；必填集合使用 `@NotEmpty` 使缺失配置启动失败。
 - `Duration` 独立最小值同时使用 `@NotNull` 和带明确单位的 `@DurationMin`，module 直接依赖 `hibernate-validator`；`@AssertTrue` 等类型级校验只表达字段间关系。
 - persistence、消息和调度适配分别遵循对应主题最佳实践；本层只约束这些能力属于 infrastructure，不在此重复其实现规则。

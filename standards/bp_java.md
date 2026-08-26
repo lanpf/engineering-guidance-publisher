@@ -12,21 +12,32 @@
 - 简单集合遍历优先使用 `forEach`，简单转换、过滤和映射优先使用 `Stream`，简单回调优先使用 lambda 或方法引用；复杂业务规则、嵌套条件和异常流程以可读性为先。
 - 可能缺失的返回值及其链式处理优先使用 `Optional`；不得将 `Optional` 用作 Bean 属性或方法参数。
 
-## 常量与字面量管理
+## 常量与字面量
 
-- 禁止将具有业务语义、可能被多处引用、或用于分支判断/状态标识的字符串字面量直接硬编码在业务代码中（如状态码、类型标识、渠道标识、事件名、配置键等）。
-- 取值集合固定且封闭（有限状态、类型枚举）：使用 `enum`；单一常量值需跨类复用：使用 `public static final` 常量或专门的常量类；取值可能因部署环境变化：使用配置项（配置文件/配置中心），不得写死在代码中。
-- 在不参与程序判断、状态标识且无需跨类复用时，日志文本、非业务诊断异常提示、单元测试桩数据、正则表达式和格式化模板可以保留为字面量；业务异常信息仍必须遵循[服务错误码最佳实践](bp_error_codes.md#错误码)中的稳定消息模板约束。
+### 常量
+
+- 取值集合固定且封闭（有限状态、类型枚举）：使用 `enum`。
+- 单一常量值需跨类复用：使用 `public static final` 常量或专门的常量类。
+- 取值可能因部署环境变化：使用配置项（配置文件/配置中心），允许有默认值。
+
+### 字面量
+
+- 禁止将具有业务语义、可能被多处引用、或用于分支判断/状态标识的字符串字面量直接硬编码在业务代码中，配置文件中的默认值除外。
+- 日志文本、非业务诊断的异常提示、单元测试桩数据、正则表达式和格式化模板只有在不承载业务语义、不参与分支或状态判断且无需跨类复用时，才允许保留为字面量。
 
 ## 参数校验
 
 - 优先使用 Jakarta Bean Validation 表达可绑定 Bean 属性和方法参数约束。
 - 仅在框架校验无法表达约束，或领域对象构造函数、工厂方法等不经过框架绑定链路的内部 API 需要快速失败时，才使用显式检查。
-- module 已因自身职责依赖 Spring Framework 时，显式检查统一使用 `org.springframework.util.Assert`；与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`，不得仅为显式检查引入 Spring Framework，也不得手写这些工具已提供的等价逻辑。工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
+- 显式检查需要抛出 `BaseException` 时，尤其是领域层守卫逻辑，统一使用 framework-core 的 `Require`。
+- 不需要抛出业务异常的技术性或编程前置条件检查，module 已因自身职责依赖 Spring Framework 时使用 `org.springframework.util.Assert`；与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。不得仅为显式检查引入 Spring Framework，也不得手写这些工具已提供的等价逻辑。工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 - 校验失败的异常 message 必须使用英文，不得包含中文文本。
 
-## 异常与日志
+## 异常
 
-- 框架、参数绑定和校验失败使用框架异常体系；业务不变性和业务约束使用明确的领域异常。
-- 业务异常必须归属明确的异常基类或错误码体系，不得用通用运行时异常承载业务语义。
+- Jakarta Bean Validation 校验失败时使用框架异常体系。
+- 服务自定义的业务异常必须继承 framework-core 提供的 `BaseException`，不得直接继承 `RuntimeException` 或其他 JDK 异常类。
+- 领域层的非空检查、前置条件校验等守卫逻辑，必须抛出 `DomainException`（继承自 `BaseException`），禁止使用 `IllegalArgumentException`、`IllegalStateException` 等通用异常替代。
+- `DomainException` 必须提供 `invalidEntityId()` 和 `missingField()` 静态工厂方法。
+- 业务异常必须携带明确的错误码，错误码遵循[服务错误码最佳实践](bp_error_codes.md#错误码)。
 - 业务异常必须处理或继续抛出；非业务异常必须记录足够的定位上下文；不得静默忽略异常。
