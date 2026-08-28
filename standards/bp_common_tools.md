@@ -5,7 +5,10 @@
 ## 基础工具类
 
 - 通用技术能力优先使用 JDK、工程已有框架或成熟且持续维护的社区库，不得重复实现已有可靠实现的散列、编码、集合、I/O 或基础设施算法。
-- module 已因自身职责依赖 Spring Framework 时，字符串 null、empty、blank 判断统一使用 `org.springframework.util.StringUtils.hasText`，集合 null、empty 判断统一使用 `org.springframework.util.CollectionUtils.isEmpty`，其他基础判断优先复用 `org.springframework.util` 中的对应工具。与 Spring 解耦的 module 不得仅为工具方法引入 Spring Framework；JDK 不足以满足需求时，使用工程统一管理的 Apache Commons：字符串使用 `org.apache.commons.lang3.StringUtils.isBlank`/`isNotBlank`，集合使用 `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty`。不得手写这些工具已提供的等价逻辑。
+- module 已因自身职责依赖 Spring Framework 时，字符串 null、empty、blank 判断统一使用 `org.springframework.util.StringUtils.hasText`，集合 null、empty 判断统一使用 `org.springframework.util.CollectionUtils.isEmpty`，其他基础判断优先复用 `org.springframework.util` 中的对应工具。
+- 与 Spring 解耦的 module 不得仅为工具方法引入 Spring Framework。
+- 与 Spring 解耦的 module 在 JDK 不足以满足需求时，使用工程统一管理的 Apache Commons：字符串使用 `org.apache.commons.lang3.StringUtils.isBlank`/`isNotBlank`，集合使用 `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty`。
+- 不得手写上述工具已提供的等价逻辑。
 - 引入新库前必须评估维护活跃度、安全性、许可证和依赖成本；已有依赖能满足需求时不得引入功能重叠的库。版本管理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)。
 
 ## Lombok

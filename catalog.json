@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -72,7 +72,10 @@
               "title": "Selection and reuse",
               "rules": [
                 {"id": "JAVA-UTILITY-001", "text": "Prefer the JDK, an already-used framework, or a mature maintained library over reimplementing general technical capabilities."},
-                {"id": "JAVA-UTILITY-002", "text": "When a module already depends on Spring Framework for its responsibility, use `org.springframework.util.StringUtils.hasText`, `CollectionUtils.isEmpty`, and matching Spring utilities. A Spring-decoupled module must not add Spring only for utilities; when the JDK is insufficient, use project-managed Apache Commons `StringUtils.isBlank`/`isNotBlank` and `CollectionUtils.isEmpty`/`isNotEmpty`. Do not hand-write equivalents already provided by these utilities."},
+                {"id": "JAVA-UTILITY-002", "text": "When a module already depends on Spring Framework for its responsibility, use `org.springframework.util.StringUtils.hasText` for string null/empty/blank checks, `org.springframework.util.CollectionUtils.isEmpty` for collection checks, and matching `org.springframework.util` utilities for other basic checks."},
+                {"id": "JAVA-UTILITY-004", "text": "A module decoupled from Spring must not add Spring Framework only for utility methods."},
+                {"id": "JAVA-UTILITY-005", "text": "When the JDK is insufficient for a Spring-decoupled module, use project-managed Apache Commons: `org.apache.commons.lang3.StringUtils.isBlank`/`isNotBlank` for strings and `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty` for collections."},
+                {"id": "JAVA-UTILITY-006", "text": "Do not hand-write logic equivalent to the utilities above."},
                 {"id": "JAVA-UTILITY-003", "text": "Before adding a library, evaluate maintenance activity, security, license, and dependency cost; do not add overlapping functionality when existing dependencies suffice."}
               ]
             }
@@ -87,7 +90,10 @@
               "title": "Validation",
               "rules": [
                 {"id": "JAVA-VALIDATION-001", "text": "Use Jakarta Bean Validation for constraints on bindable Bean properties and method parameters."},
-                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when framework validation cannot express a constraint or an internal API outside the binding path requires fast failure. For technical or programming preconditions that do not need a business exception, a module already dependent on Spring uses `org.springframework.util.Assert`, while a Spring-decoupled module uses project-managed `org.apache.commons.lang3.Validate`. Do not add Spring only for checks or hand-write equivalents these tools provide."},
+                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when framework validation cannot express a constraint or an internal API outside the framework binding path requires fast failure."},
+                {"id": "JAVA-ASSERT-001", "text": "For technical or programming preconditions that need no business exception, a module already depending on Spring Framework for its responsibility uses `org.springframework.util.Assert`."},
+                {"id": "JAVA-VALIDATE-001", "text": "A Spring-decoupled module uses project-managed `org.apache.commons.lang3.Validate` for the same technical preconditions."},
+                {"id": "JAVA-VALIDATION-003", "text": "Do not add Spring Framework only for explicit checks and do not hand-write equivalents these tools provide; utility dependency selection follows the common-utilities rules."},
                 {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "Use framework-core `Require` for an explicit check that must throw a `BaseException`, especially a domain-layer guard."},
                 {"id": "JAVA-VALIDATION-MESSAGE-001", "text": "Validation failure exception messages must be written in English and contain no Chinese text."}
               ]
@@ -125,6 +131,32 @@
                 {"id": "LOMBOK-ENTITY-001", "text": "Aggregate roots and entities use only `@Getter`, avoid `@Data` and Lombok `@EqualsAndHashCode`, and implement equality explicitly from the unique identifier."},
                 {"id": "LOMBOK-VALUE-001", "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality."},
                 {"id": "LOMBOK-SPRING-001", "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "logging.md",
+          "source": "standards/bp_logging.md#日志与敏感数据",
+          "title": "Logging and Sensitive Data Rules",
+          "sections": [
+            {
+              "title": "Logging usage",
+              "rules": [
+                {"id": "LOG-SLF4J-001", "text": "Declare loggers with `@Slf4j` and write messages with SLF4J parameter placeholders; do not build message text by string concatenation, and pass the exception object as the last argument instead of embedding it in the message."},
+                {"id": "LOG-LEVEL-001", "text": "Use `ERROR` for failures that need human intervention, including exhausted retries, unrecoverable errors, and unclassified integrity failures."},
+                {"id": "LOG-LEVEL-002", "text": "Use `WARN` for exceptions that have already recovered or degraded as expected, including retried-then-succeeded operations, expected idempotent conflicts, and degraded execution."},
+                {"id": "LOG-LEVEL-003", "text": "Use `INFO` for audit points of key business actions, state changes, and external interactions; reserve `DEBUG` for development diagnosis and keep it disabled in production by default."},
+                {"id": "LOG-CONTEXT-001", "text": "Every log statement carries locatable context such as the use-case or job name, the sanitized business key, and the scene or shard identifier; the framework injects tracing context, and business code must not hand-assemble trace fields."},
+                {"id": "LOG-METRICS-001", "text": "Do not replace metrics, alerts, or distributed tracing with logs, and do not emit one `INFO` record per occurrence for high-frequency recurring events."}
+              ]
+            },
+            {
+              "title": "Sensitive data and masking",
+              "rules": [
+                {"id": "SENSITIVE-DATA-001", "text": "Sensitive data means passwords, tokens, keys, certificates, government IDs, phone numbers, bank-card numbers, biometrics, precise addresses, and similar personal data, plus complete request or response payloads."},
+                {"id": "SENSITIVE-LOG-001", "text": "Sensitive data must never enter any log in plain text, including message text, parameters, MDC values, and exception information."},
+                {"id": "SENSITIVE-MASK-001", "text": "When a log must reference a sensitive business key, use the centrally implemented masking or irreversible digest; do not scatter masking logic across business code, keep the data type recognizable while masking the value itself (for example a phone number as `138****1234`), and keep one consistent mask format per sensitive type."}
               ]
             }
           ]
@@ -178,8 +210,7 @@
               "rules": [
                 {"id": "DEP-SCOPE-001", "text": "Match dependency scope to use: compile requirements use compile scope, tests use test scope, and `provided` or `optional` requires a genuine runtime-provided or optional capability."},
                 {"id": "DEP-SNAPSHOT-001", "text": "SNAPSHOT dependencies are forbidden in release branches and production builds and may only be temporary in local or unpublished iteration branches."},
-                {"id": "DEP-VERSION-001", "text": "Manage third-party versions centrally; business and feature modules must not override versions independently."},
-                {"id": "DEP-BEAN-001", "text": "Reuse infrastructure Beans supplied by the runtime framework instead of declaring another Bean with the same semantics."}
+                {"id": "DEP-VERSION-001", "text": "Manage third-party versions centrally; business and feature modules must not override versions independently."}
               ]
             }
           ]
@@ -277,7 +308,8 @@
                 {"id": "ARCH-MODULE-DOMAIN-001", "text": "`<service>-domain` owns the core domain model and rules."},
                 {"id": "ARCH-MODULE-APPLICATION-001", "text": "`<service>-application` orchestrates write use cases and read-only queries."},
                 {"id": "ARCH-MODULE-INFRA-001", "text": "`<service>-infrastructure` contains technical adapters, persistence abstractions, and technology-neutral shared conversions, but no DOs or conversion mappers tied to a concrete persistence technology."},
-                {"id": "ARCH-MODULE-TECH-001", "text": "Concrete persistence, scheduler, and message implementations live in `<service>-infrastructure-<kind>-<technology>` modules; each persistence implementation module owns its technology-specific DOs, DO conversion mappers, repositories, SQL/XML, and assembly."},
+                {"id": "ARCH-MODULE-TECH-001", "text": "Concrete persistence, scheduler, and message implementations live in `<service>-infrastructure-persistence-<technology>`, `<service>-infrastructure-scheduler-<technology>`, and `<service>-infrastructure-message-<technology>` modules."},
+                {"id": "ARCH-MODULE-TECH-002", "text": "A persistence implementation module also hosts that technology stack's DOs, DO conversion mappers, persistence repositories, SQL/XML, and assembly."},
                 {"id": "ARCH-MODULE-INTERFACES-001", "text": "`<service>-interfaces` implements protocol-neutral Facades and hosts REST, RPC, and message subscription adapters."},
                 {"id": "ARCH-MODULE-CLIENT-001", "text": "`<service>-openfeign-client` provides the OpenFeign client for the service API."},
                 {"id": "ARCH-MODULE-BOOT-001", "text": "`<service>-boot` starts, configures, and packages the service."},
@@ -297,7 +329,8 @@
             {
               "title": "Project configuration",
               "rules": [
-                {"id": "ARCH-PROJECT-CONFIG-001", "text": "Create a root-level `config/` directory beside service modules and prefer it for independently updateable application profiles, MyBatis SQL fragments and mapper XML, database schema or migration files, Dubbo XML, and similar configuration rather than packaging them in a module by default."},
+                {"id": "ARCH-PROJECT-CONFIG-001", "text": "Create a root-level `config/` directory beside service modules as the preferred home for independently updateable resources."},
+                {"id": "ARCH-PROJECT-CONFIG-003", "text": "Project-level `application.yml`, `application-*.yml` or corresponding properties, MyBatis shared SQL fragments and mapper XML, database schema or migration scripts, Dubbo XML, and similar configuration are stored there and are not packaged into a module artifact merely because that module assembles them."},
                 {"id": "ARCH-PROJECT-CONFIG-002", "text": "Load root-level `config/` resources explicitly through Spring or technology-specific location settings and make build, deployment, and local startup provide and validate them; package a resource under a module only when external loading is unsupported, code and resource versions are inseparable, or the artifact must be self-contained."}
               ]
             }
@@ -327,7 +360,7 @@
                 {"id": "NAME-DOMAIN-EFFECT-001", "text": "Domain-service `*Effect` result types implement `DomainEffect` and return the domain events produced by that behavior through `events()`; return an empty collection rather than null when no event is produced."},
                 {"id": "DOMAIN-CLOCK-001", "text": "Domain objects and services must not call system time directly; application services inject `Clock`, obtain business time once per use case, and pass the same value to related state changes and events."},
                 {"id": "DOMAIN-REPOSITORY-001", "text": "Domain repositories express domain-object persistence contracts without exposing a persistence technology."},
-                {"id": "DOMAIN-EVENT-001", "text": "Domain events represent facts that already occurred and receive a trend-increasing Long event ID at creation."},
+                {"id": "DOMAIN-EVENT-001", "text": "Domain events represent facts that already occurred and carry a trend-increasing Long event ID generated by the application use case through the ID generator and passed into the domain behavior; domain code must not generate the event ID itself."},
                 {"id": "DOMAIN-BOUNDARY-001", "text": "Domain must not know API payloads, application commands/outputs/views, persistence DOs, concrete technologies, `Result<T>`, or `PageResult<T>`."}
               ]
             },
@@ -355,7 +388,8 @@
                 {"id": "INFRA-CONFIG-001", "text": "For JavaBean configuration binding, collection and nested-object fields are final, expose getters without setters, and begin as empty binding containers without business defaults."},
                 {"id": "INFRA-CONFIG-002", "text": "Required configuration collections use `@NotEmpty` so missing configuration fails startup rather than running silently with an empty value."},
                 {"id": "INFRA-DURATION-001", "text": "A standalone minimum for `Duration` uses both `@NotNull` and Hibernate Validator `@DurationMin` with explicit units; the module declares `hibernate-validator` directly."},
-                {"id": "INFRA-CROSS-FIELD-001", "text": "Use `@AssertTrue` and similar type-level validation only for relationships between fields."}
+                {"id": "INFRA-CROSS-FIELD-001", "text": "Use `@AssertTrue` and similar type-level validation only for relationships between fields."},
+                {"id": "DEP-BEAN-001", "text": "Reuse infrastructure Beans supplied by the runtime framework instead of declaring another Bean with the same semantics."}
               ]
             },
             {
@@ -365,7 +399,9 @@
                 {"id": "INTERFACES-FACADE-001", "text": "Facade implementations convert API/application objects, call application services, and wrap responses with `Result<T>` or `PageResult<T>`."},
                 {"id": "INTERFACES-REST-001", "text": "Controllers handle routing, binding, and necessary protocol context only, convert the HTTP request into an API command/query, then invoke a Facade contract."},
                 {"id": "INTERFACES-HEADER-CONTEXT-001", "text": "Inject or resolve Client, Channel, Device, and other HTTP header context only in interfaces; API, application, and domain must not depend on the HTTP header binding mechanism."},
-                {"id": "INTERFACES-REST-CONTEXT-001", "text": "After the gateway supplies trusted context, each controller business request is one mutable `@Valid` HTTP request extending `ClientRequest` and implements the composable `ChannelContext` and/or `AuthenticatedSessionContext` only when the endpoint requires those contexts. Do not split business fields into path or query parameters alongside a separate client-context argument. For endpoints without a business body, declare a concrete request type matching the required contexts and let the shared argument resolver build and validate it from protected headers."},
+                {"id": "INTERFACES-REST-CONTEXT-001", "text": "After header injection and validation, each controller business request converges into one ordinary mutable `@Valid` HTTP request extending `ClientRequest`."},
+                {"id": "INTERFACES-REST-CONTEXT-002", "text": "Implement the composable `ChannelContext` and `AuthenticatedSessionContext` only when the endpoint really needs trusted channel or authenticated-session context."},
+                {"id": "INTERFACES-REST-CONTEXT-003", "text": "Do not split business fields into path or query parameters alongside a separate client-context argument; for endpoints without a business body, declare a concrete request type matching the required contexts and let the shared argument resolver build and validate it from protected headers."},
                 {"id": "INTERFACES-FACADE-BOUNDARY-001", "text": "After header injection and validation, interfaces converts its mutable HTTP request into a complete immutable API command/query record; Facades must not accept interfaces HTTP request types."},
                 {"id": "INTERFACES-RPC-001", "text": "Publish the same Facade Bean directly when the RPC technology supports it; add a technology-specific RPC adapter only for incompatible models, semantics, metadata, or exception handling."},
                 {"id": "INTERFACES-MESSAGE-001", "text": "Message listeners are interfaces-layer protocol entries and are not required to pass through a Facade; messaging rules own consumption reliability and processing flow."},
@@ -384,7 +420,7 @@
             {
               "title": "API and domain",
               "rules": [
-                {"id": "DATA-API-001", "text": "Prefer records for API commands and queries, and always use records for API responses; these contracts are complete, immutable, and independent of HTTP binding and header injection. Use records for API events when serialization, RPC, OpenFeign, and client compatibility support immutable constructor binding."},
+                {"id": "DATA-API-001", "text": "Prefer records for API commands and queries, and always use records for API responses; these contracts are complete, immutable, and independent of HTTP binding and header injection. Use records for API events when serialization, RPC, OpenFeign, and client compatibility support immutable constructor binding, and use an ordinary JavaBean class for API events when an existing consumer cannot support constructor binding."},
                 {"id": "DATA-API-COMPAT-001", "text": "For public Java APIs, evaluate the binary-constructor compatibility impact before adding a record component."},
                 {"id": "DATA-DOMAIN-001", "text": "Prefer records for domain IDs, value objects, effects, and immutable domain events when inheritance is unnecessary; use classes for aggregate roots, entities, framework bases, mutable state, and complex behavior."},
                 {"id": "DATA-INTERFACES-001", "text": "Use ordinary mutable classes for interfaces HTTP requests so JSON binding and Client, Channel, or Device header injection can populate them; they may extend the required Client context type but must not be used as Facade inputs."}
@@ -448,7 +484,8 @@
                 {"id": "ID-NAME-001", "text": "Pass a stable, configured, low-cardinality ID-space name to `nextId(name)`; do not derive generator names from user input, request IDs, or per-record business keys."},
                 {"id": "ID-FAILFAST-001", "text": "Register and validate every generator name before deployment; missing configuration fails startup or the use case and must not silently fall back to a local algorithm or database sequence."},
                 {"id": "ID-BOUNDARY-001", "text": "Generate IDs through the framework port in application/infrastructure and pass the value into domain; domain must not depend on CosId or starter implementation types."},
-                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."}
+                {"id": "ID-SEMANTICS-001", "text": "Treat generated IDs as unique and trend-increasing only; do not assume they are contiguous, gap-free, strictly chronological, or safe to decode into business meaning."},
+                {"id": "ID-STRING-001", "text": "Non-Long string identifiers such as UUIDs or external-system identities are outside the `LongIdGenerator` scope; business code must not invent new generation algorithms, the identifier source is defined by the project domain document, and identifier types extend the project-level `EntityId` bases."}
               ]
             }
           ]
@@ -544,10 +581,14 @@
                 {"id": "INFRA-MAPPER-001", "text": "Each persistence implementation module owns the conversion mappers between domain objects or application read models and that technology's DOs; do not place converters that depend on concrete DOs in shared infrastructure."},
                 {"id": "PERSISTENCE-SELECTION-001", "text": "Use one persistence technology per repository and select JPA, MyBatis, or MyBatis-Plus; a project may replace MyBatis-Plus with MyBatis when its license policy requires it."},
                 {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior."},
-                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus load the same SQL XML fragments from the project-root `config/` directory and include shared table names, column lists, and reusable predicates rather than copying them; follow the layered-service external-resource loading rules and the naming standard for files and namespaces."},
-                {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "For the same logical persistence model, technology-specific JPA, MyBatis, and MyBatis-Plus DOs keep identical business-property names and Java types while declaring no collection properties or collection-mapping annotations; model multi-value relationships as master/detail DOs, or let each technology-specific DO conversion mapper join them consistently into one string only when they need no independent query, index, or foreign-key constraint."},
+                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus implementations must load the same shared SQL XML fragments from the project-root `config/` directory."},
+                {"id": "PERSISTENCE-MYBATIS-SQL-002", "text": "Declare table names, column lists, and reusable predicates only in shared fragments; concrete mapper statements reference them with `<include>` and must not duplicate them across the two implementations."},
+                {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "For the same logical persistence model, technology-specific JPA, MyBatis, and MyBatis-Plus DOs keep identical business-property names and Java types."},
+                {"id": "PERSISTENCE-DO-COLLECTION-001", "text": "DOs must not declare collection properties or collection-mapping annotations such as `@ElementCollection` and `@CollectionTable`; model multi-value relationships as master/detail DOs and association tables."},
+                {"id": "PERSISTENCE-DO-COLLECTION-002", "text": "Only when the multi-value content is always read and written as a whole and needs no independent query, index, or foreign-key constraint may each technology's DO conversion mapper serialize it into a single string column under consistent conversion rules."},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Define nullability, uniqueness, foreign keys, and indexes in schema migrations; application validation and distributed coordination do not replace database constraints."},
-                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules; `schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration, and a prefix or suffix change must update schema scripts or migration configuration."},
+                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules."},
+                {"id": "PERSISTENCE-SCHEMA-PREFIX-001", "text": "`schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration; changing the prefix or suffix is a schema change that must update the DDL scripts or migration configuration, not only the runtime configuration."},
                 {"id": "PERSISTENCE-CONCURRENCY-SCENARIO-001", "text": "Choose concurrency controls from actual contention and business risk; do not add versions, distributed locks, or pessimistic database locks to very-low-contention operational APIs for hypothetical races."},
                 {"id": "PERSISTENCE-CONCURRENCY-STATE-001", "text": "When a business state machine or explicit precondition already exists, prefer a conditional update on the current state or business condition and treat an unexpected affected-row count as a state change or concurrency conflict."},
                 {"id": "PERSISTENCE-CONCURRENCY-001", "text": "For real cross-instance conflicts not resolved by business conditions, prefer a distributed lock to reduce contention and add version-based optimistic concurrency only when residual conflicts still require detection; never make versions, pessimistic database locks, or distributed locks the default for every write."},
@@ -559,7 +600,6 @@
               "rules": [
                 {"id": "PERSISTENCE-PAGE-001", "text": "Paginate with a stable unique order and prefer cursors for deep or continuous scans; never rely on unspecified database order."},
                 {"id": "PERSISTENCE-QUERY-001", "text": "Support frequent and large-table conditions, ordering, and joins with verified indexes and query plans; prohibit N+1 access and unbounded result sets."},
-                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."},
                 {"id": "PERSISTENCE-JPA-001", "text": "Do not rely on Open Session in View to hide JPA lazy loading; design aggregate fetch boundaries and read projections explicitly."},
                 {"id": "PERSISTENCE-MYBATIS-001", "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules."}
               ]
@@ -568,7 +608,8 @@
               "title": "Unique constraint violations",
               "rules": [
                 {"id": "PERSISTENCE-DUPLICATE-001", "text": "At the persistence-adapter boundary, translate a known business unique-constraint conflict into an explicit domain/application exception or, after verifying equivalent existing data, an idempotent success; do not leak the database exception."},
-                {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, but it must identify the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify every integrity violation as a duplicate key."},
+                {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, which is a subclass of it."},
+                {"id": "PERSISTENCE-DATA-INTEGRITY-002", "text": "After the shared catch, confirm the violation is the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify not-null, foreign-key, or check-constraint violations as duplicate keys."},
                 {"id": "PERSISTENCE-JPA-FLUSH-001", "text": "To catch a JPA unique-constraint failure inside an adapter, flush within that catch boundary; otherwise translate the deferred exception at a boundary that covers transaction commit."},
                 {"id": "PERSISTENCE-DUPLICATE-LOG-001", "text": "Log every unique-constraint conflict once at the translation boundary with constraint/scene, sanitized business key, and outcome; use INFO or WARN for expected idempotency and ERROR plus rethrow for unknown or unclassified integrity failures."}
               ]
@@ -583,7 +624,14 @@
             {
               "title": "Shared SQL XML",
               "rules": [
-                {"id": "NAME-MYBATIS-SQL-001", "text": "Name shared MyBatis/MyBatis-Plus fragment files `<Aggregate>SqlFragments.xml` with namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`; name concrete mapper files `<Aggregate>Mapper.xml` and reference shared `<sql>` elements with fully qualified `refid`."}
+                {"id": "NAME-MYBATIS-SQL-001", "text": "Name shared MyBatis/MyBatis-Plus SQL fragment files `<Aggregate>SqlFragments.xml` with namespace `<service-package>.persistence.sql.<Aggregate>SqlFragments`."},
+                {"id": "NAME-MYBATIS-MAPPER-001", "text": "Name concrete mapper XML files `<Aggregate>Mapper.xml` and reference shared `<sql>` elements with fully qualified `refid`."}
+              ]
+            },
+            {
+              "title": "Query naming",
+              "rules": [
+                {"id": "INFRA-QUERY-001", "text": "Name persistence queries by conditions, range, and ordering rather than by a single caller or use case."}
               ]
             }
           ]
@@ -605,8 +653,9 @@
               "rules": [
                 {"id": "ERROR-FORMAT-001", "text": "A complete error code has six digits: a three-digit service prefix plus a three-digit local code; error enums declare only the local code, and the framework composes and zero-pads the full code."},
                 {"id": "ERROR-CONTEXT-001", "text": "One service project represents one bounded context and uses one unique service prefix; independently deployed bounded contexts require distinct prefixes."},
+                {"id": "ERROR-PREFIX-REGISTRY-001", "text": "A service prefix must be centrally registered and allocated within the deployment system before use; two services in the same deployment system must never use the same prefix."},
                 {"id": "ERROR-DOMAIN-001", "text": "Allocate local codes `000-599` to `DomainError`: reserve `000-099` for shared domain errors and partition `100-599` into aligned 50-code blocks. Each aggregate is assigned one or more adjacent complete blocks according to its required capacity."},
-                {"id": "ERROR-DOMAIN-CAPACITY-001", "text": "A 50-code block is the minimum allocation unit for aggregate errors. An aggregate exclusively owns every code in all of its assigned blocks and may use one or multiple adjacent blocks. Capacity expansion must reserve additional adjacent, currently unallocated complete blocks; blocks must not be split, shared, or reassigned between aggregates."},
+                {"id": "ERROR-DOMAIN-CAPACITY-001", "text": "Aggregate code blocks align to 50-code boundaries (100–149, 150–199, …, 550–599) and 50 codes is the minimum allocation unit. An aggregate exclusively owns every code in all of its assigned blocks and may use one or multiple adjacent blocks. Capacity expansion must reserve additional adjacent, currently unallocated complete blocks; blocks must not be split, shared, or reassigned between aggregates."},
                 {"id": "ERROR-APPLICATION-001", "text": "Allocate local codes `600-699` to `ApplicationError` and prefix names with `APP_`."},
                 {"id": "ERROR-INFRA-001", "text": "Allocate local codes `700-899` to `InfrastructureError`."},
                 {"id": "ERROR-INFRA-TECH-001", "text": "Reserve `700-799` for failures of technical mechanisms owned by the service, such as local persistence, caching, locking, serialization, files, event storage, and outbox processing; prefix names with `INFRA_TECH_`."},
@@ -620,6 +669,8 @@
               "rules": [
                 {"id": "ERROR-DOMAIN-COMMON-001", "text": "Prefix shared domain errors with `DOMAIN_`; the first five are `DOMAIN_ENTITY_ID_INVALID`, `DOMAIN_EVENT_ID_REQUIRED`, `DOMAIN_OBJECT_FIELD_REQUIRED`, `DOMAIN_OBJECT_FIELD_INVALID`, and `DOMAIN_OBJECT_STATE_INVALID`."},
                 {"id": "ERROR-AGGREGATE-001", "text": "Prefix aggregate errors with the aggregate name; the first two are `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`."},
+                {"id": "ERROR-ENUM-PLACEMENT-001", "text": "Error enums live in the module of the layer that throws them: domain error enums in domain, application error enums in application, and infrastructure error enums in the owning infrastructure module."},
+                {"id": "ERROR-ENUM-NAMING-001", "text": "Organize and name error enums by owning aggregate, technical mechanism, or the shared-domain segment; do not create one enum mixing code segments from different layers."},
                 {"id": "ERROR-UNIQUENESS-001", "text": "A complete error code is globally unique within one deployment system; a local code need only be unique within its service prefix."},
                 {"id": "ERROR-RANGE-001", "text": "Unallocated complete aggregate ranges remain available, but unused codes inside an assigned aggregate range remain owned by that aggregate and must not be reassigned."},
                 {"id": "ERROR-DOCUMENTATION-002", "text": "Document the service prefix, shared-domain range, and every aggregate range in the authoritative domain document declared by the project documentation entry."}
@@ -630,7 +681,8 @@
               "rules": [
                 {"id": "ERROR-APPEND-001", "text": "Append new errors in local-code order within the owning range."},
                 {"id": "ERROR-STABILITY-002", "text": "Published error codes are immutable and must not be modified, reused, or assigned to a different meaning."},
-                {"id": "ERROR-MESSAGE-TEMPLATE-001", "text": "Bind each error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply an arbitrary message. Dynamic context may fill only parameters declared by the template and must not change the error meaning."}
+                {"id": "ERROR-MESSAGE-TEMPLATE-001", "text": "Bind each error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply an arbitrary message. Dynamic context may fill only parameters declared by the template and must not change the error meaning."},
+                {"id": "ERROR-MESSAGE-LANGUAGE-001", "text": "Error message templates are written in English."}
               ]
             }
           ]

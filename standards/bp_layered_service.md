@@ -15,7 +15,8 @@
 - `<工程名>-domain` 承载核心领域模型和领域规则。
 - `<工程名>-application` 编排写用例和只读查询。
 - `<工程名>-infrastructure` 提供技术适配、持久化抽象和与具体技术栈无关的通用转换，不得放置具体持久化技术的 DO 及其转换 Mapper。
-- 具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`；持久化实现 module 同时承载该技术栈的 DO、DO 转换 Mapper、repository、SQL/XML 和装配。
+- 具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`。
+- 持久化实现 module 同时承载该技术栈的 DO、DO 转换 Mapper、repository、SQL/XML 和装配。
 - `<工程名>-interfaces` 提供协议无关 Facade 实现及 REST、RPC、消息订阅等协议入口。
 - `<工程名>-openfeign-client` 提供调用本服务的 OpenFeign 客户端。
 - `<工程名>-boot` 只负责启动、运行时配置和打包。
@@ -31,7 +32,8 @@
 
 ### 项目级配置目录
 
-- 工程根目录必须设置与各 module 平级的 `config/` 目录，作为可独立更新资源的首选存放位置。项目级 `application.yml`、`application-*.yml` 或对应 properties、MyBatis 共享 SQL 片段与 mapper XML、数据库 schema/迁移脚本、Dubbo XML 等配置优先放在该目录，不得仅因某个 module 负责装配就默认打入其制品。
+- 工程根目录必须设置与各 module 平级的 `config/` 目录，作为可独立更新资源的首选存放位置。
+- 项目级 `application.yml`、`application-*.yml` 或对应 properties、MyBatis 共享 SQL 片段与 mapper XML、数据库 schema/迁移脚本、Dubbo XML 等配置优先放在该目录，不得仅因某个 module 负责装配就默认打入其制品。
 - boot 必须通过 `spring.config.location`、`spring.config.additional-location`、`spring.config.import`、框架专属 location 配置或等效启动参数显式加载 `config/` 中的资源；构建、部署和本地启动流程必须保证这些资源可用，并验证缺失或无效配置能够按预期失败。
 - 只有框架不支持外部加载、资源与代码在版本和类路径上不可拆分，或制品必须自包含且无法由部署环境提供时，才可以把资源放在对应 module 的 `src/main/resources`。不得为了开发便利牺牲配置的独立发布能力，避免仅修改资源文件就重新打包 module。
 
@@ -52,7 +54,7 @@
 - 领域服务返回的 `*Effect` 必须实现 `DomainEffect`，并通过其 `events()` 返回该次领域行为产生的领域事件；没有领域事件时返回空集合，不得返回 `null`。
 - 领域对象和服务不得直接读取系统时钟；application 注入 `Clock`，每个用例取得一次业务时间并传入相关状态变化和事件。
 - Repository 只表达领域对象存取契约，不暴露持久化技术。
-- 领域事件表示已经发生的事实，创建时必须传入趋势递增的 Long 事件 ID。
+- 领域事件表示已经发生的事实，创建时必须传入趋势递增的 Long 事件 ID；事件 ID 由 application 用例通过 ID 生成器生成并作为参数传入领域行为，domain 不得自行生成。
 - domain 不得感知 API payload、application command/output/view、持久化 DO、具体技术、`Result<T>` 或 `PageResult<T>`。
 
 ### application
@@ -67,6 +69,7 @@
 
 - infrastructure 提供 repository、ID、事件存储、消息和调度等技术适配，并实现 domain/application 定义的端口，不承载领域规则或用例编排。
 - 领域事件存储必须通过 framework-domain 定义的端口适配；domain 和 application 不得依赖具体的领域事件存储实现。
+- 已由运行框架提供的基础设施 Bean 必须注入复用，不得重复声明同语义 Bean。
 - JavaBean 配置绑定中的集合和嵌套对象字段声明为 `final`，只暴露 getter，并初始化为空绑定容器；必填集合使用 `@NotEmpty` 使缺失配置启动失败。
 - `Duration` 独立最小值同时使用 `@NotNull` 和带明确单位的 `@DurationMin`，module 直接依赖 `hibernate-validator`；`@AssertTrue` 等类型级校验只表达字段间关系。
 - persistence、消息和调度适配分别遵循对应主题最佳实践；本层只约束这些能力属于 infrastructure，不在此重复其实现规则。
@@ -76,7 +79,10 @@
 - interfaces 提供协议无关 Facade 实现和协议入口，不承载领域规则或用例编排；Facade 实现负责对象转换、调用 application 和统一响应包装。
 - controller 只处理路由、绑定和协议上下文，将 HTTP Request 转换为 API command/query 后调用 Facade。
 - Client、Channel、Device 等 Header 上下文只在 interfaces 解析；API、application 和 domain 不得依赖 Header 绑定机制。
-- controller 的业务请求收敛为一个普通可变 `@Valid` HTTP Request，并继承 `ClientRequest`；仅在接口确实需要可信渠道或认证会话上下文时，按需实现可组合的 `ChannelContext`、`AuthenticatedSessionContext`。不得把业务字段拆成 path/query 参数再附加独立客户端上下文参数；没有业务 body 的接口声明与所需上下文匹配的具体 Request 类型，由统一参数解析器从受保护 Header 构造并校验。
+- controller 的业务请求收敛为一个普通可变 `@Valid` HTTP Request，并继承 `ClientRequest`。
+- 仅在接口确实需要可信渠道或认证会话上下文时，按需实现可组合的 `ChannelContext`、`AuthenticatedSessionContext`。
+- 不得把业务字段拆成 path/query 参数再附加独立客户端上下文参数。
+- 没有业务 body 的接口声明与所需上下文匹配的具体 Request 类型，由统一参数解析器从受保护 Header 构造并校验。
 - Header 回填和校验后，必须转换成完整不可变 API command/query；Facade 不得接收 interfaces HTTP Request。
 - RPC 能直接暴露 Facade 时发布同一个 Facade Bean；只有协议模型、语义、元数据或异常不兼容时增加技术专属 adapter。
 - 消息 listener 属于 interfaces 协议入口，不强制经过 Facade；消费可靠性和处理流程遵循[分布式消息最佳实践](bp_distributed_messaging.md#消费与可靠性)。
@@ -85,7 +91,7 @@
 
 ## 不可变数据载体
 
-- API command/query 优先使用 `record`，API response 必须使用 `record`；API event 在序列化、RPC、OpenFeign 和客户端支持构造器绑定时使用 `record`。公开 Java API 新增 record component 前必须评估构造器二进制兼容性。
+- API command/query 优先使用 `record`，API response 必须使用 `record`；API event 在序列化、RPC、OpenFeign 和客户端支持构造器绑定时使用 `record`，存在无法支持构造器绑定的既有消费端时使用普通 JavaBean 类。公开 Java API 新增 record component 前必须评估构造器二进制兼容性。
 - interfaces HTTP Request 使用普通可变类以支持绑定和上下文回填，但不得作为 Facade 入参。
 - 领域 ID、值对象、`*Effect` 和不可变领域事件在无需继承时优先使用 `record`；聚合根、实体、可变状态或复杂行为使用普通类。
 - application 的不可变 command、output、query condition 和 view 优先使用 `record`；service、repository、gateway、mapper 使用普通类。

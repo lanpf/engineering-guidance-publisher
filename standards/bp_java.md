@@ -30,7 +30,9 @@
 - 优先使用 Jakarta Bean Validation 表达可绑定 Bean 属性和方法参数约束。
 - 仅在框架校验无法表达约束，或领域对象构造函数、工厂方法等不经过框架绑定链路的内部 API 需要快速失败时，才使用显式检查。
 - 显式检查需要抛出 `BaseException` 时，尤其是领域层守卫逻辑，统一使用 framework-core 的 `Require`。
-- 不需要抛出业务异常的技术性或编程前置条件检查，module 已因自身职责依赖 Spring Framework 时使用 `org.springframework.util.Assert`；与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。不得仅为显式检查引入 Spring Framework，也不得手写这些工具已提供的等价逻辑。工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
+- 不需要抛出业务异常的技术性或编程前置条件检查，module 已因自身职责依赖 Spring Framework 时使用 `org.springframework.util.Assert`。
+- 与 Spring 解耦的 module 对同类技术性前置条件使用工程统一管理的 `org.apache.commons.lang3.Validate`。
+- 不得仅为显式检查引入 Spring Framework，也不得手写这些工具已提供的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 - 校验失败的异常 message 必须使用英文，不得包含中文文本。
 
 ## 异常

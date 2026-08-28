@@ -39,7 +39,9 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
     def test_every_standard_uses_the_best_practice_filename_prefix(self) -> None:
         standards = sorted((self.layout.root / "standards").rglob("*.md"))
         self.assertTrue(standards)
-        self.assertTrue(all(path.name.startswith("bp_") for path in standards))
+        self.assertTrue(
+            all(path.name.startswith("bp_") or path.name == "README.md" for path in standards)
+        )
         for skill in self.catalog["skills"]:
             for reference in skill["references"]:
                 source_path, _ = reference["source"].split("#", 1)

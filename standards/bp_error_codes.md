@@ -6,13 +6,18 @@
 
 - 完整错误码固定为 6 位：3 位服务前缀加 3 位本地码；错误枚举只声明本地码，由框架补零并组合完整码。
 - 一个服务工程代表一个限界上下文并使用唯一服务前缀；独立部署的限界上下文必须使用不同前缀。
-- `000-599` 分配给 `DomainError`：`000-099` 为公共领域错误，`100-599` 按对齐的 50 个码位为最小单位分配给聚合。聚合可以独占一个或多个连续完整码块；码块不得拆分、共享或重新分配。
+- 服务前缀必须在部署体系内统一登记分配后使用；同一部署体系内不同服务不得使用相同前缀。
+- `000-599` 分配给 `DomainError`：`000-099` 为公共领域错误，`100-599` 按对齐的 50 个码位为最小单位分配给聚合，码块以 50 取整对齐（100–149、150–199、…、550–599）。聚合可以独占一个或多个连续完整码块；码块不得拆分、共享或重新分配。
 - `600-699` 分配给 `ApplicationError`，名称使用 `APP_` 前缀。
 - `700-899` 分配给 `InfrastructureError`：`700-799` 表达本服务拥有的持久化、缓存、锁、序列化、文件、事件存储和 outbox 等技术机制失败，名称使用 `INFRA_TECH_`；`800-899` 表达外部集成和防腐边界失败，名称使用 `INFRA_ACL_`。
 - 外部拒绝若具有稳定的本地业务语义，必须转换成 `DomainError` 或 `ApplicationError`，不得仅因来自外部系统就归类为基础设施错误。
 - `900-999` 保留，不得分配。
-- 公共领域错误使用 `DOMAIN_` 前缀，前五个固定为 `DOMAIN_ENTITY_ID_INVALID`、`DOMAIN_EVENT_ID_REQUIRED`、`DOMAIN_OBJECT_FIELD_REQUIRED`、`DOMAIN_OBJECT_FIELD_INVALID`、`DOMAIN_OBJECT_STATE_INVALID`；聚合错误使用聚合名作为前缀，前两个固定为 `{AGGREGATE}_NOT_FOUND`、`{AGGREGATE}_ALREADY_EXISTS`。
+- 公共领域错误使用 `DOMAIN_` 前缀，前五个固定为 `DOMAIN_ENTITY_ID_INVALID`、`DOMAIN_EVENT_ID_REQUIRED`、`DOMAIN_OBJECT_FIELD_REQUIRED`、`DOMAIN_OBJECT_FIELD_INVALID`、`DOMAIN_OBJECT_STATE_INVALID`。
+- 聚合错误使用聚合名作为前缀，前两个固定为 `{AGGREGATE}_NOT_FOUND`、`{AGGREGATE}_ALREADY_EXISTS`。
+- 错误枚举声明在抛出该类错误的 module：领域错误枚举在 domain，应用错误枚举在 application，基础设施错误枚举在对应 infrastructure module。
+- 错误枚举按所属聚合、技术机制或公共领域码段划分并对应命名，不建跨层混用的单一枚举。
 - 完整错误码在同一部署体系内必须全局唯一；本地码只需在所属服务前缀内唯一。
 - 每个错误码必须绑定唯一、稳定的错误信息模板；异常抛出点不得覆盖模板、拼接临时文案或传入任意 message。确需动态上下文时，只能填充模板预先声明的参数，且不得改变错误语义。
+- 错误信息模板统一使用英文。
 - 权威领域文档必须记录服务前缀、公共领域码段及每个聚合占用的完整码块；未分配的完整码块可用于扩容，已分配码块中的空码仍归原聚合。
 - 新错误按所属码段的本地码顺序追加；已发布错误码不得修改、复用或分配给其他语义。
