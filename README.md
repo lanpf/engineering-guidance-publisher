@@ -22,13 +22,14 @@ Skills have an explicit publication scope:
 - `consumer` Skills are rendered into consumer `AGENTS.md`, installed by `sync`, and recorded in the consumer lock.
 - `publisher` Skills are installed only into this repository by `install-publisher-skills`; they are not distributed to business projects.
 
-The 2.x consumer Skill set separates reusable capabilities from language-specific workflows:
+The 2.1 consumer Skill set separates daily development guidance from phase-specific and capability-specific workflows:
 
-- `develop-java-code`, `develop-layered-service`, `develop-distributed-capabilities`, `develop-compensation-workflows`, and `develop-service-persistence` own implementation guidance.
-- `manage-maven-dependencies`, `manage-service-error-codes`, and `test-service` own dependency, error-code, and test workflows.
+- `develop-service-code` owns the shared development guidance for dependencies, layering, naming, Java language, common tools, logging, error codes, persistence, distributed IDs, and unit testing.
+- `develop-distributed-capabilities` and `develop-compensation-workflows` own distributed lock/message and compensation workflows.
+- `test-integration` owns smoke-phase integration testing; during development only unit tests are allowed.
 - `refactor-layered-service` coordinates the other consumer Skills and requires plan confirmation before changing consumer code.
 
-Version 2.0 replaces `manage-java-dependencies`, `test-java-service`, and `refactor-java-service`. A normal synchronization removes those retired managed Skill directories and installs their replacements.
+Version 2.1 replaces `develop-java-code`, `manage-maven-dependencies`, `develop-layered-service`, `manage-service-error-codes`, `develop-service-persistence`, and `test-service`. A normal synchronization removes those retired managed Skill directories and installs their replacements.
 
 For local development without installing the package, set `PYTHONPATH=src` before the command.
 

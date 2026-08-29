@@ -1,4 +1,0 @@
-interface:
-  display_name: "Maven Dependency Management"
-  short_description: "Manage Maven modules, scopes, BOMs, and starters"
-  default_prompt: "Use $manage-maven-dependencies to review and update this project's Maven dependencies safely."

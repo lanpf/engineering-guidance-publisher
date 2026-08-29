@@ -159,7 +159,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             self.assertFalse(retired.exists())
             self.assertTrue(unrelated.exists())
 
-    def test_sync_replaces_v1_consumer_skill_names(self) -> None:
+    def test_sync_replaces_retired_consumer_skill_names(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "consumer"
             target.mkdir()
@@ -170,6 +170,12 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 "manage-java-dependencies",
                 "test-java-service",
                 "refactor-java-service",
+                "develop-java-code",
+                "manage-maven-dependencies",
+                "develop-layered-service",
+                "manage-service-error-codes",
+                "develop-service-persistence",
+                "test-service",
             ]
             for name in retired_names:
                 (target / ".agents" / "skills" / name).mkdir()
@@ -181,8 +187,9 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             for name in retired_names:
                 self.assertFalse((target / ".agents" / "skills" / name).exists())
             for name in (
-                "manage-maven-dependencies",
-                "test-service",
+                "develop-service-code",
+                "develop-distributed-capabilities",
+                "test-integration",
                 "refactor-layered-service",
             ):
                 self.assertIn(name, persisted["managed_skills"])
