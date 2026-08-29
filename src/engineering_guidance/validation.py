@@ -9,6 +9,7 @@ from .catalog import ProjectLayout
 
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 RULE_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+$")
+SKILL_REFERENCE = re.compile(r"\$([a-z0-9]+(?:-[a-z0-9]+)*)")
 
 
 def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
@@ -32,6 +33,7 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
 
     seen_rules: set[str] = set()
     seen_skills: set[str] = set()
+    skill_bodies: dict[str, str] = {}
 
     def check_rule(rule: Any, location: str) -> None:
         if not isinstance(rule, dict):
@@ -78,6 +80,7 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
                 errors.append(f"{location}: SKILL.md frontmatter does not match {name}")
             if len(body.splitlines()) >= 500:
                 errors.append(f"{location}: SKILL.md must stay below 500 lines")
+            skill_bodies[name] = body
         if not openai_yaml.is_file():
             errors.append(f"{location}: missing agents/openai.yaml")
 
@@ -122,4 +125,10 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
         errors.append(f"unregistered skill blueprints: {', '.join(sorted(extra))}")
     if missing:
         errors.append(f"missing skill blueprints: {', '.join(sorted(missing))}")
+    for name, body in skill_bodies.items():
+        unresolved = set(SKILL_REFERENCE.findall(body)) - seen_skills
+        if unresolved:
+            errors.append(
+                f"skill {name} references unregistered skills: {', '.join(sorted(unresolved))}"
+            )
     return errors

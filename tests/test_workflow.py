@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import tempfile
 import unittest
@@ -27,6 +28,18 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
 
     def test_catalog_and_blueprints_are_valid(self) -> None:
         self.assertEqual([], validate(self.layout, self.catalog))
+
+    def test_every_blueprint_skill_reference_is_registered(self) -> None:
+        registered = {skill["name"] for skill in self.catalog["skills"]}
+        pattern = re.compile(r"\$([a-z0-9]+(?:-[a-z0-9]+)*)")
+        for skill in self.catalog["skills"]:
+            skill_md = self.layout.blueprints / skill["name"] / "SKILL.md"
+            referenced = set(pattern.findall(skill_md.read_text(encoding="utf-8")))
+            self.assertEqual(
+                set(),
+                referenced - registered,
+                f"{skill['name']} references unregistered skills",
+            )
 
     def test_every_reference_is_traceable_to_a_standards_heading(self) -> None:
         for skill in self.catalog["skills"]:
