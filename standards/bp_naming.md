@@ -1,6 +1,6 @@
 # 服务命名最佳实践
 
-本文定义分层服务中的接口、实现、数据载体和技术适配命名约束。
+本文定义分层服务中的接口、实现、数据载体、技术适配和运行时资源命名约束。
 
 ## 命名约定
 
@@ -18,3 +18,11 @@
 - 具体 mapper XML 使用 `<Aggregate>Mapper.xml`，并通过完全限定的 `refid` 引用共享 `<sql>` 片段。
 - 协议无关 Facade 默认实现位于 `interfaces.facade` 并命名为 `Default*Facade`；必要的技术专属 RPC 适配器使用 `*RpcAdapter`。
 - OpenFeign 客户端使用 `*FeignClient`。
+
+## 资源命名与命名空间
+
+- 所有对外部资源名称和资源键的定义必须通过 `ResourceNameResolver` 统一解析并注入命名空间；资源名称包括但不限于缓存键、分布式锁键、消息 destination 和 ID 生成器名称。
+- 业务代码、配置文件和适配器不得手工拼接应用、环境或其他命名空间前缀。
+- 业务场景需要资源键时，配置类不得直接声明最终键前缀（如 `keyPrefix`），必须实现 `Namespaced` 接口表达该场景的命名空间需求。
+- 装配时注入 `NamespacedResourceNameResolver`，由 `Namespaced` 配置与解析器组装出该业务场景的 `KeyResolver`；运行期业务代码只通过场景 `KeyResolver` 构造资源键。
+- 资源键的业务语义与格式约束由所属主题定义：锁键遵循[分布式锁最佳实践](bp_distributed_lock.md#分布式锁)，生成器名称遵循[分布式 ID 最佳实践](bp_distributed_id.md#分布式 ID)。

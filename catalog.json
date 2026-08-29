@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -404,6 +404,22 @@
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "resource-naming.md",
+          "source": "standards/bp_naming.md#资源命名与命名空间",
+          "title": "Resource Naming Rules",
+          "sections": [
+            {
+              "title": "Resource names and namespaces",
+              "rules": [
+                {"id": "NAME-RESOURCE-001", "text": "Every external resource name or key is resolved through `ResourceNameResolver`, which injects the namespace; resource names include but are not limited to cache keys, distributed-lock keys, message destinations, and ID-generator names."},
+                {"id": "NAME-RESOURCE-002", "text": "Business code, configuration files, and adapters must not hand-assemble application, environment, or other namespace prefixes."},
+                {"id": "NAME-RESOURCE-003", "text": "When a business scenario needs resource keys, its configuration must not declare a final key prefix such as `keyPrefix`; the configuration implements the `Namespaced` interface to express the scenario's namespace requirement."},
+                {"id": "NAME-RESOURCE-004", "text": "Assemble the scenario's `KeyResolver` by injecting `NamespacedResourceNameResolver` and combining it with the `Namespaced` configuration; runtime business code builds resource keys only through the scenario's `KeyResolver`."}
               ]
             }
           ]
