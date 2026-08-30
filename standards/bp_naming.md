@@ -30,5 +30,6 @@
 - 选择场景装配注入时，场景配置实现 `Namespaced`，并向 `*KeyResolver` 注入由该配置和 `NamespaceResolver` 组装的 `NamespacedResourceNameResolver`。
 - 选择最终资源适配边界注入时，`*KeyResolver` 使用不注入命名空间的 `ResourceNameResolver` 实现，由最终适配器统一完成命名空间隔离。
 - 禁止 `NamespacedResourceNameResolver` 与最终资源适配器对同一资源重复注入命名空间。
+- 框架入口内部已基于 `ResourceNameResolver` 完成解析的场景无需重复处理：如分布式锁使用 `LockExecutor` 时，锁键的命名空间注入与键段规范化拼接由其内部完成，业务代码直接向 `LockContext` 传入稳定的业务键段，不建 `*KeyResolver`，也不得额外解析或注入命名空间。
 - 业务代码、配置文件和适配器不得手工拼接或声明应用、环境等命名空间前缀。
 - 资源键的业务语义与格式约束由所属主题定义：锁键遵循[分布式锁最佳实践](bp_distributed_lock.md#分布式锁)。

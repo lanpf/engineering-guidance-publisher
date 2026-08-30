@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -425,7 +425,8 @@
                 {"id": "NAME-RESOURCE-002", "text": "Business code, configuration files, and adapters must not hand-assemble application, environment, or other namespace prefixes."},
                 {"id": "NAME-RESOURCE-003", "text": "For scenario-assembly namespace injection, make the scenario configuration implement `Namespaced` and inject into its `*KeyResolver` a `NamespacedResourceNameResolver` assembled from that configuration and `NamespaceResolver`."},
                 {"id": "NAME-RESOURCE-004", "text": "For final-adapter namespace injection, give the `*KeyResolver` a `ResourceNameResolver` implementation that does not inject a namespace and let the final adapter provide namespace isolation."},
-                {"id": "NAME-RESOURCE-NAMESPACE-ONCE-001", "text": "Inject a resource namespace exactly once; never combine `NamespacedResourceNameResolver` with a final resource adapter that injects the namespace again."}
+                {"id": "NAME-RESOURCE-NAMESPACE-ONCE-001", "text": "Inject a resource namespace exactly once; never combine `NamespacedResourceNameResolver` with a final resource adapter that injects the namespace again."},
+                {"id": "NAME-RESOURCE-005", "text": "Framework entries that resolve resource names internally, such as `LockExecutor` for lock keys, perform namespace injection and key-segment normalization themselves; callers pass stable business key segments directly to the framework entry, create no `*KeyResolver` for them, and must not additionally resolve or inject the namespace."}
               ]
             }
           ]
@@ -602,7 +603,8 @@
               "rules": [
                 {"id": "LOCK-DEFENSE-001", "text": "A distributed lock is never the sole correctness guarantee; handle expiry, pauses, partitions, and duplicate execution and use the independent correctness protection defined by the persistence concurrency rule."},
                 {"id": "LOCK-PORT-001", "text": "Use the injected `LockExecutor` and `LockContext(waitTime, lockNames)`; business code must not depend directly on Redisson, Spring Integration Redis Lock, or raw Redis lock commands."},
-                {"id": "LOCK-KEY-001", "text": "Build `lockNames` as the stable business-unique key of the contended resource; `ResourceNameResolver` performs key-segment normalization (`String.join`) and business code must not assemble keys itself. Never use random values, sensitive data, or multiple formats for the same resource."},
+                {"id": "LOCK-KEY-001", "text": "Pass stable business key segments as `lockNames` that together identify the contended resource; the lock starter resolves them internally through `ResourceNameResolver` (key-segment `String.join` and namespace injection), so callers must not resolve, assemble, or pre-prefix lock keys themselves."},
+                {"id": "LOCK-KEY-002", "text": "`lockNames` must not contain sensitive data or random values, and the same resource must never appear under multiple key formats."},
                 {"id": "LOCK-WAIT-001", "text": "Bound lock wait time by the use-case SLA, prefer immediate acquisition, and return an explicit retry/conflict/degradation result on failure; never wait indefinitely or spin without backoff."},
                 {"id": "LOCK-LEASE-001", "text": "Configure a lease longer than the normal critical-section bound, keep critical sections short, and avoid remote calls, bulk work, and long transactions even when automatic renewal is enabled."},
                 {"id": "LOCK-RELEASE-001", "text": "Use `LockExecutor`-managed execution so only the owning flow unlocks in `finally`; do not transfer lock ownership across threads."}
