@@ -50,11 +50,12 @@
 
 - 以聚合根为一致性边界组织实体、值对象、领域服务、Repository 契约和领域事件；聚合根和实体只能通过领域行为改变状态。
 - 领域实体的标识必须继承基类 `EntityId`，工程按实际类型提供 `StringEntityId`、`LongEntityId` 等工程级基类，并统一重写 `validate()`，如需额外约束时才再次重写。
-- 值对象不可变；领域服务只承载跨聚合或不适合归属单个聚合的领域规则。
+- 值对象不可变。
+- 领域服务只承载跨聚合或不适合归属单个聚合的领域规则。
 - 领域服务返回的 `*Effect` 必须实现 `DomainEffect`，并通过其 `events()` 返回该次领域行为产生的领域事件；没有领域事件时返回空集合，不得返回 `null`。
 - 领域对象和服务不得直接读取系统时钟；application 注入 `Clock`，每个用例取得一次业务时间并传入相关状态变化和事件。
 - Repository 只表达领域对象存取契约，不暴露持久化技术。
-- 领域事件表示已经发生的事实，创建时必须传入趋势递增的 Long 事件 ID；事件 ID 由 application 用例通过 ID 生成器生成并作为参数传入领域行为，domain 不得自行生成。
+- 领域行为决定领域事件是否发生及其业务内容。原始领域事件只携带发生时间、事件类型和业务内容，不携带 EventStore 持久化记录 ID，也不依赖 ID 生成端口；EventStore 在封装 `DomainEventEnvelope` 时生成仅用于持久化、发布、追踪和幂等的全局事件 ID。
 - domain 不得感知 API payload、application command/output/view、持久化 DO、具体技术、`Result<T>` 或 `PageResult<T>`。
 
 ### application
