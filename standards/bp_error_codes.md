@@ -12,7 +12,7 @@
 - `700-899` 分配给 `InfrastructureError`：`700-799` 表达本服务拥有的持久化、缓存、锁、序列化、文件、事件存储和 outbox 等技术机制失败，名称使用 `INFRA_TECH_`；`800-899` 表达外部集成和防腐边界失败，名称使用 `INFRA_ACL_`。
 - 外部拒绝若具有稳定的本地业务语义，必须转换成 `DomainError` 或 `ApplicationError`，不得仅因来自外部系统就归类为基础设施错误。
 - `900-999` 保留，不得分配。
-- 公共领域错误使用 `DOMAIN_` 前缀；`000`、`001`、`002`、`003` 分别固定为 `DOMAIN_ENTITY_ID_INVALID`、`DOMAIN_OBJECT_FIELD_REQUIRED`、`DOMAIN_OBJECT_FIELD_INVALID`、`DOMAIN_OBJECT_STATE_INVALID`。
+- 公共领域错误使用 `DOMAIN_` 前缀；`000` 固定为 `DOMAIN_ENTITY_ID_INVALID`，已退役的 `001`（原 `DOMAIN_EVENT_ID_REQUIRED`）必须保留且不得复用，`002`、`003`、`004` 分别固定为 `DOMAIN_OBJECT_FIELD_REQUIRED`、`DOMAIN_OBJECT_FIELD_INVALID`、`DOMAIN_OBJECT_STATE_INVALID`。
 - 聚合错误使用聚合名作为前缀，前两个固定为 `{AGGREGATE}_NOT_FOUND`、`{AGGREGATE}_ALREADY_EXISTS`。
 - 错误枚举声明在抛出该类错误的 module：领域错误枚举在 domain，应用错误枚举在 application，基础设施错误枚举在对应 infrastructure module。
 - 错误枚举按所属聚合、技术机制或公共领域码段划分并对应命名，不建跨层混用的单一枚举。
