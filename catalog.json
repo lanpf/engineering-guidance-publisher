@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -681,7 +681,9 @@
               "rules": [
                 {"id": "TEST-PHASE-002", "text": "Write and execute integration tests only in the smoke-test phase to verify cross-module collaboration and real infrastructure behavior after the code has stabilized; do not use integration tests as a substitute for unit tests during development."},
                 {"id": "TEST-INTEGRATION-001", "text": "Treat cross-module, full auto-configuration, real database, or real middleware scenarios as integration tests; in a service, place them in the architecture-defined `<service>-integration-tests` module and keep them out of production modules."},
-                {"id": "TEST-CONTAINERS-001", "text": "Prefer Testcontainers for isolated and repeatable real-infrastructure scenarios."}
+                {"id": "TEST-CONTAINERS-001", "text": "Prefer Testcontainers for isolated and repeatable real-infrastructure scenarios."},
+                {"id": "TEST-CONTAINER-IMAGE-001", "text": "When integration tests use containers, prefer an officially maintained lightweight image variant when its functionality, version, and target architecture satisfy the test; use the standard image only when the lightweight variant lacks required tools or capabilities."},
+                {"id": "TEST-CONTAINER-ARCH-001", "text": "Confirm that each image manifest supports the target architectures of local development and CI runners, and prefer multi-architecture images."}
               ]
             },
             {
