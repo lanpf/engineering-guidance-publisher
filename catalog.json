@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -274,7 +274,9 @@
               "rules": [
                 {"id": "ARCH-PROJECT-CONFIG-001", "text": "Create a root-level `config/` directory beside service modules as the preferred home for independently updateable resources."},
                 {"id": "ARCH-PROJECT-CONFIG-003", "text": "Project-level `application.yml`, `application-*.yml` or corresponding properties, MyBatis shared SQL fragments and mapper XML, database schema or migration scripts, Dubbo XML, and similar configuration are stored there and are not packaged into a module artifact merely because that module assembles them."},
-                {"id": "ARCH-PROJECT-CONFIG-002", "text": "Load root-level `config/` resources explicitly through Spring or technology-specific location settings and make build, deployment, and local startup provide and validate them; package a resource under a module only when external loading is unsupported, code and resource versions are inseparable, or the artifact must be self-contained."}
+                {"id": "ARCH-PROJECT-CONFIG-002", "text": "Load root-level `config/` resources explicitly through Spring or technology-specific location settings and make build, deployment, and local startup provide and validate them; package a resource under a module only when external loading is unsupported, code and resource versions are inseparable, or the artifact must be self-contained."},
+                {"id": "CONFIG-DEFAULT-001", "text": "When a `*Properties` type already provides a default value and the configuration file does not change it, the configuration file must not restate the property; configuration files carry only explicit decisions that differ from code defaults and externally varying values."},
+                {"id": "CONFIG-PLACEHOLDER-001", "text": "Configuration properties must not introduce environment-variable placeholders by default and must not require the deployment environment to provide a variable by default; when injection is genuinely needed, the deployment configuration or a dedicated profile carries it, and a missing value must fail fast."}
               ]
             }
           ]
