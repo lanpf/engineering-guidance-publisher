@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -418,6 +418,7 @@
             {
               "title": "Resource names and namespaces",
               "rules": [
+                {"id": "NAME-RESOURCE-SCOPE-001", "text": "The namespace and resource-naming constraints in this section apply to business services only and do not constrain internal modules of framework engineering; how `framework-*` and other framework modules handle their own resource keys is governed by the framework engineering documentation."},
                 {"id": "NAME-NAMESPACE-001", "text": "Resource names, including but not limited to cache keys and distributed-lock keys, are scoped by a namespace: the effective name consists of the namespace prefix plus the business key, and the namespace must distinguish the application to prevent cross-application interference; environment isolation is guaranteed by the deployment infrastructure and is not a namespace responsibility."},
                 {"id": "NAME-NAMESPACE-002", "text": "A business key is unique only within its namespace; the same business key resolves to a different physical resource in each application."},
                 {"id": "NAME-NAMESPACE-003", "text": "The namespace expresses application identity only and never carries business meaning; business meaning appears only in the business-key part."},
@@ -472,7 +473,7 @@
                 {"id": "ERROR-APPEND-001", "text": "Append new errors in local-code order within the owning range."},
                 {"id": "ERROR-STABILITY-002", "text": "Published error codes are immutable and must not be modified, reused, or assigned to a different meaning."},
                 {"id": "ERROR-MESSAGE-TEMPLATE-001", "text": "Bind each error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply an arbitrary message. Dynamic context may fill only parameters declared by the template and must not change the error meaning."},
-                {"id": "ERROR-MESSAGE-LANGUAGE-001", "text": "Error message templates are written in English."}
+                {"id": "ERROR-MESSAGE-LANGUAGE-001", "text": "Error message templates are written in Chinese."}
               ]
             }
           ]
