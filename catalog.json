@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -585,6 +585,34 @@
                 {"id": "TEST-REUSE-001", "text": "Extract test support only for stable and meaningful reuse; do not create a common test base merely to remove small duplication."},
                 {"id": "TEST-UNIT-NAME-001", "text": "Name unit and module contract test classes `*Test` and execute them with Maven Surefire in the test phase."},
                 {"id": "TEST-METHOD-NAME-001", "text": "Name test methods `should<ExpectedBehavior>` to state the observable behavior directly."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "project-documentation.md",
+          "source": "standards/bp_project_documentation.md#必备文档",
+          "title": "Project Documentation Rules",
+          "sections": [
+            {
+              "title": "Required documents",
+              "rules": [
+                {"id": "DOCS-STRUCT-001", "text": "Every project must provide a root `README.md` and `docs/RESPONSIBILITIES.md`; business (domain) services must also provide `docs/DOMAIN.md`, and infrastructure projects that own a real domain should provide one too."},
+                {"id": "DOCS-AUTH-DOC-001", "text": "The required documents are a floor, not the full set; key infrastructure capabilities or external dependencies may have separate authoritative documents routed by the project documentation entry, and document names should stay short."}
+              ]
+            },
+            {
+              "title": "Document boundaries",
+              "rules": [
+                {"id": "DOCS-README-001", "text": "`README.md` is the project map answering what the project is, how to build, run, and verify it, where modules live, and where to read more; it must not carry responsibility philosophy or domain rules, and capability delivery status stays as a one-line overview linking to `docs/RESPONSIBILITIES.md`."},
+                {"id": "DOCS-RESPONSIBILITIES-001", "text": "`docs/RESPONSIBILITIES.md` is the service charter answering what the service owns, what it does not own (each entry naming its owner), which collaboration contracts it honors, and what has been delivered; it is the single home for cross-service collaboration contracts."},
+                {"id": "DOCS-DOMAIN-001", "text": "`docs/DOMAIN.md` is the domain design answering how the domain is modeled, carrying ubiquitous language, models, invariants, use cases, domain events and errors, and layering; it must not carry deployment or runtime configuration, delivery status, or other services' responsibilities."}
+              ]
+            },
+            {
+              "title": "Cross-service contracts",
+              "rules": [
+                {"id": "DOCS-CROSS-SERVICE-001", "text": "Each side of a cross-service contract writes only its own half in its own `docs/RESPONSIBILITIES.md` and links to the other side: the caller owns the end-to-end flow description, the callee owns the endpoint contract and its consumption semantics; never maintain the same contract table or flow in two repositories."}
               ]
             }
           ]

@@ -16,6 +16,7 @@
 | [bp_common_tools.md](bp_common_tools.md) | 基础工具类、Lombok、MapStruct |
 | [bp_naming.md](bp_naming.md) | 接口、实现、数据载体、技术适配与 MyBatis XML 命名 |
 | [bp_layered_service.md](bp_layered_service.md) | 规约体系、module 分层、依赖方向、项目级配置、层内约定、不可变数据载体 |
+| [bp_project_documentation.md](bp_project_documentation.md) | 必备项目文档集合、README/RESPONSIBILITIES/DOMAIN 边界、跨服务契约书写规则 |
 | [bp_dependencies.md](bp_dependencies.md) | Maven 依赖、module 边界、版本管理、服务技术基线 |
 | [bp_persistence.md](bp_persistence.md) | 持久化边界、数据模型、并发写与事务、唯一约束异常、查询与性能 |
 | [bp_logging.md](bp_logging.md) | 日志级别、日志内容、链路上下文、敏感数据定义与脱敏 |
@@ -29,4 +30,4 @@
 
 ## 依赖方向
 
-主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_naming` 是基础；`bp_layered_service` 和 `bp_dependencies` 定义结构与装配；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_distributed_*`、`bp_business_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration_testing` 按测试阶段拆分：开发阶段只运行单元测试，集成测试留待冒烟阶段。
+主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_naming` 是基础；`bp_layered_service` 和 `bp_dependencies` 定义结构与装配；`bp_project_documentation` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_distributed_*`、`bp_business_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration_testing` 按测试阶段拆分：开发阶段只运行单元测试，集成测试留待冒烟阶段。
