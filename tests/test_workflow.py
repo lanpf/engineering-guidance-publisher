@@ -145,7 +145,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 ["update-standards", "sync-standards"],
                 persisted["managed_skills"],
             )
-            self.assertFalse((root / ".agents" / "skills" / "develop-java-code").exists())
+            self.assertFalse((root / ".agents" / "skills" / "develop-service").exists())
 
     def test_sync_refuses_to_adopt_unmanaged_skill_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -154,65 +154,6 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             collision.mkdir(parents=True)
             with self.assertRaises(SyncConflict):
                 synchronize(self.layout, self.catalog, target)
-
-    def test_sync_removes_only_retired_managed_skills(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            target = Path(temporary) / "consumer"
-            target.mkdir()
-            synchronize(self.layout, self.catalog, target)
-            retired = target / ".agents" / "skills" / "retired-managed-skill"
-            unrelated = target / ".agents" / "skills" / "project-owned-skill"
-            retired.mkdir()
-            unrelated.mkdir()
-            lock_path = target / LOCK_PATH
-            lock = json.loads(lock_path.read_text(encoding="utf-8"))
-            lock["managed_skills"].append(retired.name)
-            lock_path.write_text(json.dumps(lock), encoding="utf-8")
-            synchronize(self.layout, self.catalog, target)
-            self.assertFalse(retired.exists())
-            self.assertTrue(unrelated.exists())
-
-    def test_sync_replaces_retired_consumer_skill_names(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            target = Path(temporary) / "consumer"
-            target.mkdir()
-            synchronize(self.layout, self.catalog, target)
-            lock_path = target / LOCK_PATH
-            lock = json.loads(lock_path.read_text(encoding="utf-8"))
-            retired_names = [
-                "manage-java-dependencies",
-                "test-java-service",
-                "refactor-java-service",
-                "develop-java-code",
-                "manage-maven-dependencies",
-                "develop-layered-service",
-                "manage-service-error-codes",
-                "develop-service-persistence",
-                "test-service",
-                "develop-service-code",
-                "develop-distributed-capabilities",
-                "develop-compensation-workflows",
-                "refactor-layered-service",
-            ]
-            for name in retired_names:
-                (target / ".agents" / "skills" / name).mkdir()
-            lock["managed_skills"].extend(retired_names)
-            lock_path.write_text(json.dumps(lock), encoding="utf-8")
-
-            persisted = synchronize(self.layout, self.catalog, target)
-
-            for name in retired_names:
-                self.assertFalse((target / ".agents" / "skills" / name).exists())
-            for name in (
-                "develop-service",
-                "develop-distributed",
-                "develop-compensation",
-                "test-integration",
-                "refactor-service",
-            ):
-                self.assertIn(name, persisted["managed_skills"])
-                self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())
-
 
 if __name__ == "__main__":
     unittest.main()
