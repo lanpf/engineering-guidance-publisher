@@ -12,7 +12,7 @@
 - 领域服务返回使用 `*Effect`；Repository 契约使用 `*Repository`；领域事件使用 `*Event`。
 - infrastructure 类型使用 `*RepositoryAdapter`、技术化 `*PersistenceRepository`、`*DO` 和 `*PersistenceConfiguration`。
 - 协议无关 Facade 默认实现位于 `interfaces.facade` 并命名为 `Default*Facade`；必要的技术专属 RPC 适配器使用 `*RpcAdapter`。
-- 只有 API payload 可以使用 `*ApiResponse`，只有 application 返回类型可以使用 `*Response`。远程调用返回类型按服务边界区分：外部服务的响应载荷类型使用 `*Payload`；内部服务沿用统一返回契约，普通结果使用 `Result<T>`，分页结果使用 `PageResult<T>`。`T` 的类型名称应尽量与被调用方公开契约中的对应类型保持一致；存在防腐层或本地语义差异时，按本地语义命名，不得为了同名而错误复用类型。
+- 只有 API payload 可以使用 `*ApiResponse`，只有 application 返回类型可以使用 `*Response`；外部服务调用的本地请求与响应载荷类型使用 `*Payload`，内部服务调用无法复用被调用方 API 而定义的本地请求类型使用 `*InternalRequest`。
 - mapper 契约按层级职责命名；MapStruct 实现放入契约包的 `mapstruct` 子包并命名为 `*MapStructMapper`。
 - 持久化查询接口按查询条件、范围和排序命名，不按单一调用场景命名。
 - MyBatis 与 MyBatis-Plus 共享 SQL 片段文件使用 `<Aggregate>SqlFragments.xml`，namespace 使用 `<工程包>.persistence.sql.<Aggregate>SqlFragments`。

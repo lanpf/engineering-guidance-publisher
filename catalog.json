@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -392,7 +392,8 @@
                 {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy."},
                 {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers."},
                 {"id": "NAME-RESPONSE-001", "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix."},
-                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Distinguish remote-call return types by service boundary: model external-service response payloads as `*Payload`; for internal services, use the shared `Result<T>` wrapper for ordinary results and `PageResult<T>` for paged results. Prefer naming `T` consistently with the corresponding type in the callee's published contract; when an anti-corruption layer or local semantic difference requires a distinct model, name it by the local meaning rather than forcing the same name."},
+                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Name locally owned external-service request and response payload types `*Payload`."},
+                {"id": "NAME-INTERNAL-REQUEST-001", "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused."},
                 {"id": "NAME-MAPPER-001", "text": "Name mapper contracts by layer responsibility, place MapStruct implementations in the contract package's `mapstruct` subpackage, and name them `*MapStructMapper`."}
               ]
             },
@@ -406,6 +407,33 @@
                 {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure."},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters."},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`."}
+              ]
+            }
+          ]
+        },
+        {
+          "file": "service-calls.md",
+          "source": "standards/bp_service_calls.md#内部服务调用",
+          "title": "Service Call Rules",
+          "sections": [
+            {
+              "title": "Internal service calls",
+              "rules": [
+                {"id": "SERVICE-CALL-INTERNAL-API-001", "text": "Internal service calls prefer the callee's published API module and reuse its request and response contracts instead of redefining equivalent objects; depend only on the public API, never on the callee's application, interfaces, or implementation modules."}
+              ]
+            },
+            {
+              "source": "standards/bp_service_calls.md#内部调用降级契约",
+              "title": "Internal fallback contracts",
+              "rules": [
+                {"id": "SERVICE-CALL-INTERNAL-FALLBACK-001", "text": "Define local adapter types only when the callee's API module cannot be referenced or its public contract does not fit the call boundary. The local request implements `Request` and follows the internal-request naming rule; ordinary responses use `Result<T>` and paged responses use `PageResult<T>`. Prefer a `T` type name consistent with the corresponding published contract, but use local semantic naming when an anti-corruption layer, protocol difference, or semantic difference requires a distinct Java type rather than forcing name or type reuse."}
+              ]
+            },
+            {
+              "source": "standards/bp_service_calls.md#外部服务调用",
+              "title": "External service calls",
+              "rules": [
+                {"id": "SERVICE-CALL-EXTERNAL-BOUNDARY-001", "text": "Put external service calls behind a locally owned anti-corruption adapter with locally owned request and response types that follow the external-payload naming rule; external SDK types, protocol models, and serialization details must not cross the adapter boundary into application or domain, and mapping between local and external models is explicit."}
               ]
             }
           ]
