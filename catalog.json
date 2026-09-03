@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -392,7 +392,7 @@
                 {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy."},
                 {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers."},
                 {"id": "NAME-RESPONSE-001", "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix."},
-                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Suffix REST-client remote-call return types with `*Payload`."},
+                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Distinguish remote-call return types by service boundary: model external-service response payloads as `*Payload`; for internal services, use the shared `Result<T>` wrapper for ordinary results and `PageResult<T>` for paged results. Prefer naming `T` consistently with the corresponding type in the callee's published contract; when an anti-corruption layer or local semantic difference requires a distinct model, name it by the local meaning rather than forcing the same name."},
                 {"id": "NAME-MAPPER-001", "text": "Name mapper contracts by layer responsibility, place MapStruct implementations in the contract package's `mapstruct` subpackage, and name them `*MapStructMapper`."}
               ]
             },
