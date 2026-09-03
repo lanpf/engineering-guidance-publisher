@@ -1,5 +1,5 @@
 ---
-name: update-engineering-standards
+name: update-standards
 description: Reconcile Git changes in Markdown standards documents with the engineering guidance catalog, generated Skill references, release metadata, consumer synchronization, and confirmed project-specific refactor tasks. Use after editing files under standards/, when adding, changing, moving, or retiring rules, or when preparing a standards release.
 ---
 
@@ -68,7 +68,7 @@ After every required verification succeeds, review the Git status and diff, stag
 
 After a successful push, inspect the preserved consumer change list. If no consumer Skill changed, report that no consumer synchronization is required and do not ask for project names. Otherwise, first list every changed consumer Skill and its added, changed, and retired rules, including any non-rule reference, routing, or metadata changes. Then ask the user for one or more consumer project directory names to synchronize. Accept a comma-separated, whitespace-separated, or newline-separated list; validate every entry as a single directory name, remove duplicates while preserving the user-supplied order, and ask again if any entry is invalid. This synchronization prompt applies to every consumer change, including synchronization-only changes to `refactor-layered-service`.
 
-Invoke `$sync-engineering-standards` separately for each validated project and follow its complete validation, synchronization, and consumer-verification workflow. If one synchronization fails, report the failed project and stop before beginning any remaining projects until the user gives direction. Do not infer project names or start synchronization when the push did not succeed.
+Invoke `$sync-standards` separately for each validated project and follow its complete validation, synchronization, and consumer-verification workflow. If one synchronization fails, report the failed project and stop before beginning any remaining projects until the user gives direction. Do not infer project names or start synchronization when the push did not succeed.
 
 ## Plan and apply consumer refactors
 

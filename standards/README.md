@@ -16,18 +16,18 @@
 | [bp_common_tools.md](bp_common_tools.md) | 基础工具类、Lombok、MapStruct |
 | [bp_naming.md](bp_naming.md) | 接口、实现、数据载体、技术适配与 MyBatis XML 命名 |
 | [bp_layered_service.md](bp_layered_service.md) | 规约体系、module 分层、依赖方向、项目级配置、层内约定、不可变数据载体 |
-| [bp_project_documentation.md](bp_project_documentation.md) | 必备项目文档集合、README/RESPONSIBILITIES/DOMAIN 边界、跨服务契约书写规则 |
+| [bp_docs.md](bp_docs.md) | 必备项目文档集合、README/RESPONSIBILITIES/DOMAIN 边界、跨服务契约书写规则 |
 | [bp_dependencies.md](bp_dependencies.md) | Maven 依赖、module 边界、版本管理、服务技术基线 |
 | [bp_persistence.md](bp_persistence.md) | 持久化边界、数据模型、并发写与事务、唯一约束异常、查询与性能 |
 | [bp_logging.md](bp_logging.md) | 日志级别、日志内容、链路上下文、敏感数据定义与脱敏 |
 | [bp_error_codes.md](bp_error_codes.md) | 错误码结构、码段分配、枚举与模板、发布稳定性 |
 | [bp_unit_testing.md](bp_unit_testing.md) | 单元测试与模块契约测试；开发阶段只允许单元测试 |
-| [bp_integration_testing.md](bp_integration_testing.md) | 集成测试；只在测试冒烟阶段编写和执行 |
-| [bp_distributed_id.md](bp_distributed_id.md) | 分布式 Long ID 生成与使用 |
-| [bp_distributed_lock.md](bp_distributed_lock.md) | 分布式锁互斥、锁键、超时与数据一致性 |
-| [bp_distributed_messaging.md](bp_distributed_messaging.md) | 集成事件发布、分区顺序、消费可靠性、延迟消息 |
-| [bp_business_compensation.md](bp_business_compensation.md) | 业务补偿、对账、修复、清理和兜底流程 |
+| [bp_integration.md](bp_integration.md) | 集成测试；只在测试冒烟阶段编写和执行 |
+| [bp_ids.md](bp_ids.md) | 分布式 Long ID 生成与使用 |
+| [bp_lock.md](bp_lock.md) | 分布式锁互斥、锁键、超时与数据一致性 |
+| [bp_messaging.md](bp_messaging.md) | 集成事件发布、分区顺序、消费可靠性、延迟消息 |
+| [bp_compensation.md](bp_compensation.md) | 业务补偿、对账、修复、清理和兜底流程 |
 
 ## 依赖方向
 
-主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_naming` 是基础；`bp_layered_service` 和 `bp_dependencies` 定义结构与装配；`bp_project_documentation` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_distributed_*`、`bp_business_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration_testing` 按测试阶段拆分：开发阶段只运行单元测试，集成测试留待冒烟阶段。
+主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_naming` 是基础；`bp_layered_service` 和 `bp_dependencies` 定义结构与装配；`bp_docs` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_ids` / `bp_lock` / `bp_messaging`、`bp_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration` 按测试阶段拆分：开发阶段只运行单元测试，集成测试留待冒烟阶段。

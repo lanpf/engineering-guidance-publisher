@@ -1,4 +1,0 @@
-interface:
-  display_name: "Update Engineering Standards"
-  short_description: "Reconcile standards docs with the rule catalog"
-  default_prompt: "Use $update-engineering-standards to publish standards, synchronize named projects, and prepare confirmation-gated refactor plans."

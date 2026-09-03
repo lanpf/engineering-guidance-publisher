@@ -88,7 +88,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                     self.assertIn(reference["title"], content)
             manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
-                ["update-engineering-standards", "sync-engineering-standards"],
+                ["update-standards", "sync-standards"],
                 manifest["publisher_skills"],
             )
 
@@ -114,14 +114,14 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             self.assertEqual(self.catalog["version"], persisted["version"])
             self.assertIn("Local rule.", (target / "AGENTS.md").read_text(encoding="utf-8"))
             self.assertNotIn(
-                "update-engineering-standards",
+                "update-standards",
                 (target / "AGENTS.md").read_text(encoding="utf-8"),
             )
             for name in persisted["managed_skills"]:
                 self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())
-            self.assertNotIn("update-engineering-standards", persisted["managed_skills"])
+            self.assertNotIn("update-standards", persisted["managed_skills"])
             self.assertFalse(
-                (target / ".agents" / "skills" / "update-engineering-standards").exists()
+                (target / ".agents" / "skills" / "update-standards").exists()
             )
 
     def test_install_publisher_skills_installs_only_publisher_scope(self) -> None:
@@ -142,7 +142,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             persisted = json.loads((root / PUBLISHER_LOCK_PATH).read_text(encoding="utf-8"))
             self.assertEqual(lock, persisted)
             self.assertEqual(
-                ["update-engineering-standards", "sync-engineering-standards"],
+                ["update-standards", "sync-standards"],
                 persisted["managed_skills"],
             )
             self.assertFalse((root / ".agents" / "skills" / "develop-java-code").exists())
@@ -189,6 +189,9 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 "manage-service-error-codes",
                 "develop-service-persistence",
                 "test-service",
+                "develop-service-code",
+                "develop-distributed-capabilities",
+                "develop-compensation-workflows",
             ]
             for name in retired_names:
                 (target / ".agents" / "skills" / name).mkdir()
@@ -200,8 +203,9 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             for name in retired_names:
                 self.assertFalse((target / ".agents" / "skills" / name).exists())
             for name in (
-                "develop-service-code",
-                "develop-distributed-capabilities",
+                "develop-service",
+                "develop-distributed",
+                "develop-compensation",
                 "test-integration",
                 "refactor-layered-service",
             ):

@@ -6,7 +6,7 @@
 
 - 每个服务必须声明项目文档入口，并由项目指引路由到权威领域文档。
 - 权威领域文档必须定义限界上下文、领域语言、业务规则、错误定义、领域事件和 API 业务语义。
-- 必备项目文档集合及 README、RESPONSIBILITIES、DOMAIN 三文档的边界与跨服务契约书写规则遵循[项目文档最佳实践](bp_project_documentation.md#必备文档)。
+- 必备项目文档集合及 README、RESPONSIBILITIES、DOMAIN 三文档的边界与跨服务契约书写规则遵循[项目文档最佳实践](bp_docs.md#必备文档)。
 
 ## 分层结构
 
@@ -69,7 +69,7 @@
 - application 编排用例并协调领域模型和端口，不实现领域规则。
 - command service 是写用例和事务边界，接收 application command，返回 command output 或 `void`。
 - query service 只读，接收领域 ID、值对象或 query condition，返回 view，分页使用 `PagedList<T>`。
-- application 的事件发布遵循[分布式消息最佳实践](bp_distributed_messaging.md#事件与发布)。
+- application 的事件发布遵循[分布式消息最佳实践](bp_messaging.md#事件与发布)。
 - application 可以依赖 domain、API 集成事件契约和 framework 端口，不得依赖 API command/query/response、协议实现、持久化 DO 或外部响应包装。
 
 ### infrastructure
@@ -92,7 +92,7 @@
 - 没有业务 body 的接口声明与所需上下文匹配的具体 Request 类型，由统一参数解析器从受保护 Header 构造并校验。
 - Header 回填和校验后，必须转换成完整不可变 API command/query；Facade 不得接收 interfaces HTTP Request。
 - RPC 能直接暴露 Facade 时发布同一个 Facade Bean；只有协议模型、语义、元数据或异常不兼容时增加技术专属 adapter。
-- 消息 listener 属于 interfaces 协议入口，不强制经过 Facade；消费可靠性和处理流程遵循[分布式消息最佳实践](bp_distributed_messaging.md#消费与可靠性)。
+- 消息 listener 属于 interfaces 协议入口，不强制经过 Facade；消费可靠性和处理流程遵循[分布式消息最佳实践](bp_messaging.md#消费与可靠性)。
 - OpenFeign 客户端签名与 Facade 一致，只复用 API 契约和响应包装，不定义业务模型、用例或转换规则。
 - boot 不承载领域规则、应用编排、协议适配或业务类型；技术实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
 

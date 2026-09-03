@@ -1,5 +1,5 @@
 ---
-name: develop-service-code
+name: develop-service
 description: Use when developing, changing, or reviewing service code under the shared engineering standards during development, including dependencies, layering, naming, Java language, common tools, logging, error codes, persistence, distributed IDs, and unit testing.
 ---
 

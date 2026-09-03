@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sync Engineering Standards"
-  short_description: "Install current standards into a named project"
-  default_prompt: "Use $sync-engineering-standards to synchronize the current standards into project user-auth."

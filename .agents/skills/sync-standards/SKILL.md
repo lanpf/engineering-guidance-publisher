@@ -1,5 +1,5 @@
 ---
-name: sync-engineering-standards
+name: sync-standards
 description: Validate, build, and synchronize the current engineering standards into one named project in the cloud workspace. Use when installing or upgrading generated AGENTS.md guidance and managed Skills for a project; the request must provide the project name.
 ---
 

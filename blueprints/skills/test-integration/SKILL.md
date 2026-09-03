@@ -7,7 +7,7 @@ description: Use when writing, running, or reviewing integration tests in the sm
 
 ## Workflow
 
-1. Confirm the work belongs to the smoke-test phase; during development only unit tests are allowed, and they are covered by `$develop-service-code`.
+1. Confirm the work belongs to the smoke-test phase; during development only unit tests are allowed, and they are covered by `$develop-service`.
 2. Read `references/integration-testing.md` before creating or changing any `*IT` scenario.
 3. Keep integration tests in the standalone integration-tests module and manage real infrastructure with Testcontainers.
 4. Maintain the same-named scenario documentation and manual observation steps for every integration test.

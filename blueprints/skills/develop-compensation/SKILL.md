@@ -1,5 +1,5 @@
 ---
-name: develop-compensation-workflows
+name: develop-compensation
 description: Use when designing, implementing, or reviewing business compensation, reconciliation, repair, cleanup, batch recovery, or fallback workflows, regardless of whether they are triggered by jobs, messages, startup recovery, or manual operations.
 ---
 

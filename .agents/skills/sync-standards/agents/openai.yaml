@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Standards"
+  short_description: "Install current standards into a named project"
+  default_prompt: "Use $sync-standards to synchronize the current standards into project user-auth."

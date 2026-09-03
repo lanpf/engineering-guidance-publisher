@@ -25,7 +25,7 @@
 | --- | --- | --- |
 | `framework-core` | — | [Java 最佳实践](bp_java.md#参数校验) |
 | `framework-domain` | — | [服务分层最佳实践](bp_layered_service.md#层内约定) |
-| `framework-id` | `framework-starter-id-cosid` | [分布式 ID 最佳实践](bp_distributed_id.md#分布式 ID) |
-| `framework-lock` | `framework-starter-lock-redis` | [分布式锁最佳实践](bp_distributed_lock.md#分布式锁) |
-| `framework-message` | RabbitMQ starter | [分布式消息最佳实践](bp_distributed_messaging.md#事件与发布) |
+| `framework-id` | `framework-starter-id-cosid` | [分布式 ID 最佳实践](bp_ids.md#分布式 ID) |
+| `framework-lock` | `framework-starter-lock-redis` | [分布式锁最佳实践](bp_lock.md#分布式锁) |
+| `framework-message` | RabbitMQ starter | [分布式消息最佳实践](bp_messaging.md#事件与发布) |
 | `framework-persistence` | JPA、MyBatis、MyBatis-Plus starter | [数据持久化最佳实践](bp_persistence.md#持久化边界) |

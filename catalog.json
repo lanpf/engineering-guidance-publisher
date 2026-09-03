@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.1.12",
+  "version": "2.2.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -17,7 +17,7 @@
   },
   "skills": [
     {
-      "name": "develop-service-code",
+      "name": "develop-service",
       "scope": "consumer",
       "when": "Developing, changing, or reviewing service code under the shared engineering standards during development",
       "references": [
@@ -549,7 +549,7 @@
         },
         {
           "file": "distributed-id.md",
-          "source": "standards/bp_distributed_id.md#分布式 ID",
+          "source": "standards/bp_ids.md#分布式 ID",
           "title": "Distributed ID Rules",
           "sections": [
             {
@@ -591,7 +591,7 @@
         },
         {
           "file": "project-documentation.md",
-          "source": "standards/bp_project_documentation.md#必备文档",
+          "source": "standards/bp_docs.md#必备文档",
           "title": "Project Documentation Rules",
           "sections": [
             {
@@ -620,13 +620,13 @@
       ]
     },
     {
-      "name": "develop-distributed-capabilities",
+      "name": "develop-distributed",
       "scope": "consumer",
       "when": "Implementing or reviewing cross-instance locking, reliable event publication, message consumption, partitioning, dead letters, delayed messages, or related failure handling.",
       "references": [
         {
           "file": "distributed-lock.md",
-          "source": "standards/bp_distributed_lock.md#分布式锁",
+          "source": "standards/bp_lock.md#分布式锁",
           "title": "Distributed Lock Rules",
           "sections": [
             {
@@ -645,7 +645,7 @@
         },
         {
           "file": "distributed-messaging.md",
-          "source": "standards/bp_distributed_messaging.md#事件与发布",
+          "source": "standards/bp_messaging.md#事件与发布",
           "title": "Distributed Messaging Rules",
           "sections": [
             {
@@ -673,13 +673,13 @@
       ]
     },
     {
-      "name": "develop-compensation-workflows",
+      "name": "develop-compensation",
       "scope": "consumer",
       "when": "Designing, implementing, or reviewing compensation, reconciliation, repair, cleanup, batch recovery, or fallback workflows",
       "references": [
         {
           "file": "business-compensation.md",
-          "source": "standards/bp_business_compensation.md#业务补偿与兜底",
+          "source": "standards/bp_compensation.md#业务补偿与兜底",
           "title": "Business Compensation and Fallback Rules",
           "sections": [
             {
@@ -704,7 +704,7 @@
       "references": [
         {
           "file": "integration-testing.md",
-          "source": "standards/bp_integration_testing.md#集成测试",
+          "source": "standards/bp_integration.md#集成测试",
           "title": "Integration Testing Rules",
           "sections": [
             {
@@ -739,13 +739,13 @@
       "references": []
     },
     {
-      "name": "update-engineering-standards",
+      "name": "update-standards",
       "scope": "publisher",
       "when": "Reconciling Markdown standards changes with catalog.json and preparing a standards release",
       "references": []
     },
     {
-      "name": "sync-engineering-standards",
+      "name": "sync-standards",
       "scope": "publisher",
       "when": "Installing or upgrading generated engineering guidance in one named project",
       "references": []

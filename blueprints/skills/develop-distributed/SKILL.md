@@ -1,5 +1,5 @@
 ---
-name: develop-distributed-capabilities
+name: develop-distributed
 description: Use when implementing or reviewing cross-instance locking, reliable event publication, message consumption, partitioning, dead letters, delayed messages, or related failure handling.
 ---
 

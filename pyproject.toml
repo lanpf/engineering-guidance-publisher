@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "engineering-guidance-publisher"
-version = "2.1.12"
+version = "2.2.0"
 description = "Publish and synchronize versioned engineering guidance for coding agents"
 requires-python = ">=3.11"
 dependencies = []
