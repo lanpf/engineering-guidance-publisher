@@ -192,6 +192,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 "develop-service-code",
                 "develop-distributed-capabilities",
                 "develop-compensation-workflows",
+                "refactor-layered-service",
             ]
             for name in retired_names:
                 (target / ".agents" / "skills" / name).mkdir()
@@ -207,7 +208,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 "develop-distributed",
                 "develop-compensation",
                 "test-integration",
-                "refactor-layered-service",
+                "refactor-service",
             ):
                 self.assertIn(name, persisted["managed_skills"])
                 self.assertTrue((target / ".agents" / "skills" / name / "SKILL.md").is_file())

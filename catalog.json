@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints."},
@@ -733,7 +733,7 @@
       ]
     },
     {
-      "name": "refactor-layered-service",
+      "name": "refactor-service",
       "scope": "consumer",
       "when": "Planning or applying coordinated standards-driven layered service refactors",
       "references": []

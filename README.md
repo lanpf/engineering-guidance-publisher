@@ -22,16 +22,12 @@ Skills have an explicit publication scope:
 - `consumer` Skills are rendered into consumer `AGENTS.md`, installed by `sync`, and recorded in the consumer lock.
 - `publisher` Skills are installed only into this repository by `install-publisher-skills`; they are not distributed to business projects.
 
-The 2.2 consumer Skill set separates daily development guidance from phase-specific and capability-specific workflows:
+The current consumer Skill set separates daily development guidance from phase-specific and capability-specific workflows:
 
 - `develop-service` owns the shared development guidance for dependencies, layering, naming, Java language, common tools, logging, error codes, persistence, distributed IDs, and unit testing.
 - `develop-distributed` and `develop-compensation` own distributed lock/message and compensation workflows.
 - `test-integration` owns smoke-phase integration testing; during development only unit tests are allowed.
-- `refactor-layered-service` coordinates the other consumer Skills and requires plan confirmation before changing consumer code.
-
-Version 2.1 replaces `develop-java-code`, `manage-maven-dependencies`, `develop-layered-service`, `manage-service-error-codes`, `develop-service-persistence`, and `test-service`. A normal synchronization removes those retired managed Skill directories and installs their replacements.
-
-Version 2.2 renames `develop-service-code` to `develop-service`, `develop-distributed-capabilities` to `develop-distributed`, `develop-compensation-workflows` to `develop-compensation`, `update-engineering-standards` to `update-standards`, and `sync-engineering-standards` to `sync-standards`. A normal synchronization or publisher-skill install removes the retired directories and installs the renamed replacements. The same release shortens standards document names: `bp_project_documentation.md` to `bp_docs.md`, `bp_distributed_id.md` to `bp_ids.md`, `bp_distributed_lock.md` to `bp_lock.md`, `bp_distributed_messaging.md` to `bp_messaging.md`, `bp_business_compensation.md` to `bp_compensation.md`, and `bp_integration_testing.md` to `bp_integration.md`.
+- `refactor-service` coordinates the other consumer Skills and requires plan confirmation before changing consumer code.
 
 For local development without installing the package, set `PYTHONPATH=src` before the command.
 

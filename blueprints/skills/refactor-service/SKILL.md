@@ -1,9 +1,9 @@
 ---
-name: refactor-layered-service
+name: refactor-service
 description: Plan and apply coordinated standards-driven refactors across layered service architecture, Java code, dependencies, distributed capabilities, compensation workflows, persistence, error codes, and tests.
 ---
 
-# Refactor Layered Service
+# Refactor Service
 
 ## Workflow
 
