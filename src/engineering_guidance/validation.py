@@ -10,6 +10,8 @@ from .catalog import ProjectLayout
 SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 RULE_ID = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+$")
 SKILL_REFERENCE = re.compile(r"\$([a-z0-9]+(?:-[a-z0-9]+)*)")
+RULE_ENFORCEMENTS = {"required", "default", "advisory"}
+RULE_PRIORITIES = {"baseline", "topic"}
 
 
 def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
@@ -35,12 +37,33 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
     seen_skills: set[str] = set()
     skill_bodies: dict[str, str] = {}
 
+    def check_standard_source(source_document: Any, location: str) -> None:
+        if not isinstance(source_document, str) or "#" not in source_document:
+            errors.append(f"{location}: source must use <path>#<heading>")
+            return
+        source_path_text, heading = source_document.split("#", 1)
+        source_path = layout.root / source_path_text
+        if not source_path.is_file():
+            errors.append(f"{location}: source document does not exist: {source_path_text}")
+            return
+        if not heading.strip():
+            errors.append(f"{location}: source heading is required")
+            return
+        source_text = source_path.read_text(encoding="utf-8")
+        heading_pattern = re.compile(
+            rf"^#{{1,6}}\s+{re.escape(heading.strip())}\s*$", re.MULTILINE
+        )
+        if not heading_pattern.search(source_text):
+            errors.append(f"{location}: source heading not found: {source_document}")
+
     def check_rule(rule: Any, location: str) -> None:
         if not isinstance(rule, dict):
             errors.append(f"{location}: rule must be an object")
             return
         rule_id = rule.get("id")
         text = rule.get("text")
+        enforcement = rule.get("enforcement")
+        priority = rule.get("priority")
         if not isinstance(rule_id, str) or not RULE_ID.fullmatch(rule_id):
             errors.append(f"{location}: invalid rule id {rule_id!r}")
         elif rule_id in seen_rules:
@@ -49,9 +72,17 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
             seen_rules.add(rule_id)
         if not isinstance(text, str) or not text.strip():
             errors.append(f"{location}: rule text is required")
+        if enforcement not in RULE_ENFORCEMENTS:
+            errors.append(
+                f"{location}: enforcement must be one of {sorted(RULE_ENFORCEMENTS)}"
+            )
+        if priority not in RULE_PRIORITIES:
+            errors.append(f"{location}: priority must be one of {sorted(RULE_PRIORITIES)}")
 
     for index, rule in enumerate(catalog.get("agents", {}).get("rules", [])):
         check_rule(rule, f"agents.rules[{index}]")
+        if isinstance(rule, dict) and rule.get("priority") != "baseline":
+            errors.append(f"agents.rules[{index}]: shared agent rules must be baseline")
 
     skills = catalog.get("skills")
     if not isinstance(skills, list) or not skills:
@@ -72,6 +103,7 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
         blueprint = layout.blueprints / name
         skill_md = blueprint / "SKILL.md"
         openai_yaml = blueprint / "agents" / "openai.yaml"
+        body = ""
         if not skill_md.is_file():
             errors.append(f"{location}: missing {skill_md.relative_to(layout.root)}")
         else:
@@ -89,24 +121,7 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
         for reference_index, reference in enumerate(references):
             ref_location = f"{location}.references[{reference_index}]"
             source_document = reference.get("source")
-            if not isinstance(source_document, str) or "#" not in source_document:
-                errors.append(f"{ref_location}: source must use <path>#<heading>")
-            else:
-                source_path_text, heading = source_document.split("#", 1)
-                source_path = layout.root / source_path_text
-                if not source_path.is_file():
-                    errors.append(f"{ref_location}: source document does not exist: {source_path_text}")
-                elif not heading.strip():
-                    errors.append(f"{ref_location}: source heading is required")
-                else:
-                    source_text = source_path.read_text(encoding="utf-8")
-                    heading_pattern = re.compile(
-                        rf"^#{{1,6}}\s+{re.escape(heading.strip())}\s*$", re.MULTILINE
-                    )
-                    if not heading_pattern.search(source_text):
-                        errors.append(
-                            f"{ref_location}: source heading not found: {source_document}"
-                        )
+            check_standard_source(source_document, ref_location)
             filename = reference.get("file")
             if not isinstance(filename, str) or Path(filename).name != filename or not filename.endswith(".md"):
                 errors.append(f"{ref_location}: invalid reference filename {filename!r}")
@@ -115,8 +130,20 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
             else:
                 files.add(filename)
             for section_index, section in enumerate(reference.get("sections", [])):
+                section_location = f"{ref_location}.sections[{section_index}]"
+                if "source" in section:
+                    check_standard_source(section["source"], section_location)
+                reference_priorities: set[str] = set()
                 for rule_index, rule in enumerate(section.get("rules", [])):
-                    check_rule(rule, f"{ref_location}.sections[{section_index}].rules[{rule_index}]")
+                    check_rule(rule, f"{section_location}.rules[{rule_index}]")
+                    if isinstance(rule, dict) and isinstance(rule.get("priority"), str):
+                        reference_priorities.add(rule["priority"])
+                if "baseline" in reference_priorities and f"`references/{filename}`" not in body:
+                    errors.append(
+                        f"{ref_location}: baseline reference must be explicitly loaded by {name}"
+                    )
+        if scope == "consumer" and name != "develop-service" and "$develop-service" not in body:
+            errors.append(f"{location}: consumer skill must load $develop-service baseline rules")
 
     blueprint_names = {path.name for path in layout.blueprints.iterdir() if path.is_dir()}
     extra = blueprint_names - seen_skills

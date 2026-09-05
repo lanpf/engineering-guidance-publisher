@@ -8,13 +8,25 @@
 - 规则编号、标题和规则语义在发布后保持稳定；发布后不得重用规则 ID 表达不同语义，标题是 `catalog.json` 引用身份的一部分，不得随手改名。
 - `## 验证` 章节只写在具有可运行验证行为的主题文档中；语言、命名等静态约束由代码评审与静态检查保障。
 
+每条规则同时声明约束级别和适用优先级：
+
+- **强制（`required`）**：不可豁免，违反时阻断交付。
+- **默认（`default`）**：默认必须采用；仅在存在具体、可说明的场景理由时允许偏离，并在交付结果中记录理由。
+- **建议（`advisory`）**：用于改善实现质量，可按实际收益采用，不因未采用而单独阻断交付。
+- **基础（`baseline`）**：与具体架构或业务主题无关，开发和重构时必须预先加载，并在完成前统一复查。
+- **主题（`topic`）**：仅在任务涉及对应技术、架构或业务主题时加载和检查。
+
+`bp_*.md` 使用“**强制/默认/建议 · 基础/主题**”标记规则；`catalog.json` 使用 `enforcement` 和 `priority` 字段提供机器可校验的发布表示。分类是规则语义的一部分，调整分类也必须按规则变更发布。
+
 ## 文档索引
 
 | 文档 | 范围 |
 | --- | --- |
-| [bp_java.md](bp_java.md) | Java 语言、常量与字面量、参数校验、异常 |
+| [bp_java.md](bp_java.md) | Java 语言、数据设计、常量与字面量 |
+| [bp_validation.md](bp_validation.md) | Bean Validation、显式前置条件、业务守卫与异常体系 |
 | [bp_common_tools.md](bp_common_tools.md) | 基础工具类、Lombok、MapStruct |
 | [bp_naming.md](bp_naming.md) | 接口、实现、数据载体、技术适配与 MyBatis XML 命名 |
+| [bp_resource_naming.md](bp_resource_naming.md) | 资源键、命名空间、Resolver 职责与单次注入边界 |
 | [bp_layered_service.md](bp_layered_service.md) | 规约体系、module 分层、依赖方向、项目级配置、层内约定、不可变数据载体 |
 | [bp_service_calls.md](bp_service_calls.md) | 内部 API 契约复用、内部调用降级契约与外部服务防腐边界 |
 | [bp_docs.md](bp_docs.md) | 必备项目文档集合、README/RESPONSIBILITIES/DOMAIN 边界、跨服务契约书写规则 |
@@ -31,4 +43,4 @@
 
 ## 依赖方向
 
-主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_naming` 是基础；`bp_layered_service` 和 `bp_dependencies` 定义结构与装配；`bp_service_calls` 定义同步服务调用的契约与适配边界；`bp_docs` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_ids` / `bp_lock` / `bp_messaging`、`bp_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration` 按测试阶段拆分：开发阶段只运行单元测试，集成测试留待冒烟阶段。
+主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_dependencies` / `bp_naming` 是基础，`bp_validation` 同时包含基础校验规则与分层服务校验主题；`bp_layered_service` 定义结构与装配，`bp_resource_naming` 定义资源键运行时边界；`bp_service_calls` 定义同步服务调用的契约与适配边界；`bp_docs` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_ids` / `bp_lock` / `bp_messaging`、`bp_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration` 按测试阶段拆分：开发阶段只运行单元测试，主题集成验证由 `bp_integration` 在冒烟阶段统一路由。

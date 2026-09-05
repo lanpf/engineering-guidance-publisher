@@ -44,10 +44,35 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
     def test_every_reference_is_traceable_to_a_standards_heading(self) -> None:
         for skill in self.catalog["skills"]:
             for reference in skill["references"]:
-                source_path, heading = reference["source"].split("#", 1)
-                source = self.layout.root / source_path
-                self.assertTrue(source.is_file())
-                self.assertIn(heading, source.read_text(encoding="utf-8"))
+                sources = [reference["source"]]
+                sources.extend(
+                    section["source"]
+                    for section in reference["sections"]
+                    if "source" in section
+                )
+                for source_document in sources:
+                    source_path, heading = source_document.split("#", 1)
+                    source = self.layout.root / source_path
+                    self.assertTrue(source.is_file())
+                    self.assertRegex(
+                        source.read_text(encoding="utf-8"),
+                        rf"(?m)^#{{1,6}}\s+{re.escape(heading)}\s*$",
+                    )
+
+    def test_every_rule_has_a_valid_classification(self) -> None:
+        rules = list(self.catalog["agents"]["rules"])
+        rules.extend(
+            rule
+            for skill in self.catalog["skills"]
+            for reference in skill["references"]
+            for section in reference["sections"]
+            for rule in section["rules"]
+        )
+        self.assertTrue(rules)
+        self.assertTrue(all(rule["enforcement"] in {"required", "default", "advisory"} for rule in rules))
+        self.assertTrue(all(rule["priority"] in {"baseline", "topic"} for rule in rules))
+        self.assertTrue(any(rule["priority"] == "baseline" for rule in rules))
+        self.assertTrue(any(rule["priority"] == "topic" for rule in rules))
 
     def test_every_standard_uses_the_best_practice_filename_prefix(self) -> None:
         standards = sorted((self.layout.root / "standards").rglob("*.md"))
@@ -62,11 +87,14 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
 
     def test_standard_bullets_are_not_declared_in_multiple_documents(self) -> None:
         owners: dict[str, Path] = {}
+        classification = re.compile(r"^- \*\*(强制|默认|建议) · (基础|主题)\*\*：")
         for standard in sorted((self.layout.root / "standards").rglob("bp_*.md")):
             for line in standard.read_text(encoding="utf-8").splitlines():
                 rule = line.strip()
                 if not rule.startswith("- "):
                     continue
+                self.assertRegex(rule, classification, f"unclassified standard bullet in {standard}")
+                rule = classification.sub("- ", rule)
                 self.assertNotIn(
                     rule,
                     owners,
@@ -86,6 +114,10 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 for reference in skill["references"]:
                     content = (skill_root / "references" / reference["file"]).read_text(encoding="utf-8")
                     self.assertIn(reference["title"], content)
+                    for section in reference["sections"]:
+                        for rule in section["rules"]:
+                            tag = f"**[{rule['enforcement'].upper()}][{rule['priority'].upper()}]**"
+                            self.assertIn(tag, content)
             manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
                 ["update-standards", "sync-standards"],

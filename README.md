@@ -22,6 +22,8 @@ Skills have an explicit publication scope:
 - `consumer` Skills are rendered into consumer `AGENTS.md`, installed by `sync`, and recorded in the consumer lock.
 - `publisher` Skills are installed only into this repository by `install-publisher-skills`; they are not distributed to business projects.
 
+Every catalog rule also has two explicit classifications. `enforcement` is `required`, `default`, or `advisory`; `priority` is `baseline` or `topic`. Consumer code-change workflows always load and recheck baseline rules, while topic rules are routed only when the task touches their subject.
+
 The current consumer Skill set separates daily development guidance from phase-specific and capability-specific workflows:
 
 - `develop-service` owns the shared development guidance for dependencies, layering, naming, Java language, common tools, logging, error codes, persistence, distributed IDs, and unit testing.

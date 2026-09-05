@@ -30,9 +30,11 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 2. Reuse an existing rule ID only when its semantic identity remains the same. Add a stable new ID for a new constraint.
 3. Never reuse a retired ID for another meaning. Remove a rule from the active catalog only when the source documents intentionally retire it.
 4. Keep concise catalog text semantically equivalent to the source documents; split independent constraints into separate rules.
-5. Update the matching Skill blueprint only when the workflow or reference-routing behavior changes. Do not duplicate detailed rule text in `SKILL.md`.
-6. Keep every catalog reference's `<path>#<heading>` source traceable to the standards document that owns it.
-7. Increment the semantic version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py`. Use a patch increment unless the user requests or the compatibility impact requires a larger increment.
+5. Give every rule an `enforcement` of `required`, `default`, or `advisory` and a `priority` of `baseline` or `topic`. Keep these fields aligned with the source document's “强制/默认/建议 · 基础/主题” marker; changing either field is a semantic rule change.
+6. Treat `required` rules as non-waivable delivery gates, `default` rules as required unless a concrete deviation reason is reported, and `advisory` rules as optional quality guidance. Reserve `baseline` for non-topic-specific rules that every code change must preload and recheck.
+7. Update the matching Skill blueprint only when the workflow or reference-routing behavior changes. Every consumer code-change workflow must load `$develop-service` baseline rules before editing and recheck them before completion. Do not duplicate detailed rule text in `SKILL.md`.
+8. Keep every catalog reference's `<path>#<heading>` source traceable to the standards document that owns it.
+9. Increment the semantic version in `catalog.json`, `pyproject.toml`, and `src/engineering_guidance/__init__.py`. Use a patch increment unless the user requests or the compatibility impact requires a larger increment.
 
 ## Track consumer changes
 

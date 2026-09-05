@@ -12,6 +12,12 @@ BEGIN_MARKER = "<!-- engineering-standards:begin"
 END_MARKER = "<!-- engineering-standards:end -->"
 
 
+def render_rule(rule: dict[str, Any]) -> str:
+    enforcement = rule["enforcement"].upper()
+    priority = rule["priority"].upper()
+    return f"- **{rule['id']}** **[{enforcement}][{priority}]** — {rule['text']}"
+
+
 def skills_for_scope(catalog: dict[str, Any], scope: str) -> list[dict[str, Any]]:
     return [skill for skill in catalog["skills"] if skill["scope"] == scope]
 
@@ -27,7 +33,7 @@ def render_reference(title: str, sections: list[dict[str, Any]]) -> str:
     for section in sections:
         lines.extend([f"## {section['title']}", ""])
         for rule in section["rules"]:
-            lines.append(f"- **{rule['id']}** — {rule['text']}")
+            lines.append(render_rule(rule))
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -38,9 +44,13 @@ def render_agents(catalog: dict[str, Any]) -> str:
         f"<!-- engineering-standards:begin version={version} -->",
         "## Shared engineering guidance",
         "",
+        "Rule markers: [REQUIRED] is release-blocking, [DEFAULT] applies unless a concrete "
+        "deviation reason is recorded, [ADVISORY] is optional guidance; [BASELINE] rules are "
+        "preloaded for every change, [TOPIC] rules apply when the affected capability matches.",
+        "",
     ]
     for rule in catalog["agents"]["rules"]:
-        lines.append(f"- **{rule['id']}** — {rule['text']}")
+        lines.append(render_rule(rule))
     lines.extend(["", "## Skill routing", ""])
     for skill in skills_for_scope(catalog, "consumer"):
         lines.append(f"- {skill['when']}: use `${skill['name']}`.")

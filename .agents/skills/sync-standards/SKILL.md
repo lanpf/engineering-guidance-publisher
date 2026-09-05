@@ -5,6 +5,10 @@ description: Validate, build, and synchronize the current engineering standards 
 
 # Sync Engineering Standards
 
+## Enforcement vocabulary
+
+`required` rules are release-blocking. `default` rules apply unless a concrete deviation reason is recorded. `advisory` rules are optional guidance. `baseline` rules are preloaded for every change; `topic` rules are loaded when the affected capability matches.
+
 Synchronize the publisher's current catalog into exactly one consumer project.
 
 ## Resolve the target
