@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -270,7 +270,7 @@
               "title": "Reuse and configuration",
               "rules": [
                 {"id": "MAPSTRUCT-REUSE-001", "text": "Reuse existing mappers through `@Mapper(uses = {...})` instead of duplicating field-level conversions.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-CONFIG-001", "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in a shared `@MapperConfig`; reference it from each mapper and explicitly mark intentionally ignored fields with `ignore = true`.", "enforcement": "required", "priority": "baseline"},
+                {"id": "MAPSTRUCT-CONFIG-001", "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in a shared `@MapperConfig`; reference it from each mapper and explicitly mark intentionally unmapped target fields with `ignore = true`. Partial updates and projections may use local `ignoreByDefault = true` or `IGNORE` for whitelist mappings, but must not change the shared default.", "enforcement": "required", "priority": "baseline"},
                 {"id": "MAPSTRUCT-HELPER-001", "text": "Keep generic converters and helpers private to mapper use and do not expose them as business components.", "enforcement": "required", "priority": "baseline"}
               ]
             }
@@ -300,6 +300,21 @@
                 {"id": "ARCH-MODULE-CLIENT-001", "text": "`<service>-openfeign-client` provides the OpenFeign client for the service API.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-MODULE-BOOT-001", "text": "`<service>-boot` starts, configures, and packages the service.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-MODULE-INTEGRATION-TESTS-001", "text": "`<service>-integration-tests` is a standalone test module for cross-module, full-auto-configuration, and real database or middleware integration tests; production modules must not depend on it.", "enforcement": "required", "priority": "topic"}
+              ]
+            },
+            {
+              "title": "Package structure",
+              "source": "standards/bp_layered_service.md#包结构",
+              "rules": [
+                {"id": "PACKAGE-LAYER-001", "text": "Top-level packages must match the module responsibility, such as `api`, `domain`, `application`, `infrastructure`, or `interfaces`; do not place production types from different layers or technology adapters directly in the module root package.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-DIRECTION-001", "text": "Package dependencies must follow the service layer dependency direction; package boundaries must not bypass module constraints or hide reverse dependencies through cross-package access, reflection, or events.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-FEATURE-001", "text": "Within a layer, group packages by business capability or technical adapter before role subpackages; do not create global `entity`, `service`, or `repository` buckets by default.", "enforcement": "default", "priority": "topic"},
+                {"id": "PACKAGE-INFRA-001", "text": "The `infrastructure` module must further group packages by capability or adapter boundary, such as `persistence`, `messaging`, `locking`, `external`, or `configuration`; do not place all adapters, DOs, mappers, configuration, and clients in one `infra` package.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-TECH-001", "text": "A concrete technology module groups packages first by technology stack and then by aggregate, resource, or external service; technology-specific DOs, repositories, conversion mappers, and assembly may share a feature package or its role subpackages, but concrete DOs and technology annotations must not be shared across stacks.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-CROSS-CAPABILITY-001", "text": "Cross-capability reuse must use a stable port, contract, or explicit shared component; do not couple capabilities through another feature package's implementation classes, database DOs, or mappers.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-GRANULARITY-001", "text": "Create a subpackage only when its types form a clear responsibility boundary; do not create a package for a single type merely for visual symmetry, and split oversized packages by capability or reason for change rather than mechanically by class name.", "enforcement": "default", "priority": "topic"},
+                {"id": "PACKAGE-VISIBILITY-001", "text": "Keep implementation types package-private by default; declare a type `public` only when cross-package, cross-module, or framework assembly requires it, and give every public type an explicit contract or adapter responsibility.", "enforcement": "required", "priority": "topic"},
+                {"id": "PACKAGE-TEST-001", "text": "Mirror production package paths in tests; keep test helpers in test source sets or test-support packages and never package them as production code or make production code depend on them.", "enforcement": "default", "priority": "topic"}
               ]
             },
             {
@@ -442,7 +457,8 @@
                 {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-INTERNAL-REQUEST-001", "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-MAPPER-001", "text": "Name mapper contracts by layer responsibility, place MapStruct implementations in the contract package's `mapstruct` subpackage, and name them `*MapStructMapper`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-KEY-RESOLVER-001", "text": "Name each concrete scenario resource-key handler `*KeyResolver` and make it extend `AbstractKeyResolver`; its runtime behavior follows the resource-key rules.", "enforcement": "required", "priority": "baseline"}
+                {"id": "NAME-KEY-RESOLVER-001", "text": "Name each concrete scenario resource-key handler `*KeyResolver` and make it extend `AbstractKeyResolver`; its runtime behavior follows the resource-key rules.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-PACKAGE-001", "text": "Use lowercase package names that express a stable responsibility or change boundary; do not use `misc`, `temp`, or `other`, and do not place business types in generic `util` or `common` packages. Package hierarchy and grouping follow the service layer rules.", "enforcement": "required", "priority": "baseline"}
               ]
             },
             {

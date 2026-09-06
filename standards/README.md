@@ -43,4 +43,4 @@
 
 ## 依赖方向
 
-主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_dependencies` / `bp_naming` 是基础，`bp_validation` 同时包含基础校验规则与分层服务校验主题；`bp_layered_service` 定义结构与装配，`bp_resource_naming` 定义资源键运行时边界；`bp_service_calls` 定义同步服务调用的契约与适配边界；`bp_docs` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_ids` / `bp_lock` / `bp_messaging`、`bp_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration` 按测试阶段拆分：开发阶段只运行单元测试，主题集成验证由 `bp_integration` 在冒烟阶段统一路由。
+主题文档之间的约束引用自底向上：`bp_java` / `bp_common_tools` / `bp_dependencies` / `bp_naming` 是基础，`bp_validation` 同时包含基础校验规则与分层服务校验主题；`bp_layered_service` 定义 module、包结构与装配，`bp_resource_naming` 定义资源键运行时边界；`bp_service_calls` 定义同步服务调用的契约与适配边界；`bp_docs` 定义项目文档集合与边界；`bp_persistence`、`bp_logging`、`bp_error_codes`、`bp_ids` / `bp_lock` / `bp_messaging`、`bp_compensation` 在其上定义领域与技术主题，并回引基础文档。`bp_unit_testing` 与 `bp_integration` 按测试阶段拆分：开发阶段只运行单元测试，主题集成验证由 `bp_integration` 在冒烟阶段统一路由。

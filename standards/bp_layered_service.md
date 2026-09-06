@@ -21,6 +21,18 @@
 - **强制 · 主题**：`<工程名>-boot` 只负责启动、运行时配置和打包。
 - **强制 · 主题**：`<工程名>-integration-tests` 是独立测试 module，承载跨 module、完整自动装配以及依赖真实数据库或中间件的集成测试；生产 module 不得依赖它。
 
+### 包结构
+
+- **强制 · 主题**：顶层包必须与所属 module 的职责一致，例如 `api`、`domain`、`application`、`infrastructure`、`interfaces`；不得在 module 根包下直接混放不同层或不同技术适配的生产类。
+- **强制 · 主题**：包之间的依赖方向必须与[服务分层最佳实践](bp_layered_service.md#依赖方向)一致；包拆分不得绕过 module 依赖约束，也不得用跨包访问、反射或事件隐藏反向依赖。
+- **默认 · 主题**：同一层内按业务能力或技术适配分组（feature-first），再按需要细分 `api`、`service`、`repository`、`mapper` 等角色；不要默认按全局类名分类建立孤立的 `entity`、`service`、`repository` 包。
+- **强制 · 主题**：`infrastructure` module 的顶层包必须继续按能力或适配边界分包，例如 `persistence`、`messaging`、`locking`、`external`、`configuration`；不得将所有 adapter、DO、mapper、configuration 和 client 直接放在同一个 `infra` 包中。
+- **强制 · 主题**：具体技术 module 先按技术栈分组，再按聚合、资源或外部服务分组；同一能力的 DO、技术 repository、转换 mapper 和装配可以放在同一 feature package 或其角色子包内，但不得跨技术栈共享具体 DO 或技术注解。
+- **强制 · 主题**：跨能力复用必须通过稳定的 port、契约或明确的公共组件完成；不得通过访问另一个 feature package 的实现类、数据库 DO 或 mapper 建立隐式耦合。
+- **默认 · 主题**：只有在包内类型形成清晰的职责闭包后才继续细分；单个类型不应为了目录整齐单独建立一层包，包过大时应按能力或变化原因拆分，而不是机械按类名拆分。
+- **强制 · 主题**：包内实现默认使用 package-private；只有跨包、跨 module 或框架装配需要的类型才声明为 `public`，公开类型必须有明确契约或适配职责。
+- **默认 · 主题**：测试包路径镜像生产包路径；测试辅助类只在测试源集或测试支持包中提供，不得进入生产包或被生产代码依赖。
+
 ### 依赖方向
 
 - **强制 · 主题**：api 不依赖业务实现；domain 不依赖其他业务层；application 依赖 domain。

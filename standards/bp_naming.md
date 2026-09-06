@@ -19,3 +19,4 @@
 - **强制 · 基础**：具体 mapper XML 使用 `<Aggregate>Mapper.xml`，并通过完全限定的 `refid` 引用共享 `<sql>` 片段。
 - **强制 · 基础**：OpenFeign 客户端使用 `*FeignClient`。
 - **强制 · 基础**：具体业务场景的资源键处理器以 `*KeyResolver` 结尾并继承 `AbstractKeyResolver`；其运行时职责遵循[资源命名最佳实践](bp_resource_naming.md#资源键与命名空间)。
+- **强制 · 基础**：包名必须使用小写并表达稳定职责或变化边界；禁止使用 `misc`、`temp`、`other` 等无语义包，也不得把业务类型放入笼统的 `util` 或 `common` 包。包的层级和分组遵循[服务分层最佳实践](bp_layered_service.md#包结构)。

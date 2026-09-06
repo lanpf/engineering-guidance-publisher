@@ -27,5 +27,5 @@
 - **强制 · 基础**：领域对象构造、业务校验、状态转换和协议编码必须使用显式语义方法；这些行为可以由 MapStruct mapper 调用，但不得隐藏在自动字段映射中。
 - **强制 · 基础**：转换契约必须独立定义；MapStruct 只作为实现机制，实现类必须实现契约并在方法上使用 `@Override`。实现类的包和名称遵循[服务命名最佳实践](bp_naming.md#命名约定)。
 - **强制 · 基础**：复用转换逻辑时通过 `@Mapper(uses = {...})` 组合已有 mapper，不得复制字段级转换。
-- **强制 · 基础**：`componentModel = spring` 和 `unmappedTargetPolicy = ERROR` 在公共 `@MapperConfig` 中声明，具体 mapper 通过 `config` 引用；确实不参与映射的字段必须显式声明 `ignore = true`。
+- **强制 · 基础**：`componentModel = spring` 和 `unmappedTargetPolicy = ERROR` 在公共 `@MapperConfig` 中声明，具体 mapper 通过 `config` 引用；确实不参与映射的目标字段必须显式声明 `ignore = true`。部分更新、投影等白名单映射场景可在局部配置使用 `ignoreByDefault = true` 或 `IGNORE`，不得修改公共默认配置。
 - **强制 · 基础**：通用 converter/helper 只能供 mapper 使用，不得作为业务组件公开。

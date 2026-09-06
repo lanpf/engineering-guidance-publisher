@@ -13,7 +13,7 @@ description: Plan and apply coordinated standards-driven refactors across layere
 
 1. Read the project's `AGENTS.md`, root `README.md`, and every authoritative document routed for the affected area.
 2. Inspect Git status and record unrelated pre-existing changes before editing.
-3. Use `$develop-service` first to load the complete baseline rule set and build the required/default baseline checklist, then use its topic references for dependencies, layering, naming, Java, common tools, logging, error codes, persistence, distributed identifiers, and unit tests.
+3. Use `$develop-service` first to load the complete baseline rule set and build the required/default baseline checklist, then use its topic references for dependencies, layering, package structure, naming, Java, common tools, logging, error codes, persistence, distributed identifiers, and unit tests.
 4. Use `$develop-distributed` for locking, event publication, and message consumption.
 5. Use `$develop-compensation` for compensation, reconciliation, repair, cleanup, batch recovery, or fallback flows.
 6. Use `$test-integration` only for integration-test work in the smoke-test phase; keep development-phase verification in `$develop-service` unit tests.
