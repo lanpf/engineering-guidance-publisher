@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -78,8 +78,8 @@
               "title": "Language and data design",
               "rules": [
                 {"id": "JAVA-VERSION-002", "text": "Compile and run with Java 17.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VAR-001", "text": "Use `var` for a local variable when its initializer itself makes the concrete type clear.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VAR-002", "text": "Use an explicit local-variable type when understanding it requires reading a called method declaration or relying on generic type inference.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VAR-001", "text": "Production code must not use `var`, including local variables, loop variables, try-with-resources variables, and lambda parameters; use an explicit type wherever a type declaration is needed.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VAR-002", "text": "Only test source sets may use `var`, and only when the initializer itself clearly shows the concrete type; declare the type explicitly when determining it requires reading a called method declaration or relying on generic type inference. Test source sets include unit tests, integration tests, and dedicated test support; a type in production sources is not exempt merely because its name contains `Test`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-RECORD-001", "text": "Prefer `record` for data carriers whose state is complete at construction, remains immutable, and does not require inheritance, proxies, or JavaBean setter binding.", "enforcement": "default", "priority": "baseline"},
                 {"id": "JAVA-RECORD-002", "text": "Defensively copy collection record components with `List.copyOf`, `Set.copyOf`, or the corresponding immutable-copy operation.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-CLASS-001", "text": "Use an ordinary class when the type requires inheritance, mutable state, framework proxying, JavaBean shape, or complex domain behavior.", "enforcement": "required", "priority": "baseline"},
@@ -89,6 +89,7 @@
             {
               "title": "Readable modern Java",
               "rules": [
+                {"id": "JAVA-BRACES-001", "text": "In both production and test code, always use braces for the bodies of `if`, `else`, `for` (including enhanced for), `while`, and `do-while`, even for a single statement or an empty body; never use a lone semicolon as an empty body. An `else if` chain is allowed, but every conditional branch body must still use braces.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-STYLE-001", "text": "For simple collection traversal, `forEach` is an available concise style; choose it only when it remains immediately readable.", "enforcement": "advisory", "priority": "baseline"},
                 {"id": "JAVA-STYLE-002", "text": "For simple transformations and callbacks, Stream, lambdas, and method references are available concise styles; choose them only when they remain immediately readable.", "enforcement": "advisory", "priority": "baseline"},
                 {"id": "JAVA-OPTIONAL-001", "text": "Prefer `Optional` for possibly absent return values and chained handling.", "enforcement": "default", "priority": "baseline"},
@@ -452,6 +453,8 @@
               "rules": [
                 {"id": "NAME-INTERFACE-001", "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`; use `Abstract*` for abstract classes and reserve `Base*` for framework or shared base types.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-AUTO-CONFIGURATION-001", "text": "Only Spring Boot auto-configuration entry classes may have names ending in `Configuration`, and they must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix; merely annotating a class with Spring `@Configuration` does not qualify for the exception.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-PROPERTIES-001", "text": "Name configuration-property binding classes with the `*Properties` suffix.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-RESPONSE-001", "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.", "enforcement": "required", "priority": "baseline"},
@@ -468,7 +471,7 @@
                 {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-APPLICATION-001", "text": "Use `*Command`, `*Output`, `*CommandService`, `*View`, and `*QueryService` in application; paged queries return `PagedList<*View>`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceConfiguration` in infrastructure.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceAutoConfiguration` in infrastructure.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`.", "enforcement": "required", "priority": "baseline"}
               ]
