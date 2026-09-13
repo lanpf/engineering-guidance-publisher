@@ -6,7 +6,8 @@
 
 - **强制 · 基础**：接口按业务角色、端口或技术契约命名，不使用 `I*`、`*Interface`；抽象类使用 `Abstract*`，`Base*` 仅用于框架或共享基础类型。
 - **强制 · 基础**：实现类不得使用笼统的 `*Impl`，必须按默认角色、技术、适配职责或策略命名。
-- **强制 · 基础**：仅 Spring Boot 自动配置入口类允许以 `Configuration` 结尾，且必须统一命名为 `*AutoConfiguration`。其他类型不得以 `Configuration` 结尾，应按实际职责命名；仅标注 Spring `@Configuration` 不构成命名例外。
+- **强制 · 基础**：Spring Boot 自动配置入口类必须统一命名为 `*AutoConfiguration`。除组件扫描的 wiring 类外，其他类型不得以 `Configuration` 结尾，应按实际职责命名。
+- **强制 · 基础**：组件扫描的 wiring 类使用 `*Configuration` 命名。
 - **强制 · 基础**：配置属性绑定类使用 `*Properties` 命名。
 - **强制 · 基础**：payload、command output、query view 和 effect 不使用 `*Result`；该名称保留给 `Result<T>`、`PageResult<T>`。
 - **强制 · 基础**：API 使用 `*ApiCommand`、`*ApiOutput`、`*ApiQuery`、`*View`、`*ApiEnum`、`*ApiConstants`、`*ApiEvent`、`*CommandFacade` 和 `*QueryFacade`。

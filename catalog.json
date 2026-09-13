@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -464,7 +464,8 @@
               "rules": [
                 {"id": "NAME-INTERFACE-001", "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`; use `Abstract*` for abstract classes and reserve `Base*` for framework or shared base types.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-AUTO-CONFIGURATION-001", "text": "Only Spring Boot auto-configuration entry classes may have names ending in `Configuration`, and they must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix; merely annotating a class with Spring `@Configuration` does not qualify for the exception.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-AUTO-CONFIGURATION-001", "text": "Spring Boot auto-configuration entry classes must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix, except component-scanned wiring classes.", "enforcement": "required", "priority": "baseline"},
+                {"id": "NAME-CONFIGURATION-001", "text": "Name component-scanned wiring classes with the `*Configuration` suffix.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-PROPERTIES-001", "text": "Name configuration-property binding classes with the `*Properties` suffix.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.", "enforcement": "required", "priority": "baseline"},
                 {"id": "NAME-RESPONSE-001", "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix.", "enforcement": "required", "priority": "baseline"},
