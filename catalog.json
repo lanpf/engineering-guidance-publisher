@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -326,6 +326,17 @@
                 {"id": "ARCH-DEP-OUTER-001", "text": "Interfaces depends on API and application, OpenFeign client depends on API, and boot performs final assembly.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-DEP-INTEGRATION-TESTS-001", "text": "Integration-tests may depend on boot and observed service modules in test scope only; those verification dependencies never participate in production dependency direction.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-DEP-INWARD-001", "text": "No inner module may depend on outer protocol types, persistence objects, concrete technologies, or boot.", "enforcement": "required", "priority": "topic"}
+              ]
+            },
+            {
+              "title": "Responsibility cohesion and boundary checks",
+              "source": "standards/bp_layered_service.md#职责内聚与边界检查",
+              "rules": [
+                {"id": "ARCH-SEMANTIC-OWNERSHIP-001", "text": "Determine ownership from authoritative project responsibility/domain documents and business semantics, not names, packages, annotations, or branch counts. Protocol parsing, serialization, connection management, and technical retries that preserve business semantics are adapter behavior. Classify gateway protocol authentication and route execution by their actual semantics rather than automatically moving them into domain/application.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-DOMAIN-COHESION-001", "text": "Locate where eligibility decisions, business invariants, state transitions, and business decisions actually execute. Keep each rule in its owning domain model or domain service and reuse it across entry points; controllers, filters, listeners, adapters, and application must not maintain independent copies of domain decisions. Distinguish protocol-format validation from domain validity using the validation rules.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-ORCHESTRATION-COHESION-001", "text": "Trace use-case call chains to locate business step ordering, coordination of domain capabilities or ports, business-result branching, and business compensation decisions; application owns this orchestration. Multiple SDK calls, page fetching, or technical retries within one adapter operation do not alone imply application orchestration; independent infrastructure recovery follows the compensation rules.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-SUBSTANTIVE-LAYERING-001", "text": "Do not treat the existence of domain/application modules or an intermediate forwarding service as proof of cohesion; trace the implementation that actually decides and orchestrates. Responsibility migration must move the decisions and their behavioral verification, not merely move classes, rename packages, or add forwarding layers while leaving business logic in outer layers.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-DEPENDENCY-AUDIT-001", "text": "Check dependency direction in declared/inherited POM dependencies and source imports, fully qualified type references, method signatures, inheritance/implementation relationships, and injected types; trace related call chains for implicit reverse dependencies. Apply the allowed layer dependencies and type boundaries, not merely successful compilation, absence of cycles, or use of interfaces.", "enforcement": "required", "priority": "topic"}
               ]
             },
             {
