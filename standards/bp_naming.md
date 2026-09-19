@@ -10,7 +10,7 @@
 - **强制 · 基础**：组件扫描的 wiring 类使用 `*Configuration` 命名。
 - **强制 · 基础**：配置属性绑定类使用 `*Properties` 命名。
 - **强制 · 基础**：payload、command output、query view 和 effect 不使用 `*Result`；该名称保留给 `Result<T>`、`PageResult<T>`。
-- **强制 · 基础**：API 使用 `*ApiCommand`、`*ApiOutput`、`*ApiQuery`、`*View`、`*ApiEnum`、`*ApiConstants`、`*ApiEvent`、`*CommandFacade` 和 `*QueryFacade`。
+- **强制 · 基础**：API 使用 `*ApiCommand`、`*ApiOutput`、`*ApiQuery`、`*ApiView`、`*ApiEnum`、`*ApiConstants`、`*ApiEvent`、`*CommandFacade` 和 `*QueryFacade`。
 - **强制 · 基础**：application 使用 `*CommandService`、`*Command`、`*Output`、`*QueryService`、`*Query`、`*View`；分页返回 `PagedList<*View>`。
 - **强制 · 基础**：领域服务返回使用 `*Effect`；Repository 契约使用 `*Repository`；领域事件使用 `*Event`。
 - **强制 · 基础**：infrastructure 类型使用 `*RepositoryAdapter`、技术化 `*PersistenceRepository`、`*DO` 和 `*PersistenceAutoConfiguration`。
