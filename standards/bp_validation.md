@@ -1,10 +1,10 @@
 # 校验与异常最佳实践
 
-本文定义 Jakarta Bean Validation、Spring 校验启用、显式前置条件、业务守卫和异常体系约束。
+本文定义校验方式选择、Jakarta Bean Validation、Spring 校验启用、显式检查和异常体系约束。
 
 ## Bean Validation
 
-- **默认 · 基础**：可绑定 Bean 属性以及方法参数和返回值的非空、格式与范围约束优先使用 Jakarta Bean Validation，并声明在所属字段、属性或 record component 上。
+- **默认 · 基础**：在依赖与运行时校验机制均已具备的前提下，可绑定 Bean 属性以及方法参数和返回值的非空、格式与范围约束优先使用 Jakarta Bean Validation，并声明在对应的字段、属性、record component、方法参数或返回值位置；不能仅添加注解而不保证调用路径实际触发校验。
 - **强制 · 基础**：`@Valid` 只标记嵌套对象的级联校验，本身不构成约束。
 - **强制 · 主题**：请求对象入口使用默认校验组时使用 `@Valid`，需要指定校验组时使用 `@Validated`，不得在同一入口无差别叠加两者。
 - **默认 · 主题**：公开 API 的方法参数和返回值约束优先声明在 API 接口或 API 数据类型上。
@@ -14,21 +14,19 @@
 
 ## 显式检查
 
-- **强制 · 基础**：仅在 Bean Validation 无法表达约束，或领域对象构造函数、工厂方法等不经过框架绑定链路的内部 API 需要快速失败时，才使用显式检查。
-- **强制 · 基础**：技术性前置条件用于发现程序错误或保护内部不变量，不构成稳定业务协议；其异常 message 只用于诊断，调用方不得依赖 message 文本判断业务结果。
-- **强制 · 基础**：依赖 framework-core 的 module，技术性前置条件优先使用 framework-core `Require`；`Require` 已覆盖非空、非空白、正数、值与任意条件、集合与映射非空以及元素去重，仅当其能力不足时才使用 Spring `org.springframework.util.Assert`（已因自身职责依赖 Spring 的 module）或工程统一管理的 `org.apache.commons.lang3.Validate`（与 Spring 解耦的 module）。
-- **强制 · 基础**：未依赖 framework-core 的 module，技术性前置条件只检查非空时优先使用 JDK `Objects.requireNonNull`；需要检查非空白、范围、集合或任意条件时，已因自身职责依赖 Spring Framework 的 module 使用 `org.springframework.util.Assert`，与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。
-- **强制 · 主题**：调用方未传入异常供应器时，framework-core `Require` 校验失败抛出携带框架错误码的 `FrameworkException`，用于技术性前置条件；只有带有明确业务意义的业务拒绝才通过异常供应器重载提供稳定错误码与继承自 `BaseException` 的异常，不得为普通技术性前置条件提供业务异常供应器。
-- **默认 · 主题**：技术性前置条件判断集合元素为 null 或非法时，优先抛出 `FrameworkException` 的 `missingCollectionElement` 或 `invalidCollectionElement`。
-- **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有失败语义属于 API 明确承诺的业务错误时，API 层才使用 `Require`。
+- **强制 · 基础**：当 Jakarta Bean Validation 无法表达约束、调用路径不能保证触发校验，或必须返回明确的业务错误语义时，使用显式检查；包括不经过框架绑定链路、需要快速失败的构造函数和工厂方法。
+- **强制 · 基础**：技术性前置条件用于发现程序错误或保护内部技术不变量，不得使用服务业务错误码；可以抛出通用技术异常或携带框架通用错误码的 `FrameworkException`。
+- **强制 · 主题**：业务条件检查表达调用方可预期的业务拒绝，必须抛出携带稳定业务错误码、继承自 framework-core `BaseException` 的异常；使用 `Require` 的异常供应器重载或显式抛出对应业务异常，不得因工具降级而丢失业务错误语义。普通技术性前置条件不得使用业务异常供应器。
+- **强制 · 基础**：显式检查工具必须先满足失败语义，再按已有依赖及能力依次选择 framework-core `Require`、Spring `org.springframework.util.Assert`、工程统一管理的 `org.apache.commons.lang3.Validate`，再使用 JDK（如 `Objects.requireNonNull`）；前一工具不可用或不能满足约束及异常语义时才选择下一项。仅当已有工具和 JDK 均不能满足需求时才允许手写检查。
+- **强制 · 基础**：不得仅为显式检查引入新依赖，也不得手写已有可用工具已提供且满足失败语义的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
+- **默认 · 主题**：依赖 framework-core 的 module，技术性前置条件判断集合元素为 null 或非法时，优先抛出 `FrameworkException` 的 `missingCollectionElement` 或 `invalidCollectionElement`。
+- **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有失败语义属于 API 明确承诺的业务错误时，API 层才进行业务条件检查。
 - **强制 · 主题**：依赖领域状态、持久化数据或用例上下文的规则由 application 或 domain 校验，不得前移到协议绑定层。
-- **强制 · 基础**：不得仅为显式检查引入 Spring Framework，也不得手写上述工具已提供的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 
 ## 异常与消息
 
-- **强制 · 基础**：Jakarta Bean Validation 和技术前置条件的诊断 message 使用英文，不得作为稳定业务协议。
-具有稳定错误码的业务异常使用[服务错误码最佳实践](bp_error_codes.md#错误码)定义的中文模板；调用方不得解析异常 message 判断业务结果的约束由上文技术前置条件和错误码契约共同保证。
+- **强制 · 基础**：异常分类按失败语义判定，不得仅凭是否继承 `BaseException` 判断其为业务异常。服务业务错误使用错误码绑定的中文模板，遵循[服务错误码最佳实践](bp_error_codes.md#错误码)；工程自行声明的技术诊断消息和 Bean Validation 提示使用英文，第三方原始异常消息不受此语言约束。调用方以业务错误码判断业务结果，任何异常 message 都不得作为稳定业务协议解析。
 - **强制 · 主题**：Jakarta Bean Validation 校验失败时使用框架异常体系；服务自定义业务异常继承 framework-core 的 `BaseException`，不得直接继承 `RuntimeException` 或其他 JDK 异常类。
-- **强制 · 主题**：领域层守卫逻辑抛出继承自 `BaseException` 的 `DomainException`，不得使用 `IllegalArgumentException`、`IllegalStateException` 等通用异常替代。
-- **强制 · 主题**：`DomainException` 提供 `invalidEntityId()` 和 `missingField()` 静态工厂方法。
+- **强制 · 主题**：表达领域规则或领域有效性的守卫抛出继承自 `BaseException` 的 `DomainException`，不得使用 `IllegalArgumentException`、`IllegalStateException` 等通用异常替代；领域内部的程序错误或技术性前置条件按技术异常处理，不得仅因位于 domain 就包装为业务异常。
+- **强制 · 主题**：每个领域的 `DomainException` 必须提供 `invalidEntityId()` 静态工厂方法，用于领域实体 ID 有效性校验失败；对应 `DOMAIN_ENTITY_ID_INVALID` 的码位仅由[服务错误码最佳实践](bp_error_codes.md#错误码)定义。
 - **强制 · 基础**：业务异常必须处理或继续抛出；不得静默忽略异常。非业务异常的日志要求遵循[日志与敏感数据最佳实践](bp_logging.md#日志与敏感数据)。

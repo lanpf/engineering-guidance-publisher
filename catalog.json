@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -140,7 +140,7 @@
               "source": "standards/bp_validation.md#Bean Validation",
               "title": "Bean Validation",
               "rules": [
-                {"id": "JAVA-VALIDATION-001", "text": "Prefer Jakarta Bean Validation for constraints on bindable Bean properties and method parameters or return values; declare nullability, format, and range constraints on the owning field, property, or record component.", "enforcement": "default", "priority": "baseline"},
+                {"id": "JAVA-VALIDATION-001", "text": "When dependencies and runtime validation are available, prefer Jakarta Bean Validation for nullability, format, and range constraints on bindable Bean properties and method parameters or returns. Declare constraints on the corresponding field, property, record component, parameter, or return location and ensure the call path actually triggers validation.", "enforcement": "default", "priority": "baseline"},
                 {"id": "JAVA-VALIDATION-CASCADE-001", "text": "`@Valid` marks cascaded validation of nested objects and is not itself a constraint.", "enforcement": "required", "priority": "baseline"}
               ]
             },
@@ -148,20 +148,20 @@
               "source": "standards/bp_validation.md#显式检查",
               "title": "Explicit checks",
               "rules": [
-                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when Bean Validation cannot express a constraint or an internal API outside the framework binding path requires fast failure, such as a domain constructor or factory.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VALIDATION-TECHNICAL-001", "text": "Technical preconditions detect programming errors or protect internal invariants and do not form a stable business protocol; their exception messages are diagnostic only and callers must not inspect message text to determine a business result.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-OBJECTS-REQUIRE-NONNULL-001", "text": "In a module that does not depend on framework-core, a technical precondition that checks nullity only prefers JDK `Objects.requireNonNull`.", "enforcement": "default", "priority": "baseline"},
-                {"id": "JAVA-REQUIRE-PRIORITY-001", "text": "A module that depends on framework-core prefers framework-core `Require` for technical preconditions; `Require` already covers nullity, blankness, positive numbers, value-and-condition checks, collection and map emptiness, and element deduplication, so Spring `org.springframework.util.Assert` (for modules already depending on Spring for their responsibility) or project-managed `org.apache.commons.lang3.Validate` (for Spring-decoupled modules) applies only when `Require` capability is insufficient.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-ASSERT-001", "text": "For a technical precondition that checks blankness, ranges, collections, or arbitrary conditions in a module that does not depend on framework-core and already depends on Spring Framework for its responsibility, use `org.springframework.util.Assert`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VALIDATE-001", "text": "For the same richer technical preconditions in a Spring-decoupled module that does not depend on framework-core, use project-managed `org.apache.commons.lang3.Validate`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VALIDATION-003", "text": "Do not add Spring Framework only for explicit checks and do not hand-write equivalents these tools provide; utility dependency selection follows the common-utilities rules.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VALIDATION-MESSAGE-001", "text": "Jakarta Bean Validation and technical-precondition diagnostic messages are written in English and are not a stable business protocol.", "enforcement": "required", "priority": "baseline"}
+                {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks when Bean Validation cannot express the constraint, the call path cannot guarantee validation, or an explicit business-error meaning is required; this includes constructors and factories outside framework binding that need fast failure.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VALIDATION-TECHNICAL-001", "text": "Technical preconditions detect programming errors or protect internal technical invariants. They must not use service business error codes; general technical exceptions or `FrameworkException` with framework-wide technical codes are allowed.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-OBJECTS-REQUIRE-NONNULL-001", "text": "Use JDK checks such as `Objects.requireNonNull` when existing Require, Assert, and Validate dependencies are unavailable or cannot satisfy the constraint and failure semantics. Hand-write a check only when existing tools and the JDK cannot meet the need.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-REQUIRE-PRIORITY-001", "text": "Select explicit-check tools by failure semantics first, then existing dependencies and capability; prefer framework-core `Require` when it can meet both the constraint and exception semantics.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-ASSERT-001", "text": "Use Spring `org.springframework.util.Assert` from an existing dependency when Require is unavailable or unsuitable and Assert satisfies the constraint and failure semantics.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VALIDATE-001", "text": "Use project-managed `org.apache.commons.lang3.Validate` from an existing dependency when Require and Assert are unavailable or unsuitable and Validate satisfies the constraint and failure semantics.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VALIDATION-003", "text": "Do not add dependencies solely for explicit checks or hand-write equivalent logic already provided by an available tool that satisfies the failure semantics; dependency selection follows the common-utilities rules.", "enforcement": "required", "priority": "baseline"}
               ]
             },
             {
               "source": "standards/bp_validation.md#异常与消息",
               "title": "Exceptions and logging",
               "rules": [
+                {"id": "JAVA-VALIDATION-MESSAGE-001", "text": "Classify exceptions by failure semantics, not merely inheritance from `BaseException`. Service business errors use the Chinese templates bound to their error codes; project-authored technical diagnostics and Bean Validation messages use English, while original third-party exception messages are exempt. Callers use business error codes, never exception message parsing, to determine business outcomes.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-EXCEPTION-003", "text": "Handle or propagate business exceptions and never silently ignore an exception; non-business exception logging follows the logging rules.", "enforcement": "required", "priority": "baseline"}
               ]
             }
@@ -186,9 +186,9 @@
               "source": "standards/bp_validation.md#显式检查",
               "title": "Explicit checks",
               "rules": [
-                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "When the caller does not supply an exception supplier, framework-core `Require` throws `FrameworkException` carrying framework error codes on check failure and serves technical preconditions; only a business rejection with explicit business meaning supplies a stable error code and an exception extending `BaseException` through the exception-supplier overloads, and an ordinary technical precondition must not be given a business exception supplier.", "enforcement": "required", "priority": "topic"},
-                {"id": "JAVA-VALIDATION-COLLECTION-ELEMENT-001", "text": "When a technical precondition judges a collection element null or invalid, prefer throwing `FrameworkException.missingCollectionElement()` or `FrameworkException.invalidCollectionElement()`.", "enforcement": "default", "priority": "topic"},
-                {"id": "JAVA-VALIDATION-API-001", "text": "For API requests, prefer Jakarta Bean Validation for field-shape constraints and use `Require` in API only when the failure is a business error explicitly promised by the API contract.", "enforcement": "default", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "Business checks express expected business rejections and must throw an exception extending framework-core `BaseException` with a stable business code, through a Require exception supplier or an explicit throw. Tool fallback must preserve that meaning; ordinary technical preconditions must not use business exception suppliers.", "enforcement": "required", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-COLLECTION-ELEMENT-001", "text": "In modules depending on framework-core, prefer `FrameworkException.missingCollectionElement()` or `FrameworkException.invalidCollectionElement()` for technical checks of null or invalid collection elements.", "enforcement": "default", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-API-001", "text": "For API requests, prefer Jakarta Bean Validation for field-shape constraints; perform business checks in API only when the failure is a business error explicitly promised by the API contract.", "enforcement": "default", "priority": "topic"},
                 {"id": "JAVA-VALIDATION-LAYER-001", "text": "Validate rules that depend on domain state, persistence data, or use-case context in application or domain rather than moving them to the protocol-binding layer.", "enforcement": "required", "priority": "topic"}
               ]
             },
@@ -198,8 +198,8 @@
               "rules": [
                 {"id": "JAVA-EXCEPTION-001", "text": "Use the framework exception hierarchy for Jakarta Bean Validation failures.", "enforcement": "required", "priority": "topic"},
                 {"id": "JAVA-EXCEPTION-002", "text": "A service-defined business exception extends framework-core `BaseException` and must not directly extend `RuntimeException` or another JDK exception type.", "enforcement": "required", "priority": "topic"},
-                {"id": "JAVA-DOMAIN-GUARD-001", "text": "A domain-layer null check, precondition, or other guard throws `DomainException`, which extends `BaseException`; do not substitute `IllegalArgumentException`, `IllegalStateException`, or another generic exception.", "enforcement": "required", "priority": "topic"},
-                {"id": "JAVA-DOMAIN-EXCEPTION-FACTORY-001", "text": "`DomainException` provides the static factory methods `invalidEntityId()` and `missingField()`.", "enforcement": "required", "priority": "topic"}
+                {"id": "JAVA-DOMAIN-GUARD-001", "text": "Guards expressing domain rules or domain validity throw `DomainException` extending `BaseException`, not generic JDK exceptions. Programming errors and technical preconditions inside domain remain technical exceptions; location alone does not make them business failures.", "enforcement": "required", "priority": "topic"},
+                {"id": "JAVA-DOMAIN-EXCEPTION-FACTORY-001", "text": "Each domain's `DomainException` provides `invalidEntityId()` for invalid domain entity identifiers. The error-code policy exclusively defines the code allocation for `DOMAIN_ENTITY_ID_INVALID`.", "enforcement": "required", "priority": "topic"}
               ]
             }
           ]
@@ -579,7 +579,7 @@
             {
               "title": "Domain allocation",
               "rules": [
-                {"id": "ERROR-DOMAIN-COMMON-001", "text": "Prefix shared domain errors with `DOMAIN_`; reserve `000`, `001`, `002`, and `003` for `DOMAIN_ENTITY_ID_INVALID`, `DOMAIN_OBJECT_FIELD_REQUIRED`, `DOMAIN_OBJECT_FIELD_INVALID`, and `DOMAIN_OBJECT_STATE_INVALID`.", "enforcement": "required", "priority": "topic"},
+                {"id": "ERROR-DOMAIN-COMMON-001", "text": "Prefix shared domain errors with `DOMAIN_`; fix local code `000` as `DOMAIN_ENTITY_ID_INVALID`.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-AGGREGATE-001", "text": "Prefix aggregate errors with the aggregate name; the first two are `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-ENUM-PLACEMENT-001", "text": "Error enums live in the module of the layer that throws them: domain error enums in domain, application error enums in application, and infrastructure error enums in the owning infrastructure module.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-ENUM-NAMING-001", "text": "Organize and name error enums by owning aggregate, technical mechanism, or the shared-domain segment; do not create one enum mixing code segments from different layers.", "enforcement": "required", "priority": "topic"},
