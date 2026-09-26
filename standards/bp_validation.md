@@ -16,10 +16,9 @@
 
 - **强制 · 基础**：仅在 Bean Validation 无法表达约束，或领域对象构造函数、工厂方法等不经过框架绑定链路的内部 API 需要快速失败时，才使用显式检查。
 - **强制 · 基础**：技术性前置条件用于发现程序错误或保护内部不变量，不构成稳定业务协议；其异常 message 只用于诊断，调用方不得依赖 message 文本判断业务结果。
-- **默认 · 基础**：未依赖 framework-core 的 module，技术性前置条件只检查非空时优先使用 JDK `Objects.requireNonNull`。
-- **强制 · 基础**：依赖 framework-core 的 module，技术性前置条件（包括非空检查）按 framework-core `Require` > Spring `org.springframework.util.Assert` > 工程统一管理的 `org.apache.commons.lang3.Validate` 的优先级选择工具；`Require` 不显式提供异常的默认重载抛出 framework 异常体系，供普通技术性前置条件使用。
-- **强制 · 基础**：未依赖 framework-core 的 module，技术性前置条件需要检查非空白、范围、集合或任意条件时，已因自身职责依赖 Spring Framework 的 module 使用 `org.springframework.util.Assert`，与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。
-- **强制 · 主题**：业务规则守卫用于表达调用方可预期且需要稳定错误码的业务拒绝，统一使用 framework-core 的 `Require`，并显式提供继承自 `BaseException` 的异常；只有带有明确业务意义的业务拒绝才提供错误码与 `BaseException` 异常，不得使用 `Objects.requireNonNull`、`Validate` 或 `Assert` 表达业务拒绝，也不得为普通技术性前置条件附加业务错误码或业务异常。
+- **强制 · 基础**：依赖 framework-core 的 module，技术性前置条件优先使用 framework-core `Require`；`Require` 已覆盖非空、非空白、正数、值与任意条件、集合与映射非空以及元素去重，仅当其能力不足时才使用 Spring `org.springframework.util.Assert`（已因自身职责依赖 Spring 的 module）或工程统一管理的 `org.apache.commons.lang3.Validate`（与 Spring 解耦的 module）。
+- **强制 · 基础**：未依赖 framework-core 的 module，技术性前置条件只检查非空时优先使用 JDK `Objects.requireNonNull`；需要检查非空白、范围、集合或任意条件时，已因自身职责依赖 Spring Framework 的 module 使用 `org.springframework.util.Assert`，与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。
+- **强制 · 主题**：framework-core `Require` 不提供异常供应器的重载抛出 `FrameworkException`（框架错误码），供技术性前置条件使用；只有带有明确业务意义的业务拒绝才通过异常供应器重载提供稳定错误码与继承自 `BaseException` 的异常，不得为普通技术性前置条件提供业务异常供应器。
 - **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有失败语义属于 API 明确承诺的业务错误时，API 层才使用 `Require`。
 - **强制 · 主题**：依赖领域状态、持久化数据或用例上下文的规则由 application 或 domain 校验，不得前移到协议绑定层。
 - **强制 · 基础**：不得仅为显式检查引入 Spring Framework，也不得手写上述工具已提供的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。

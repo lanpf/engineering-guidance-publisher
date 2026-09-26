@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -150,10 +150,10 @@
               "rules": [
                 {"id": "JAVA-VALIDATION-002", "text": "Use explicit checks only when Bean Validation cannot express a constraint or an internal API outside the framework binding path requires fast failure, such as a domain constructor or factory.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-VALIDATION-TECHNICAL-001", "text": "Technical preconditions detect programming errors or protect internal invariants and do not form a stable business protocol; their exception messages are diagnostic only and callers must not inspect message text to determine a business result.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-OBJECTS-REQUIRE-NONNULL-001", "text": "For a technical precondition that checks nullity only, a module not depending on framework-core prefers JDK `Objects.requireNonNull`.", "enforcement": "default", "priority": "baseline"},
-                {"id": "JAVA-REQUIRE-PRIORITY-001", "text": "A module that depends on framework-core selects technical-precondition tools (including nullity checks) by priority: framework-core `Require`, then Spring `org.springframework.util.Assert`, then project-managed `org.apache.commons.lang3.Validate`; the `Require` overloads without an explicit exception supplier throw the framework exception system and serve ordinary technical preconditions.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-ASSERT-001", "text": "For a technical precondition that checks blankness, ranges, collections, or arbitrary conditions, a module that does not depend on framework-core and already depends on Spring Framework for its responsibility uses `org.springframework.util.Assert`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-VALIDATE-001", "text": "For the same richer technical preconditions, a module that depends on neither framework-core nor Spring uses project-managed `org.apache.commons.lang3.Validate`.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-OBJECTS-REQUIRE-NONNULL-001", "text": "In a module that does not depend on framework-core, a technical precondition that checks nullity only prefers JDK `Objects.requireNonNull`.", "enforcement": "default", "priority": "baseline"},
+                {"id": "JAVA-REQUIRE-PRIORITY-001", "text": "A module that depends on framework-core prefers framework-core `Require` for technical preconditions; `Require` already covers nullity, blankness, positive numbers, value-and-condition checks, collection and map emptiness, and element deduplication, so Spring `org.springframework.util.Assert` (for modules already depending on Spring for their responsibility) or project-managed `org.apache.commons.lang3.Validate` (for Spring-decoupled modules) applies only when `Require` capability is insufficient.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-ASSERT-001", "text": "For a technical precondition that checks blankness, ranges, collections, or arbitrary conditions in a module that does not depend on framework-core and already depends on Spring Framework for its responsibility, use `org.springframework.util.Assert`.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-VALIDATE-001", "text": "For the same richer technical preconditions in a Spring-decoupled module that does not depend on framework-core, use project-managed `org.apache.commons.lang3.Validate`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-VALIDATION-003", "text": "Do not add Spring Framework only for explicit checks and do not hand-write equivalents these tools provide; utility dependency selection follows the common-utilities rules.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-VALIDATION-MESSAGE-001", "text": "Jakarta Bean Validation and technical-precondition diagnostic messages are written in English and are not a stable business protocol.", "enforcement": "required", "priority": "baseline"}
               ]
@@ -186,7 +186,7 @@
               "source": "standards/bp_validation.md#显式检查",
               "title": "Explicit checks",
               "rules": [
-                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "A business guard represents an expected business rejection that needs a stable error code; use framework-core `Require` and explicitly supply an exception extending `BaseException`. Only rejections with explicit business meaning carry an error code and a `BaseException` exception; do not express a business rejection with `Objects.requireNonNull`, `Validate`, or `Assert`, and do not attach business error codes or business exceptions to ordinary technical preconditions.", "enforcement": "required", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "framework-core `Require` overloads without an exception supplier throw `FrameworkException` with framework error codes and serve technical preconditions; only a business rejection with explicit business meaning supplies a stable error code and an exception extending `BaseException` through the exception-supplier overloads, and an ordinary technical precondition must not be given a business exception supplier.", "enforcement": "required", "priority": "topic"},
                 {"id": "JAVA-VALIDATION-API-001", "text": "For API requests, prefer Jakarta Bean Validation for field-shape constraints and use `Require` in API only when the failure is a business error explicitly promised by the API contract.", "enforcement": "default", "priority": "topic"},
                 {"id": "JAVA-VALIDATION-LAYER-001", "text": "Validate rules that depend on domain state, persistence data, or use-case context in application or domain rather than moving them to the protocol-binding layer.", "enforcement": "required", "priority": "topic"}
               ]
