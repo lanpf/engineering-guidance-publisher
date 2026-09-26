@@ -18,7 +18,8 @@
 - **强制 · 基础**：技术性前置条件用于发现程序错误或保护内部不变量，不构成稳定业务协议；其异常 message 只用于诊断，调用方不得依赖 message 文本判断业务结果。
 - **强制 · 基础**：依赖 framework-core 的 module，技术性前置条件优先使用 framework-core `Require`；`Require` 已覆盖非空、非空白、正数、值与任意条件、集合与映射非空以及元素去重，仅当其能力不足时才使用 Spring `org.springframework.util.Assert`（已因自身职责依赖 Spring 的 module）或工程统一管理的 `org.apache.commons.lang3.Validate`（与 Spring 解耦的 module）。
 - **强制 · 基础**：未依赖 framework-core 的 module，技术性前置条件只检查非空时优先使用 JDK `Objects.requireNonNull`；需要检查非空白、范围、集合或任意条件时，已因自身职责依赖 Spring Framework 的 module 使用 `org.springframework.util.Assert`，与 Spring 解耦的 module 使用工程统一管理的 `org.apache.commons.lang3.Validate`。
-- **强制 · 主题**：framework-core `Require` 不提供异常供应器的重载抛出 `FrameworkException`（框架错误码），供技术性前置条件使用；只有带有明确业务意义的业务拒绝才通过异常供应器重载提供稳定错误码与继承自 `BaseException` 的异常，不得为普通技术性前置条件提供业务异常供应器。
+- **强制 · 主题**：调用方未传入异常供应器时，framework-core `Require` 校验失败抛出携带框架错误码的 `FrameworkException`，用于技术性前置条件；只有带有明确业务意义的业务拒绝才通过异常供应器重载提供稳定错误码与继承自 `BaseException` 的异常，不得为普通技术性前置条件提供业务异常供应器。
+- **默认 · 主题**：技术性前置条件判断集合元素为 null 或非法时，优先抛出 `FrameworkException` 的 `missingCollectionElement` 或 `invalidCollectionElement`。
 - **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有失败语义属于 API 明确承诺的业务错误时，API 层才使用 `Require`。
 - **强制 · 主题**：依赖领域状态、持久化数据或用例上下文的规则由 application 或 domain 校验，不得前移到协议绑定层。
 - **强制 · 基础**：不得仅为显式检查引入 Spring Framework，也不得手写上述工具已提供的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。

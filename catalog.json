@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints.", "enforcement": "required", "priority": "baseline"},
@@ -186,7 +186,8 @@
               "source": "standards/bp_validation.md#显式检查",
               "title": "Explicit checks",
               "rules": [
-                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "framework-core `Require` overloads without an exception supplier throw `FrameworkException` with framework error codes and serve technical preconditions; only a business rejection with explicit business meaning supplies a stable error code and an exception extending `BaseException` through the exception-supplier overloads, and an ordinary technical precondition must not be given a business exception supplier.", "enforcement": "required", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-REQUIRE-001", "text": "When the caller does not supply an exception supplier, framework-core `Require` throws `FrameworkException` carrying framework error codes on check failure and serves technical preconditions; only a business rejection with explicit business meaning supplies a stable error code and an exception extending `BaseException` through the exception-supplier overloads, and an ordinary technical precondition must not be given a business exception supplier.", "enforcement": "required", "priority": "topic"},
+                {"id": "JAVA-VALIDATION-COLLECTION-ELEMENT-001", "text": "When a technical precondition judges a collection element null or invalid, prefer throwing `FrameworkException.missingCollectionElement()` or `FrameworkException.invalidCollectionElement()`.", "enforcement": "default", "priority": "topic"},
                 {"id": "JAVA-VALIDATION-API-001", "text": "For API requests, prefer Jakarta Bean Validation for field-shape constraints and use `Require` in API only when the failure is a business error explicitly promised by the API contract.", "enforcement": "default", "priority": "topic"},
                 {"id": "JAVA-VALIDATION-LAYER-001", "text": "Validate rules that depend on domain state, persistence data, or use-case context in application or domain rather than moving them to the protocol-binding layer.", "enforcement": "required", "priority": "topic"}
               ]
