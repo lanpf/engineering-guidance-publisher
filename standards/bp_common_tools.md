@@ -5,9 +5,9 @@
 ## 基础工具类
 
 - **默认 · 基础**：通用技术能力优先使用 JDK、工程已有框架或成熟且持续维护的社区库。
-- **强制 · 基础**：module 已因自身职责依赖 Spring Framework 时，字符串 null、empty、blank 判断统一使用 `org.springframework.util.StringUtils.hasText`，集合 null、empty 判断统一使用 `org.springframework.util.CollectionUtils.isEmpty`，其他基础判断优先复用 `org.springframework.util` 中的对应工具。
+- **强制 · 基础**：先按语义区分纯 null、非空（不为 null 且长度非零）、非空白（至少含一个非空白字符）判定，再选择对应方法；不得为统一工具改变判断语义。module 已因自身职责依赖 Spring Framework 时，字符串非空使用 `org.springframework.util.StringUtils.hasLength`，非空白使用 `hasText`；集合允许将 null 与空集合等同处理时使用 `org.springframework.util.CollectionUtils.isEmpty`。纯 null 判定使用 `== null` / `!= null` 或 JDK 对应方法，其他基础判断优先复用语义匹配的 Spring 工具。
 - **强制 · 基础**：与 Spring 解耦的 module 不得仅为工具方法引入 Spring Framework。
-- **强制 · 基础**：与 Spring 解耦的 module 在 JDK 不足以满足需求时，使用工程统一管理的 Apache Commons：字符串使用 `org.apache.commons.lang3.StringUtils.isBlank`/`isNotBlank`，集合使用 `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty`。
+- **强制 · 基础**：与 Spring 解耦的 module 先按上述语义区分判定；在 JDK 不足以满足需求时使用工程统一管理的 Apache Commons：字符串非空使用 `org.apache.commons.lang3.StringUtils.isNotEmpty`（反向使用 `isEmpty`），非空白使用 `isNotBlank`（反向使用 `isBlank`）；集合允许将 null 与空集合等同处理时使用 `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty`。不得把 empty 与 blank 判断互换。
 - **强制 · 基础**：不得手写上述工具已提供的等价逻辑。
 工具依赖的引入与版本治理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)。
 
@@ -25,7 +25,7 @@
 
 - **强制 · 基础**：数据载体之间存在对应字段的结构化映射时使用 MapStruct，不得手写逐字段搬运或使用 `BeanUtils.copyProperties`。
 - **强制 · 基础**：领域对象构造、业务校验、状态转换和协议编码必须使用显式语义方法；这些行为可以由 MapStruct mapper 调用，但不得隐藏在自动字段映射中。
-- **强制 · 基础**：转换契约必须独立定义；MapStruct 只作为实现机制，实现类必须实现契约并在方法上使用 `@Override`。实现类的包和名称遵循[服务命名最佳实践](bp_naming.md#命名约定)。
+- **强制 · 基础**：转换契约必须独立定义；手写的 `@Mapper` 接口继承契约，或 `@Mapper` 抽象类实现契约，重新声明契约方法时使用 `@Override`；具体实现由 MapStruct 生成，不得手写或修改生成类。手写 mapper 类型的包和名称遵循[服务命名最佳实践](bp_naming.md#命名约定)。
 - **强制 · 基础**：复用转换逻辑时通过 `@Mapper(uses = {...})` 组合已有 mapper，不得复制字段级转换。
-- **强制 · 基础**：`componentModel = spring` 和 `unmappedTargetPolicy = ERROR` 在公共 `@MapperConfig` 中声明，具体 mapper 通过 `config` 引用；确实不参与映射的目标字段必须显式声明 `ignore = true`。部分更新、投影等白名单映射场景可在局部配置使用 `ignoreByDefault = true` 或 `IGNORE`，不得修改公共默认配置。
+- **强制 · 基础**：`componentModel = spring` 和 `unmappedTargetPolicy = ERROR` 在公共 `@MapperConfig` 中声明，具体 mapper 通过 `config` 引用；确实不参与映射的目标字段必须显式声明 `ignore = true`。部分更新、投影等白名单映射必须在对应方法使用 `@BeanMapping(ignoreByDefault = true)` 并显式声明允许映射的字段；不得以局部 `unmappedTargetPolicy = IGNORE` 替代白名单或关闭漏映射检查，不得修改公共默认配置。
 - **强制 · 基础**：通用 converter/helper 只能供 mapper 使用，不得作为业务组件公开。

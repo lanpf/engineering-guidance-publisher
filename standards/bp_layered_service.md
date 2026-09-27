@@ -15,11 +15,11 @@
 - **强制 · 主题**：`<工程名>-application` 编排写用例和只读查询。
 - **强制 · 主题**：`<工程名>-infrastructure` 提供技术适配、持久化抽象和与具体技术栈无关的通用转换，不得放置具体持久化技术的 DO 及其转换 Mapper。
 - **强制 · 主题**：具体持久化、调度和消息实现分别放在 `<工程名>-infrastructure-persistence-<技术>`、`<工程名>-infrastructure-scheduler-<技术>`、`<工程名>-infrastructure-message-<技术>`。
-- **强制 · 主题**：持久化实现 module 同时承载该技术栈的 DO、DO 转换 Mapper、repository、SQL/XML 和装配。
+- **强制 · 主题**：持久化实现 module 承载该技术栈的 DO、DO 转换 Mapper、repository，以及 SQL/XML 的加载、装配与验证职责；SQL/XML 文件的物理存放位置遵循本文“项目级配置目录”。
 - **强制 · 主题**：`<工程名>-interfaces` 提供协议无关 Facade 实现及 REST、RPC、消息订阅等协议入口。
 - **强制 · 主题**：`<工程名>-openfeign-client` 提供调用本服务的 OpenFeign 客户端。
 - **强制 · 主题**：`<工程名>-boot` 只负责启动、运行时配置和打包。
-- **强制 · 主题**：`<工程名>-integration-tests` 是独立测试 module，承载跨 module、完整自动装配以及依赖真实数据库或中间件的集成测试；生产 module 不得依赖它。
+- **强制 · 主题**：`<工程名>-integration-tests` 是独立测试 module，承载多个 module 的真实实现协作、完整自动装配以及依赖真实数据库或中间件的集成测试；仅引用其他 module 的接口或 DTO 不因此构成集成测试；生产 module 不得依赖它。
 
 ### 包结构
 
@@ -46,6 +46,7 @@
 - **强制 · 主题**：工程根目录必须设置与各 module 平级的 `config/` 目录，作为可独立更新资源的首选存放位置。
 - **默认 · 主题**：项目级 `application.yml`、`application-*.yml` 或对应 properties、MyBatis 共享 SQL 片段与 mapper XML、数据库 schema/迁移脚本、Dubbo XML 等配置优先放在该目录。
 - **强制 · 主题**：不得仅因某个 module 负责装配就把可独立更新的配置资源打入其制品。
+- **强制 · 主题**：外置 SQL、映射文件、schema 和其他配置资源仍须与应用版本建立对应关系，并在部署前验证兼容性；可独立更新不意味着可脱离代码版本管理。
 - **强制 · 主题**：boot 必须通过 `spring.config.location`、`spring.config.additional-location`、`spring.config.import`、框架专属 location 配置或等效启动参数显式加载 `config/` 中的资源；构建、部署和本地启动流程必须保证这些资源可用，并验证缺失或无效配置能够按预期失败。
 - **强制 · 主题**：只有框架不支持外部加载、资源与代码在版本和类路径上不可拆分，或制品必须自包含且无法由部署环境提供时，才可以把资源放在对应 module 的 `src/main/resources`。不得为了开发便利牺牲配置的独立发布能力，避免仅修改资源文件就重新打包 module。
 
@@ -119,7 +120,6 @@
 
 ## 不可变数据载体
 
-- **默认 · 主题**：API command/query 优先使用 `record`。
 - **强制 · 主题**：API response 使用 `record`。
 - **强制 · 主题**：API event 在序列化、RPC、OpenFeign 和客户端支持构造器绑定时使用 `record`；存在无法支持构造器绑定的既有消费端时使用普通 JavaBean 类。
 - **强制 · 主题**：公开 Java API 新增 record component 前必须评估构造器二进制兼容性。

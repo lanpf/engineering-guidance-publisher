@@ -5,7 +5,7 @@
 ## 持久化边界
 
 - **强制 · 主题**：repository adapter 完成领域 Repository 与数据访问能力之间的适配，persistence repository 只表达数据访问能力。
-- **强制 · 主题**：具体 JPA、MyBatis 或 MyBatis-Plus repository、DO、DO 转换 Mapper、SQL/XML 和装配放在独立 persistence 实现 module；领域 Repository 契约遵循[服务分层最佳实践](bp_layered_service.md#domain)。
+- **强制 · 主题**：具体 JPA、MyBatis 或 MyBatis-Plus repository、DO、DO 转换 Mapper，以及 SQL/XML 的加载、装配与验证职责归属独立 persistence 实现 module；资源物理位置遵循[服务分层最佳实践](bp_layered_service.md#项目级配置目录)，领域 Repository 契约遵循[服务分层最佳实践](bp_layered_service.md#domain)。
 - **强制 · 主题**：每个 persistence 实现 module 内的 DO 转换 Mapper 负责 domain、application read model 与该技术栈 DO 之间的转换，不得把依赖具体 DO 的转换器放在共享 infrastructure module。
 - **强制 · 主题**：一个 persistence 实现 module 只使用一种持久化技术，一个运行时制品只装配该 repository 的一种实现；JPA、MyBatis 和 MyBatis-Plus 的替代实现可以存在于不同 module，但不得在同一实现或运行时制品内混用。制品级实现选择遵循[依赖管理最佳实践](bp_dependencies.md#服务技术基线)。
 - **强制 · 主题**：持久化实现可以选择 JPA、MyBatis 或 MyBatis-Plus；使用 MyBatis-Plus 的工程在许可证策略不允许时可以降级为 MyBatis，降级不得改变数据库 schema、表名、字段名、查询语义和 repository 可观察行为。
@@ -43,13 +43,14 @@
 MyBatis 经 Spring 异常转换抛出的 `DuplicateKeyException` 是 `DataIntegrityViolationException` 的子类，因此 JPA 和 MyBatis 可以在同一转换边界捕获 `DataIntegrityViolationException`；这是一项实现说明，不替代下述分类要求。
 - **强制 · 主题**：统一捕获后必须依据已知约束名、SQLState/厂商错误码或冲突后的业务键回查确认它确实是目标唯一约束冲突，不得把非空、外键、检查约束等其他完整性错误当成重复键。
 - **强制 · 主题**：JPA 若要在 adapter 内捕获唯一约束异常，必须在该捕获边界内执行 `flush`；否则异常可能推迟到事务提交时才抛出，应改由覆盖提交边界的统一转换器处理。
-- **强制 · 主题**：无论转换为业务异常还是按幂等成功处理，都必须在唯一的转换边界记录日志，包含约束或场景、脱敏后的业务键和处理结果；预期幂等冲突使用 `INFO` 或 `WARN`，未知或无法分类的完整性错误使用 `ERROR` 并继续抛出，脱敏形式遵循[日志与敏感数据最佳实践](bp_logging.md#日志与敏感数据)。
+- **强制 · 主题**：唯一约束异常后，若事务已失败、标记回滚或持久化上下文不再可靠，不得继续用该事务或上下文回查并返回幂等成功；尤其在 JPA/Hibernate 持久化异常后，应先结束失败事务，再通过有效的新事务或独立查询边界核验既有结果。不得仅在失败事务内部开启嵌套调用便宣称恢复成功；核验失败仍须传播失败。
+- **强制 · 主题**：无论转换为业务异常还是按幂等成功处理，都必须在唯一的转换边界记录日志，包含约束或场景、脱敏后的业务键和处理结果；级别、重复事件聚合与审计例外统一遵循[日志与敏感数据最佳实践](bp_logging.md#日志与敏感数据)，未知或无法分类的完整性错误必须继续抛出。
 
 ## 查询与性能
 
 - **强制 · 主题**：分页必须使用稳定且唯一的排序，不得依赖数据库未指定顺序。
 - **默认 · 主题**：深分页或持续扫描优先使用游标。
-- **强制 · 主题**：查询条件、排序和关联路径必须由匹配索引支持；新增高频或大表查询前验证执行计划。
+- **强制 · 主题**：查询索引须依据访问模式、数据规模和执行计划设计；新增高频或大表查询前必须验证执行计划和性能满足场景要求，不得机械要求每个查询条件独立建索引。
 - **强制 · 主题**：持久化查询接口命名遵循[服务命名最佳实践](bp_naming.md#命名约定)。
 - **强制 · 主题**：禁止 N+1 查询和无界结果集；批量读写必须限制批次大小，避免一次性加载全部数据。
 - **强制 · 主题**：MyBatis-Plus 的数据库类型必须显式正确配置，不支持的类型必须启动失败；自定义 interceptor 必须保持确定顺序并验证不会绕过分页或命名策略。

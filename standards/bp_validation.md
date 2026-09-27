@@ -20,7 +20,7 @@
 - **强制 · 基础**：显式检查工具必须先满足失败语义，再按已有依赖及能力依次选择 framework-core `Require`、Spring `org.springframework.util.Assert`、工程统一管理的 `org.apache.commons.lang3.Validate`，再使用 JDK（如 `Objects.requireNonNull`）；前一工具不可用或不能满足约束及异常语义时才选择下一项。仅当已有工具和 JDK 均不能满足需求时才允许手写检查。
 - **强制 · 基础**：不得仅为显式检查引入新依赖，也不得手写已有可用工具已提供且满足失败语义的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 - **默认 · 主题**：依赖 framework-core 的 module，技术性前置条件判断集合元素为 null 或非法时，优先抛出 `FrameworkException` 的 `missingCollectionElement` 或 `invalidCollectionElement`。
-- **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有失败语义属于 API 明确承诺的业务错误时，API 层才进行业务条件检查。
+- **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有 API 契约明确承诺业务错误语义时，对应检查才返回该业务错误；检查的执行位置由检查内容决定，不因错误由 API 对外承诺而前移到协议绑定层。
 - **强制 · 主题**：依赖领域状态、持久化数据或用例上下文的规则由 application 或 domain 校验，不得前移到协议绑定层。
 
 ## 异常与消息
