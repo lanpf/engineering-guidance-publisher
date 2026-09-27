@@ -18,6 +18,7 @@
 - **强制 · 基础**：技术性前置条件用于发现程序错误或保护内部技术不变量，不得使用服务业务错误码；可以抛出通用技术异常或携带框架通用错误码的 `FrameworkException`。
 - **强制 · 主题**：业务条件检查表达调用方可预期的业务拒绝，必须抛出携带稳定业务错误码、继承自 framework-core `BaseException` 的异常；使用 `Require` 的异常供应器重载或显式抛出对应业务异常，不得因工具降级而丢失业务错误语义。普通技术性前置条件不得使用业务异常供应器。
 - **强制 · 基础**：显式检查工具必须先满足失败语义，再按已有依赖及能力依次选择 framework-core `Require`、Spring `org.springframework.util.Assert`、工程统一管理的 `org.apache.commons.lang3.Validate`，再使用 JDK（如 `Objects.requireNonNull`）；前一工具不可用或不能满足约束及异常语义时才选择下一项。仅当已有工具和 JDK 均不能满足需求时才允许手写检查。
+- **强制 · 主题**：`Require.that` 的判定谓词只允许以传入的 `value` 为唯一输入（可调用其方法、引用 `static final` 常量），不得引用其他变量、方法参数、`this` 字段或外部可变状态；跨变量判定必须写成显式守卫并按技术性前置条件处理，不得改写为 `Require.that` 调用。
 - **强制 · 基础**：不得仅为显式检查引入新依赖，也不得手写已有可用工具已提供且满足失败语义的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 - **默认 · 主题**：依赖 framework-core 的 module，技术性前置条件判断集合元素为 null 或非法时，优先抛出 `FrameworkException` 的 `missingCollectionElement` 或 `invalidCollectionElement`。
 - **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有 API 契约明确承诺业务错误语义时，对应检查才返回该业务错误；检查的执行位置由检查内容决定，不因错误由 API 对外承诺而前移到协议绑定层。
