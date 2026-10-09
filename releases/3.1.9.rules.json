@@ -1,0 +1,2929 @@
+{
+  "version": "3.1.9",
+  "previous_version": "3.1.8",
+  "baseline": "427e838",
+  "status": "released",
+  "date": "2026-10-09",
+  "added": [
+    {
+      "id": "JAVA-CONSTANT-ENUM-001",
+      "text": "Represent a fixed, closed value set such as finite states or categories with an enum.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "constants-and-literals.md",
+      "source": "standards/bp_java.md#常量与字面量"
+    },
+    {
+      "id": "JAVA-CONSTANT-SHARED-001",
+      "text": "Represent a single value shared across classes with a `public static final` constant or a dedicated constants type.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "constants-and-literals.md",
+      "source": "standards/bp_java.md#常量与字面量"
+    },
+    {
+      "id": "JAVA-CONSTANT-CONFIG-001",
+      "text": "Externalize deployment-varying values as configuration; defaults are allowed.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "constants-and-literals.md",
+      "source": "standards/bp_java.md#常量与字面量"
+    },
+    {
+      "id": "JAVA-PREDICATE-SEMANTICS-001",
+      "text": "Distinguish null-only, non-empty, and non-blank before selecting a predicate; never change semantics to standardize tools. Treat null and empty collections alike only when the scenario allows it.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类"
+    },
+    {
+      "id": "JAVA-UTILITY-SPRING-001",
+      "text": "In modules already depending on Spring, use semantics-matching utilities: `StringUtils.hasLength` for non-empty strings, `hasText` for non-blank strings, and `CollectionUtils.isEmpty` when null and empty collections are equivalent. Use null comparisons or JDK equivalents for null-only checks.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类"
+    },
+    {
+      "id": "LOMBOK-ENTITY-ACCESS-001",
+      "text": "Aggregate roots and entities use only `@Getter` for field access; prohibit `@Data` and externally exposed setters without domain behavior.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "id": "LOMBOK-ENTITY-EQUALITY-001",
+      "text": "Implement aggregate-root and entity equality explicitly from unique identity; do not use Lombok `@EqualsAndHashCode`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "id": "MAPSTRUCT-CONTRACT-BINDING-001",
+      "text": "Define a conversion contract independently; a handwritten `@Mapper` interface extends it or abstract class implements it, using `@Override` when redeclaring contract methods. The handwritten mapper follows the naming rules.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "id": "MAPSTRUCT-GENERATED-001",
+      "text": "MapStruct generates concrete implementations at compile time; never handwrite or modify generated classes.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "id": "MAPSTRUCT-SHARED-CONFIG-001",
+      "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in shared `@MapperConfig`, reference it via each mapper's `config`, and retain these shared defaults.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "id": "MAPSTRUCT-EXPLICIT-IGNORE-001",
+      "text": "For ordinary mappings, explicitly declare `ignore = true` for each intentionally unmapped target field.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "id": "MAPSTRUCT-WHITELIST-001",
+      "text": "For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicit allowed mappings; never substitute local `unmappedTargetPolicy = IGNORE` or disable missing-mapping checks.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "id": "JAVA-BEAN-VALIDATION-PREFERENCE-001",
+      "text": "When dependencies and runtime validation are available, prefer Jakarta Bean Validation for nullability, format, and range constraints on bindable properties and method parameters or returns.",
+      "enforcement": "default",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-BEAN-VALIDATION-EXECUTION-001",
+      "text": "When using Bean Validation, declare constraints at the corresponding field, property, record component, parameter, or return location and ensure the actual call path triggers validation.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-MVC-OBJECT-VALIDATION-001",
+      "text": "Trigger Spring MVC request-object validation through entry-parameter `@Valid`, or `@Validated` for specific groups; follow the entry group-selection rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-MVC-METHOD-VALIDATION-001",
+      "text": "Direct MVC parameter constraints such as `@NotBlank` or `@Min` use MVC method validation; do not blanket-annotate Controllers with class-level `@Validated` merely to enable it.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-CHECK-TOOL-ORDER-001",
+      "text": "Choose explicit-check tools by failure semantics first, then available dependencies and capability, in order: framework-core `Require`, Spring `Assert`, managed Commons `Validate`, and JDK checks such as `Objects.requireNonNull`. Advance only when the preceding tool is unavailable or unsuitable; handwrite checks only when existing tools and the JDK cannot satisfy the requirement.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-VALID-PURITY-001",
+      "text": "A `Require.valid` predicate uses its passed `value` as the sole input: it may call value methods, reference `static final` constants or class literals, and use immutable values derived solely from `value` inside the predicate. Never capture other variables, parameters, instance fields, or mutable external state.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-CROSS-VARIABLE-GUARD-001",
+      "text": "Use explicit guards for cross-variable checks, never `Require.valid`; classify their exceptions by failure semantics rather than treating every cross-variable decision as a technical precondition.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-NONNULL-SCOPE-001",
+      "text": "Use `Require.notNull`/`allNotNull` only for constructor parameters and public-method parameters, not return values, local variables, or fields.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-NONNULL-BATCH-001",
+      "text": "For Require parameter null checks, use `notNull` for one parameter and `allNotNull` for multiple parameters; do not chain repeated `notNull` calls.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-COLLECTION-NULL-EXCEPTION-001",
+      "text": "Technical null-element checks cover collection elements and both Map keys and values; any null element throws `FrameworkException`. This rule does not replace domain or business validity checks.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-NULLSAFE-SELECTION-001",
+      "text": "Prefer `NullSafe.forEach` for null-element checking alone; prefer `NullSafe.copyOf` when an immutable copy is also needed, without a redundant `forEach` check.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-EXCEPTION-SEMANTICS-001",
+      "text": "Classify exceptions by failure semantics rather than merely inheritance from `BaseException`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "JAVA-EXCEPTION-LANGUAGE-001",
+      "text": "Service business errors use bound Chinese templates; project-authored technical diagnostics and Bean Validation messages use English. Original third-party messages are exempt.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "JAVA-EXCEPTION-PROTOCOL-001",
+      "text": "Determine business outcomes by stable business error codes; never parse an exception message as a stable protocol.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+      "text": "Translate Jakarta Bean Validation failures into the framework exception hierarchy at the unified exception translation boundary.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "JAVA-BUSINESS-EXCEPTION-BASE-001",
+      "text": "Service-defined business exceptions extend framework-core `BaseException`, never JDK `RuntimeException` or other JDK exceptions directly.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "LOG-PARAMETERIZED-001",
+      "text": "Declare loggers under the Lombok rules and use SLF4J placeholders instead of concatenating message text.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-EXCEPTION-ARGUMENT-001",
+      "text": "When logging an exception, pass the exception object as the last argument instead of embedding it in message text.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-SEVERITY-001",
+      "text": "Choose severity by impact and handling: ERROR for failures requiring human intervention such as exhausted retries, unrecoverable or unclassified integrity failures; WARN for noteworthy abnormal contention, recovery, or degradation; INFO for normal idempotency and key business/external-interaction audit points; DEBUG for diagnosis. Exception translation alone does not make a normal idempotent hit WARN.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-PRODUCTION-DEBUG-001",
+      "text": "Disable DEBUG in production by default.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-BUSINESS-CONTEXT-001",
+      "text": "Include locatable business context such as use-case/job name, sanitized business key, and scene or shard identifier.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-TRACE-CONTEXT-001",
+      "text": "Let the framework inject tracing context; business code must not manually assemble trace fields.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-OBSERVABILITY-BOUNDARY-001",
+      "text": "Logs must not replace metrics, alerts, or distributed tracing.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-RECURRING-CONTROL-001",
+      "text": "Aggregate, rate-limit, or sample high-frequency recurring operational records instead of INFO per occurrence or escalation to WARN to bypass controls. Aggregates retain scene, time window, count, and outcome.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "LOG-AUDIT-COMPLETENESS-001",
+      "text": "Explicit per-event audit records must use a controlled audit channel without sampling or loss.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "SENSITIVE-PLAINTEXT-001",
+      "text": "Never emit sensitive data in plain text in message text, parameters, MDC, or exception information.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "SENSITIVE-CENTRAL-MASK-001",
+      "text": "Correlate sensitive business keys only through centralized masking or irreversible digests; do not scatter such implementations in business code.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "id": "PACKAGE-TEST-MIRROR-001",
+      "text": "Mirror production package paths in tests by default.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#包结构"
+    },
+    {
+      "id": "PACKAGE-TEST-ISOLATION-001",
+      "text": "Keep test helpers in test sources or test-support packages; never place them in production packages or make production code depend on them.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#包结构"
+    },
+    {
+      "id": "ARCH-DEP-API-CONTRACT-001",
+      "text": "API must not depend on business implementations.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-DEP-DOMAIN-001",
+      "text": "Domain must not depend on other business layers.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-DEP-APPLICATION-001",
+      "text": "Application depends on domain; any additional contract dependencies follow the application boundary rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-DEP-INTERFACES-001",
+      "text": "Interfaces depends on API and application.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-DEP-CLIENT-001",
+      "text": "OpenFeign client depends on API.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-DEP-BOOT-001",
+      "text": "Boot depends on modules required for runtime assembly and performs final assembly only.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-CONFIG-LOAD-001",
+      "text": "Explicitly load root-level `config/` resources through `spring.config.location`, `spring.config.additional-location`, `spring.config.import`, technology-specific location settings, or equivalent startup parameters.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-CONFIG-VERIFY-001",
+      "text": "Build, deployment, and local startup must provide required external resources and verify expected failure for missing or invalid configuration.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "ARCH-CONFIG-CLASSPATH-EXCEPTION-001",
+      "text": "Package resources in module `src/main/resources` only when external loading is unsupported, resource/code versions or classpaths are inseparable, or deployment cannot provide an artifact's mandatory self-contained resources. Development convenience alone is not sufficient.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "id": "API-FACADE-INPUT-001",
+      "text": "Facade inputs implement `Request` and use complete immutable API command/query records independent of HTTP binding and header injection.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "API-FACADE-OUTPUT-001",
+      "text": "Facade outputs use `Result<T>` or paged `PageResult<T>`; use `Result<Void>` for no payload and `Result<List<T>>` for nonpaged collections.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DOMAIN-STATE-CHANGE-001",
+      "text": "Aggregate roots and entities change state only through domain behavior.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DOMAIN-VALUE-IMMUTABILITY-001",
+      "text": "Value objects are immutable.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DOMAIN-SERVICE-SCOPE-001",
+      "text": "Domain services contain only cross-aggregate rules or rules not belonging to a single aggregate.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DOMAIN-RAW-EVENT-001",
+      "text": "Domain behavior decides occurrence and business content; raw domain events contain occurrence time, event type, and business content only, without EventStore record IDs or ID-generator dependencies.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DOMAIN-EVENT-ENVELOPE-ID-001",
+      "text": "EventStore generates a global ID when building `DomainEventEnvelope`, used only for persistence, publication, tracing, and idempotency.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "INFRA-EVENTSTORE-PORT-001",
+      "text": "Adapt domain-event storage through the framework-domain port; domain and application must not depend on a concrete event-store implementation. Envelope identity follows the domain-event and distributed-ID rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "INFRA-DURATION-VALIDATION-001",
+      "text": "For an independent Duration minimum, use both `@NotNull` and `@DurationMin` with explicit units.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "INFRA-DURATION-DEPENDENCY-001",
+      "text": "A module using `@DurationMin` directly declares `hibernate-validator`.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定"
+    },
+    {
+      "id": "DATA-DOMAIN-RECORD-001",
+      "text": "Prefer records for domain IDs, value objects, effects, and immutable events when inheritance is unnecessary.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "DATA-DOMAIN-CLASS-001",
+      "text": "Use ordinary classes for aggregate roots, entities, mutable state, or complex behavior, following the Java type-selection rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "DATA-APPLICATION-RECORD-001",
+      "text": "Prefer records for immutable application commands, outputs, query conditions, and views.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "DATA-APPLICATION-COMPONENT-001",
+      "text": "Services, repositories, gateways, and mappers use ordinary classes or their corresponding interfaces, never records.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "DATA-PERSISTENCE-PROJECTION-001",
+      "text": "Read-only persistence projections may use records by default.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "DATA-PERSISTENCE-DO-001",
+      "text": "DOs, JPA entities, and types requiring no-argument constructors or setter mapping use ordinary classes.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体"
+    },
+    {
+      "id": "PERSISTENCE-MODULE-TECHNOLOGY-001",
+      "text": "Each persistence implementation module uses one technology; alternative JPA, MyBatis, and MyBatis-Plus implementations may exist in distinct modules but never coexist within one implementation module.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-RUNTIME-IMPLEMENTATION-001",
+      "text": "A runtime artifact assembles only one implementation of each repository contract; choose it under the boot packaging-dependency rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-SCHEMA-PREFIX-COMMENT-001",
+      "text": "Begin `schema.sql` with a comment requiring table prefix and suffix to match runtime configuration.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-SCHEMA-NAMING-CHANGE-001",
+      "text": "A table-prefix or suffix change is a schema change: update DDL or migration configuration along with runtime settings.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-RETRY-IDEMPOTENT-001",
+      "text": "Every retried write must be idempotent.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-RETRY-POLICY-001",
+      "text": "Explicitly classify unique-constraint and optimistic-lock conflicts, deadlocks, and transient connection failures; bound retry count rather than retrying indefinitely.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-QUERY-PLAN-001",
+      "text": "Design indexes by access patterns, data scale, and execution plans; verify plans and acceptable performance before high-frequency or large-table queries instead of requiring an index per predicate.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-NPLUSONE-001",
+      "text": "N+1 queries are forbidden.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-RESULT-BOUND-001",
+      "text": "Limit query result scope; unbounded result sets are forbidden.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-BATCH-SIZE-001",
+      "text": "Bound batch read/write size rather than loading all data at once.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-MYBATIS-DATABASE-TYPE-001",
+      "text": "Explicitly configure the correct MyBatis-Plus database type; fail startup on unsupported types.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-INTERCEPTOR-ORDER-001",
+      "text": "Keep custom interceptor order deterministic and verify it cannot bypass pagination or naming rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-CONFLICT-LOG-001",
+      "text": "Record known uniqueness-conflict outcomes once at the translation boundary with constraint/scene, sanitized business key, and outcome; severity, aggregation, and audit exceptions follow logging rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "PERSISTENCE-UNKNOWN-INTEGRITY-001",
+      "text": "Propagate unknown or unclassified integrity failures rather than treating them as business uniqueness conflicts or idempotent success.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "id": "DEP-ADMISSION-REVIEW-001",
+      "text": "Before adding dependencies, assess maintenance, security, license, and dependency cost.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "DEP-OVERLAP-001",
+      "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "DEP-SCOPE-USAGE-001",
+      "text": "Choose scope by actual use: compile for compilation requirements, test for tests, and provided only for capabilities genuinely supplied by the runtime.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "DEP-OPTIONAL-001",
+      "text": "Use optional only for a genuinely optional capability; it is not a replacement for choosing the correct scope.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "SERVICE-SPRING-VERSION-PAIR-001",
+      "text": "Use the unified service version pair: Spring Boot `3.5.16` with Spring Cloud `2025.0.3`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "service-baseline.md",
+      "source": "standards/bp_dependencies.md#服务技术基线"
+    },
+    {
+      "id": "SERVICE-SPRING-VERSION-UPGRADE-001",
+      "text": "Upgrade the version pair with `framework-dependencies` and update the policy table in the same release.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "service-baseline.md",
+      "source": "standards/bp_dependencies.md#服务技术基线"
+    },
+    {
+      "id": "DOCS-BASE-FILES-001",
+      "text": "Every project provides root `README.md` and `docs/RESPONSIBILITIES.md`.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "DOCS-RESPONSIBILITY-SCOPE-001",
+      "text": "`docs/RESPONSIBILITIES.md` defines owned/unowned responsibilities, collaboration contracts, and delivery extent; it is the single home for cross-service collaboration contracts.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "DOCS-UNOWNED-OWNER-001",
+      "text": "Each unowned responsibility listed in the responsibility document must identify its owner.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "DOCS-CONTRACT-SPLIT-001",
+      "text": "Each side writes its half of a cross-service contract in its own `docs/RESPONSIBILITIES.md` and links to the other: the caller owns end-to-end flow and the callee owns endpoint contract and consumption semantics. Never duplicate the same contract table or flow.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "DOCS-CONTRACT-UPDATE-001",
+      "text": "When a cross-service contract changes, both sides update their owned content together.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "DOCS-CONTRACT-LINK-001",
+      "text": "Reference the other side's authoritative document by link instead of copying its content.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档"
+    },
+    {
+      "id": "NAME-INTERFACE-ROLE-001",
+      "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-ABSTRACT-BASE-001",
+      "text": "Name abstract classes `Abstract*`; reserve `Base*` for framework or shared base types.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-API-SHARED-RESPONSE-001",
+      "text": "Use `*ApiResponse` only for a shared API payload return type.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-MAPPER-TYPE-001",
+      "text": "Name conversion contracts by layer responsibility and handwritten MapStruct mapper types `*MapStructMapper`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-MAPPER-PACKAGE-001",
+      "text": "Place the handwritten MapStruct mapper in its contract package's `mapstruct` subpackage.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-MYBATIS-MAPPER-FILE-001",
+      "text": "Name concrete mapper XML files `<Aggregate>Mapper.xml`.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence-naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-MYBATIS-REFID-001",
+      "text": "Reference shared SQL fragments under the persistence reuse rules and always use a fully qualified `refid`.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "persistence-naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-KEY-RESOLVER-SUFFIX-001",
+      "text": "Name each concrete business-scenario resource-key handler `*KeyResolver`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "NAME-KEY-RESOLVER-BASE-001",
+      "text": "Concrete scenario key resolvers extend `AbstractKeyResolver`; runtime responsibilities follow resource-key rules.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "id": "ERROR-CATEGORY-MAPPING-001",
+      "text": "Choose category, range, prefix, and semantics together: shared DomainError 000-099 / DOMAIN_; aggregate DomainError 100-599 / aggregate name; ApplicationError 600-699 / APP_; own-technology InfrastructureError 700-799 / INFRA_TECH_ (persistence, cache, locks, serialization, files, event storage, outbox); external-adapter InfrastructureError 800-899 / INFRA_ACL_; 900-999 remains unallocated. ACL denotes responsibility, not a required separate module. Aggregate block allocation follows the separate capacity rule.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "ERROR-DOMAIN-ID-FIXED-001",
+      "text": "Fix common-domain local code 000 as `DOMAIN_ENTITY_ID_INVALID`; use the category mapping for the shared-domain prefix.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "ERROR-AGGREGATE-FIRST-CODES-001",
+      "text": "Fix the first two codes of each aggregate's allocated range as `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`; the category mapping owns the name prefix.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "NAME-BUSINESS-KEY-BOUNDARY-001",
+      "text": "Business code uses business keys only. A scenario `*KeyResolver` owns business prefixes and segments and delegates to injected `ResourceNameResolver`, without parsing or assembling namespaces. Exactly-once namespace injection follows the namespace ownership rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间"
+    },
+    {
+      "id": "NAME-NAMESPACE-CONFIG-001",
+      "text": "Unified infrastructure configuration supplies application namespace identity.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间"
+    },
+    {
+      "id": "NAME-NAMESPACE-MANUAL-PREFIX-001",
+      "text": "Business code, business configuration, and adapters must not repeat or hand-assemble namespace prefixes for an individual resource; the canonical exactly-once namespace rule owns injection count.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间"
+    },
+    {
+      "id": "SERVICE-CALL-INTERNAL-REUSE-001",
+      "text": "Prefer the callee's published API module and directly reuse request/response contracts rather than redefining equivalents.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部服务调用"
+    },
+    {
+      "id": "SERVICE-CALL-INTERNAL-DEPENDENCY-001",
+      "text": "Depend only on the callee's public API, never its application, interfaces, or concrete implementation modules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部服务调用"
+    },
+    {
+      "id": "SERVICE-CALL-FALLBACK-CONDITION-001",
+      "text": "Define local adapter types only when the published API cannot be referenced or its public contract does not fit the current call boundary.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部调用降级契约"
+    },
+    {
+      "id": "SERVICE-CALL-FALLBACK-REQUEST-001",
+      "text": "A local fallback request implements `Request` and follows the internal-request naming rule.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部调用降级契约"
+    },
+    {
+      "id": "SERVICE-CALL-FALLBACK-RESPONSE-001",
+      "text": "Use `Result<T>` for ordinary fallback responses and `PageResult<T>` for paged responses.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部调用降级契约"
+    },
+    {
+      "id": "SERVICE-CALL-FALLBACK-NAME-001",
+      "text": "Prefer a fallback response T name consistent with the published contract, but use local semantic names when anti-corruption, protocol, or semantic differences require them; never incorrectly reuse a Java type merely to preserve a name.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部调用降级契约"
+    },
+    {
+      "id": "SERVICE-CALL-FIXED-MODEL-001",
+      "text": "Use typed payloads for fixed field sets; never use Map merely to save type definitions, reuse a generic request, assemble a few fixed fields, or avoid a mapper.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#Map 使用边界"
+    },
+    {
+      "id": "SERVICE-CALL-MAP-CONFINEMENT-001",
+      "text": "When Map adaptation is necessary, confine construction and conversion to the matching infrastructure adapter; never expose it through ports or to application/domain.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#Map 使用边界"
+    },
+    {
+      "id": "SERVICE-CALL-MAP-CONSTANT-001",
+      "text": "Use external-service-specific constants for fixed Map protocol keys and keep them in the corresponding infrastructure adapter.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#Map 使用边界"
+    },
+    {
+      "id": "ID-GENERATOR-REGISTRATION-001",
+      "text": "Register and validate generator names and corresponding CosId configuration before deployment.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "ID-GENERATOR-MISSING-001",
+      "text": "A missing generator fails startup or its use case; never silently fall back to local algorithms or database auto-increment.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "ID-BUSINESS-BOUNDARY-001",
+      "text": "Generate aggregate and other business identifiers through framework ports in application/infrastructure and pass them into domain. Domain must not depend on `LongIdGenerator`, CosId, or starter types.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "ID-EVENTSTORE-BOUNDARY-001",
+      "text": "Domain-event persistence identifier generation follows the canonical EventStore and Envelope identity rule in service layering.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "ID-STRING-SOURCE-001",
+      "text": "Non-Long string identifiers such as UUIDs or external identities are outside `LongIdGenerator`; never invent business-owned generation algorithms, and document their source in the project domain document.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "ID-STRING-TYPE-001",
+      "text": "Non-Long domain identifier types follow the layered-service project-level `EntityId` base constraints.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID"
+    },
+    {
+      "id": "LOCK-KEY-STABILITY-001",
+      "text": "Business lock key segments together identify the same contended resource stably; never use random keys or multiple formats for one resource.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-KEY-RESOLUTION-001",
+      "text": "`LockExecutor` internally normalizes business segments through `ResourceNameResolver`, including `String.join` and namespace injection; callers pass business segments and never resolve or pre-prefix keys.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-KEY-SENSITIVE-001",
+      "text": "Lock key segments contain no sensitive data under the logging definition.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-WAIT-BOUND-001",
+      "text": "Bound wait time by business SLA; never wait indefinitely or spin without backoff.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-WAIT-IMMEDIATE-001",
+      "text": "Prefer immediate lock acquisition by default.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-WAIT-FAILURE-001",
+      "text": "On acquisition failure return an explicit retryable, conflict, or degradation outcome.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-LEASE-BOUND-001",
+      "text": "Cover the normal critical-section upper bound with a lease and safety margin; bound critical-section duration even with automatic renewal.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "LOCK-CRITICAL-SECTION-001",
+      "text": "Restrict critical sections to necessary read/modify/write work, excluding avoidable remote calls, large batch processing, and long transactions.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁"
+    },
+    {
+      "id": "MESSAGE-OUTBOX-PORT-001",
+      "text": "Application submits integration events only through `IntegrationEventOutbox`, without direct RabbitMQ templates or broker APIs.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-OUTBOX-TRANSACTION-001",
+      "text": "Commit business state and outbox rows atomically in the same local transaction; direct publication must not replace reliable outbox semantics.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-OUTBOX-SIGNAL-001",
+      "text": "Trigger an outbox publication signal only after transaction commit.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-CONTRACT-FIELDS-001",
+      "text": "A stable integration-event contract includes globally unique event ID, event type, aggregate type, aggregate ID, and occurrence time.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-CONTRACT-MODEL-001",
+      "text": "Never directly serialize domain entities as integration events; use the distinct domain/integration type boundary defined by service layering.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-LOCAL-IDEMPOTENCY-ATOMIC-001",
+      "text": "Commit completed-consumption deduplication and local business writes atomically in the same transaction; never mark consumed before separate fallible writes.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-EXTERNAL-IDEMPOTENCY-001",
+      "text": "For nontransactional external effects, use a recoverable idempotency protocol preventing missed processing or duplicated side effects on retries.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-ACK-COMMIT-001",
+      "text": "Acknowledge only after business processing and local transaction success.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-CONSUMER-RETRY-001",
+      "text": "On consumer failure, use classified bounded retries and backoff.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-CONSUMER-DEADLETTER-001",
+      "text": "Route unrecoverable messages or those exceeding retry thresholds to dead-letter or manual handling.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-METRICS-001",
+      "text": "Monitor publication confirms/returns, outbox backlog, retries, consumer lag, and dead-letter counts.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-TRACE-CONTEXT-001",
+      "text": "Trace message processing with event ID, aggregate ID, and destination.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-DELAY-QUORUM-001",
+      "text": "When at-least-once delayed delivery is required, use a quorum configuration supporting that semantics.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-DELAY-PARAMETER-001",
+      "text": "Validate delay levels, tick, and maximum TTL against supported ranges at startup.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-DELAY-PURPOSE-001",
+      "text": "Use delayed messages only for error-tolerant retries, reminders, and auxiliary flows, never as precise timers or the sole guarantee of a core-business deadline.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "MESSAGE-DELAY-STATE-001",
+      "text": "On delayed-message arrival recheck state and idempotency; expired or completed work must not repeat side effects.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布"
+    },
+    {
+      "id": "JOB-BATCH-BOUND-001",
+      "text": "Use bounded pages or shards with stable sorted cursors, bounded batch size, and bounded runtime; never load all data at once.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "JOB-BATCH-TRANSACTION-001",
+      "text": "Never hold a transaction across multiple batches.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "COMPENSATION-PARAMETER-VALIDITY-001",
+      "text": "Parameters carry only validated business scope, cursors, or switches and fail fast when missing or invalid.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "COMPENSATION-PARAMETER-SECRET-001",
+      "text": "Job parameters must not contain secrets.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "JOB-OPERATIONS-001",
+      "text": "Configure execution timeouts, alerts, log retention, and failure handling.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "JOB-LOG-CONTEXT-001",
+      "text": "Log job name, executor, shard, batch, processed count, and outcome; follow logging rules for sensitive data.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底"
+    },
+    {
+      "id": "TEST-UNIT-CLASS-NAME-001",
+      "text": "Name unit and module contract tests `*Test`.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "unit-testing.md",
+      "source": "standards/bp_unit_testing.md#单元测试"
+    },
+    {
+      "id": "TEST-UNIT-RUNNER-001",
+      "text": "Run unit and module contract tests with Maven Surefire in the test phase.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "unit-testing.md",
+      "source": "standards/bp_unit_testing.md#单元测试"
+    },
+    {
+      "id": "TEST-INTEGRATION-CLASSIFICATION-001",
+      "text": "Tests of real implementation collaboration across modules, full auto-configuration, real databases, or real middleware are integration tests; merely referencing another module's interface or DTO is insufficient.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-INTEGRATION-PLACEMENT-001",
+      "text": "Put service integration tests in the architecture-defined standalone test module, never in a production module.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-IT-CLASS-NAME-001",
+      "text": "Name integration tests `*IT`; method naming follows unit-test naming rules.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-IT-RUNNER-001",
+      "text": "Run integration tests with Maven Failsafe in integration-test and verify phases.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-MODULE-README-001",
+      "text": "A standalone test module README contains only coverage, environment requirements, unified execution, report location, and documentation index.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-SCENARIO-DOC-LOCATION-001",
+      "text": "Put detailed integration scenarios in the standalone test module's `docs/<TestClass>.md`.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "JAVA-VALIDATION-ENTRY-GROUP-001",
+      "text": "Use `@Valid` for request-object entries with the default validation group and `@Validated` for explicitly selected groups; never stack both indiscriminately at the same entry.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    }
+  ],
+  "revised": [
+    {
+      "before": {
+        "id": "JAVA-UTILITY-005",
+        "text": "In Spring-decoupled modules distinguish the same predicate semantics first. When the JDK is insufficient, use managed Apache Commons `org.apache.commons.lang3.StringUtils.isEmpty`/`isNotEmpty` for empty/non-empty and `isBlank`/`isNotBlank` for blank/non-blank, and `org.apache.commons.collections4.CollectionUtils.isEmpty`/`isNotEmpty` only when null and empty collections are equivalent; never interchange empty and blank.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-UTILITY-005",
+        "text": "When the JDK is insufficient in a Spring-decoupled module, use managed Commons tools matching the predicate semantics: strings use `isEmpty`/`isNotEmpty` or `isBlank`/`isNotBlank`; collections use collections4 `isEmpty`/`isNotEmpty` only when null and empty are equivalent.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "clarify existing Commons selection without changing its identity"
+    },
+    {
+      "before": {
+        "id": "TEST-SELF-CONTAINED-001",
+        "text": "Keep integration scenarios self-contained; place containers, test application, configuration, probes, and lifecycle management in the corresponding `*IT` when practical.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-SELF-CONTAINED-001",
+        "text": "Prefer self-contained integration scenarios, with containers, test application, configuration, probes, and lifecycle management in the corresponding `*IT`.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试",
+      "reason": "align catalog enforcement with the source's existing default classification"
+    }
+  ],
+  "retired": [
+    {
+      "rule": {
+        "id": "JAVA-LITERAL-002",
+        "text": "Represent a fixed closed value set with an enum, a reusable single value with a `public static final` constant or dedicated constants type, and a deployment-varying value with external configuration, which may declare a default.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "constants-and-literals.md",
+      "source": "standards/bp_java.md#常量与字面量",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-CONSTANT-ENUM-001",
+        "JAVA-CONSTANT-SHARED-001",
+        "JAVA-CONSTANT-CONFIG-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-UTILITY-002",
+        "text": "Distinguish null-only, non-empty (non-null and nonzero length), and non-blank (contains a non-whitespace character) before selecting a predicate; never change semantics to standardize tools. In Spring-dependent modules use `org.springframework.util.StringUtils.hasLength` for non-empty and `hasText` for non-blank, and `org.springframework.util.CollectionUtils.isEmpty` only when null and empty collections are equivalent. Use `== null` / `!= null` or JDK equivalents for null-only checks and other Spring utilities only when their semantics match.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-PREDICATE-SEMANTICS-001",
+        "JAVA-UTILITY-SPRING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOMBOK-ENTITY-001",
+        "text": "Aggregate roots and entities use only `@Getter`, avoid `@Data` and Lombok `@EqualsAndHashCode`, and implement equality explicitly from the unique identifier.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOMBOK-ENTITY-ACCESS-001",
+        "LOMBOK-ENTITY-EQUALITY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MAPSTRUCT-CONTRACT-001",
+        "text": "Define the conversion contract independently; MapStruct is an implementation mechanism rather than the contract itself.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MAPSTRUCT-CONTRACT-BINDING-001",
+        "MAPSTRUCT-GENERATED-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MAPSTRUCT-IMPLEMENTATION-001",
+        "text": "A handwritten `@Mapper` interface extends the independent conversion contract, or a `@Mapper` abstract class implements it; use `@Override` when redeclaring contract methods. MapStruct generates the concrete implementation: never handwrite or modify generated classes. Naming rules apply to the handwritten mapper type.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MAPSTRUCT-CONTRACT-BINDING-001",
+        "MAPSTRUCT-GENERATED-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MAPSTRUCT-CONFIG-001",
+        "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in a shared `@MapperConfig` referenced by each mapper; explicitly ignore intentionally unmapped target fields. For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicitly declare allowed mappings. Never substitute local `unmappedTargetPolicy = IGNORE` for a whitelist or disable unmapped-field checks; retain the shared default.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MAPSTRUCT-SHARED-CONFIG-001",
+        "MAPSTRUCT-EXPLICIT-IGNORE-001",
+        "MAPSTRUCT-WHITELIST-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-VALIDATION-001",
+        "text": "When dependencies and runtime validation are available, prefer Jakarta Bean Validation for nullability, format, and range constraints on bindable Bean properties and method parameters or returns. Declare constraints on the corresponding field, property, record component, parameter, or return location and ensure the call path actually triggers validation.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-BEAN-VALIDATION-PREFERENCE-001",
+        "JAVA-BEAN-VALIDATION-EXECUTION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-VALIDATION-SPRING-MVC-001",
+        "text": "Trigger Spring MVC request-object validation with `@Valid` on the entry parameter, or `@Validated` when validation groups are required. Direct method-parameter constraints such as `@NotBlank` or `@Min` use Spring MVC method validation; do not add class-level `@Validated` to every Controller merely to enable it.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-MVC-OBJECT-VALIDATION-001",
+        "JAVA-MVC-METHOD-VALIDATION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-OBJECTS-REQUIRE-NONNULL-001",
+        "text": "Use JDK checks such as `Objects.requireNonNull` when existing Require, Assert, and Validate dependencies are unavailable or cannot satisfy the constraint and failure semantics. Hand-write a check only when existing tools and the JDK cannot meet the need.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "merge branches of a single ordered selection policy",
+      "replaced_by": [
+        "JAVA-CHECK-TOOL-ORDER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-REQUIRE-PRIORITY-001",
+        "text": "Select explicit-check tools by failure semantics first, then existing dependencies and capability; prefer framework-core `Require` when it can meet both the constraint and exception semantics.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "merge branches of a single ordered selection policy",
+      "replaced_by": [
+        "JAVA-CHECK-TOOL-ORDER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-ASSERT-001",
+        "text": "Use Spring `org.springframework.util.Assert` from an existing dependency when Require is unavailable or unsuitable and Assert satisfies the constraint and failure semantics.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "merge branches of a single ordered selection policy",
+      "replaced_by": [
+        "JAVA-CHECK-TOOL-ORDER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-VALIDATE-001",
+        "text": "Use project-managed `org.apache.commons.lang3.Validate` from an existing dependency when Require and Assert are unavailable or unsuitable and Validate satisfies the constraint and failure semantics.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "merge branches of a single ordered selection policy",
+      "replaced_by": [
+        "JAVA-CHECK-TOOL-ORDER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-REQUIRE-THAT-PURITY-001",
+        "text": "A `Require.that` predicate takes the passed-in `value` as its only input: it may call `value`'s own methods or reference `static final` constants, and must not capture other variables, method parameters, `this` fields, or external mutable state. Cross-variable or state-dependent decisions are explicit guards handled as technical preconditions; never rewrite them as `Require.that` calls.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "replace renamed API and separate predicate purity from failure classification; add authorized parameter checks",
+      "replaced_by": [
+        "JAVA-REQUIRE-VALID-PURITY-001",
+        "JAVA-CROSS-VARIABLE-GUARD-001",
+        "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "JAVA-REQUIRE-NONNULL-BATCH-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-VALIDATION-COLLECTION-ELEMENT-001",
+        "text": "In modules depending on framework-core, prefer `FrameworkException.missingCollectionElement()` or `FrameworkException.invalidCollectionElement()` for technical checks of null or invalid collection elements.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "replace retired collection-check guidance with the user's current NullSafe policy",
+      "replaced_by": [
+        "JAVA-COLLECTION-NULL-EXCEPTION-001",
+        "JAVA-NULLSAFE-SELECTION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-VALIDATION-MESSAGE-001",
+        "text": "Classify exceptions by failure semantics, not merely inheritance from `BaseException`. Service business errors use the Chinese templates bound to their error codes; project-authored technical diagnostics and Bean Validation messages use English, while original third-party exception messages are exempt. Callers use business error codes, never exception message parsing, to determine business outcomes.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-EXCEPTION-SEMANTICS-001",
+        "JAVA-EXCEPTION-LANGUAGE-001",
+        "JAVA-EXCEPTION-PROTOCOL-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-EXCEPTION-001",
+        "text": "Use the framework exception hierarchy for Jakarta Bean Validation failures.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+        "JAVA-BUSINESS-EXCEPTION-BASE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-EXCEPTION-002",
+        "text": "A service-defined business exception extends framework-core `BaseException` and must not directly extend `RuntimeException` or another JDK exception type.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+        "JAVA-BUSINESS-EXCEPTION-BASE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-SLF4J-001",
+        "text": "Write log messages with SLF4J parameter placeholders rather than string concatenation, and pass the exception object as the last argument instead of embedding it in message text.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOG-PARAMETERIZED-001",
+        "LOG-EXCEPTION-ARGUMENT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-LEVEL-001",
+        "text": "Use `ERROR` for failures that need human intervention, including exhausted retries, unrecoverable errors, and unclassified integrity failures.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "express log-level alternatives as one severity decision and keep production configuration independent",
+      "replaced_by": [
+        "LOG-SEVERITY-001",
+        "LOG-PRODUCTION-DEBUG-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-LEVEL-002",
+        "text": "Choose severity by impact and handling needs rather than exception class: `WARN` denotes noteworthy abnormal contention, recovery, or degradation. A normal idempotent hit does not become `WARN` merely because exception translation was involved.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "express log-level alternatives as one severity decision and keep production configuration independent",
+      "replaced_by": [
+        "LOG-SEVERITY-001",
+        "LOG-PRODUCTION-DEBUG-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-LEVEL-003",
+        "text": "Use `INFO` for normal idempotent outcomes and audit points of key business actions, state changes, and external interactions. Use `DEBUG` for diagnosis and disable it in production by default.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "express log-level alternatives as one severity decision and keep production configuration independent",
+      "replaced_by": [
+        "LOG-SEVERITY-001",
+        "LOG-PRODUCTION-DEBUG-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-CONTEXT-001",
+        "text": "Every log statement carries locatable context such as the use-case or job name, the sanitized business key, and the scene or shard identifier; the framework injects tracing context, and business code must not hand-assemble trace fields.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOG-BUSINESS-CONTEXT-001",
+        "LOG-TRACE-CONTEXT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOG-METRICS-001",
+        "text": "Do not replace metrics, alerts, or tracing with logs. Aggregate, rate-limit, or sample high-frequency recurring operational records rather than emitting `INFO` per occurrence or escalating to `WARN` to bypass controls; aggregates retain scene, time window, count, and outcome. Explicit per-event audit requirements must use a controlled audit channel without sampling or loss.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOG-OBSERVABILITY-BOUNDARY-001",
+        "LOG-RECURRING-CONTROL-001",
+        "LOG-AUDIT-COMPLETENESS-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SENSITIVE-LOG-001",
+        "text": "Sensitive data must never enter any log in plain text, including message text, parameters, MDC values, and exception information.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "SENSITIVE-PLAINTEXT-001",
+        "SENSITIVE-CENTRAL-MASK-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PACKAGE-TEST-001",
+        "text": "Mirror production package paths in tests; keep test helpers in test source sets or test-support packages and never package them as production code or make production code depend on them.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#包结构",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PACKAGE-TEST-MIRROR-001",
+        "PACKAGE-TEST-ISOLATION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ARCH-DEP-API-001",
+        "text": "API does not depend on business implementations; domain does not depend on other business layers; application depends on domain.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ARCH-DEP-API-CONTRACT-001",
+        "ARCH-DEP-DOMAIN-001",
+        "ARCH-DEP-APPLICATION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ARCH-DEP-OUTER-001",
+        "text": "Interfaces depends on API and application, OpenFeign client depends on API, and boot performs final assembly.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ARCH-DEP-INTERFACES-001",
+        "ARCH-DEP-CLIENT-001",
+        "ARCH-DEP-BOOT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ARCH-PROJECT-CONFIG-002",
+        "text": "Load root-level `config/` resources explicitly through Spring or technology-specific location settings and make build, deployment, and local startup provide and validate them; package a resource under a module only when external loading is unsupported, code and resource versions are inseparable, or the artifact must be self-contained.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构",
+      "reason": "separate loading, resource verification, and existing classpath packaging exception",
+      "replaced_by": [
+        "ARCH-CONFIG-LOAD-001",
+        "ARCH-CONFIG-VERIFY-001",
+        "ARCH-CONFIG-CLASSPATH-EXCEPTION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "API-FACADE-001",
+        "text": "Facade inputs implement `Request` and are complete, immutable API command/query records independent of HTTP binding and header injection; results are `BaseResult` implementations, using `PageResult<T>` for paged collections and `Result<T>` otherwise, including `Result<Void>` for no payload and `Result<List<T>>` for non-paged collections.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "API-FACADE-INPUT-001",
+        "API-FACADE-OUTPUT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DOMAIN-BEHAVIOR-001",
+        "text": "Aggregate roots and entities change state only through domain behavior; value objects are immutable; domain services contain only cross-aggregate rules or rules that do not belong to one aggregate.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "align existing compound catalog rule with three independent source constraints",
+      "replaced_by": [
+        "DOMAIN-STATE-CHANGE-001",
+        "DOMAIN-VALUE-IMMUTABILITY-001",
+        "DOMAIN-SERVICE-SCOPE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DOMAIN-EVENT-001",
+        "text": "Domain behavior decides whether a domain event occurred and its business content. Raw domain events carry occurrence time, event type, and business content only; they do not carry an EventStore persistence-record ID or depend on an ID generator. EventStore generates the global event ID when wrapping a `DomainEventEnvelope`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "api-domain-application.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DOMAIN-RAW-EVENT-001",
+        "DOMAIN-EVENT-ENVELOPE-ID-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "INFRA-ASYNC-001",
+        "text": "Adapt domain event storage through the port defined by framework-domain; domain and application must not depend on a concrete domain-event-store implementation. EventStore uses `LongIdGenerator` to assign each persistence envelope a trend-increasing Long ID, and persistence adapters must not inject that technical ID back into the raw domain event.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "keep storage-port ownership independent and refer to canonical envelope identity rules",
+      "replaced_by": [
+        "INFRA-EVENTSTORE-PORT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "INFRA-DURATION-001",
+        "text": "A standalone minimum for `Duration` uses both `@NotNull` and Hibernate Validator `@DurationMin` with explicit units; the module declares `hibernate-validator` directly.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "INFRA-DURATION-VALIDATION-001",
+        "INFRA-DURATION-DEPENDENCY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DATA-DOMAIN-001",
+        "text": "Prefer records for domain IDs, value objects, effects, and immutable domain events when inheritance is unnecessary; use classes for aggregate roots, entities, framework bases, mutable state, and complex behavior.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DATA-DOMAIN-RECORD-001",
+        "DATA-DOMAIN-CLASS-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DATA-APPLICATION-001",
+        "text": "Prefer records for immutable application commands, command outputs, query conditions, and views; services, repositories, gateways, and mappers remain classes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DATA-APPLICATION-RECORD-001",
+        "DATA-APPLICATION-COMPONENT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DATA-PERSISTENCE-001",
+        "text": "Read-only persistence projections may be records; DOs, JPA entities, and no-argument or setter-bound types remain classes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "data-carriers.md",
+      "source": "standards/bp_layered_service.md#不可变数据载体",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DATA-PERSISTENCE-PROJECTION-001",
+        "DATA-PERSISTENCE-DO-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-SELECTION-001",
+        "text": "Use one persistence technology in each persistence implementation module and assemble only one implementation of a repository in a runtime artifact; alternative JPA, MyBatis, and MyBatis-Plus implementations may live in separate modules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-MODULE-TECHNOLOGY-001",
+        "PERSISTENCE-RUNTIME-IMPLEMENTATION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-SCHEMA-PREFIX-001",
+        "text": "`schema.sql` must begin with a comment requiring its table prefix and suffix to match runtime configuration; changing the prefix or suffix is a schema change that must update the DDL scripts or migration configuration, not only the runtime configuration.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-SCHEMA-PREFIX-COMMENT-001",
+        "PERSISTENCE-SCHEMA-NAMING-CHANGE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-RETRY-001",
+        "text": "Make every retried write idempotent, classify unique-constraint and optimistic-lock conflicts, deadlocks, and transient connection failures explicitly, and never retry without a bound.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-RETRY-IDEMPOTENT-001",
+        "PERSISTENCE-RETRY-POLICY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-QUERY-001",
+        "text": "Design indexes by access patterns, data scale, and execution plans; verify plans and acceptable performance before adding high-frequency or large-table queries rather than requiring an index per predicate. Prohibit N+1 access and unbounded result sets.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-QUERY-PLAN-001",
+        "PERSISTENCE-NPLUSONE-001",
+        "PERSISTENCE-RESULT-BOUND-001",
+        "PERSISTENCE-BATCH-SIZE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-MYBATIS-001",
+        "text": "Configure the MyBatis-Plus database type explicitly and fail on unsupported types; keep custom interceptors ordered and verify they cannot bypass pagination or naming rules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-MYBATIS-DATABASE-TYPE-001",
+        "PERSISTENCE-INTERCEPTOR-ORDER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "PERSISTENCE-DUPLICATE-LOG-001",
+        "text": "Record unique-constraint conflicts once at the translation boundary with constraint/scene, sanitized business key, and outcome. Severity, recurring-event aggregation, and audit exceptions follow the logging rules; rethrow unknown or unclassified integrity failures.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "PERSISTENCE-CONFLICT-LOG-001",
+        "PERSISTENCE-UNKNOWN-INTEGRITY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JAVA-UTILITY-003",
+        "text": "Before adding a dependency, evaluate maintenance activity, security, license, and dependency cost; do not add overlapping functionality when existing dependencies suffice.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DEP-ADMISSION-REVIEW-001",
+        "DEP-OVERLAP-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DEP-SCOPE-001",
+        "text": "Match dependency scope to use: compile requirements use compile scope, tests use test scope, and `provided` or `optional` requires a genuine runtime-provided or optional capability.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DEP-SCOPE-USAGE-001",
+        "DEP-OPTIONAL-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SERVICE-SPRING-BOOT-001",
+        "text": "Service applications use Spring Boot 3.5.16.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "service-baseline.md",
+      "source": "standards/bp_dependencies.md#服务技术基线",
+      "reason": "version pair is one selection; upgrade ownership is independent",
+      "replaced_by": [
+        "SERVICE-SPRING-VERSION-PAIR-001",
+        "SERVICE-SPRING-VERSION-UPGRADE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SERVICE-SPRING-CLOUD-001",
+        "text": "Service applications use Spring Cloud 2025.0.3.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "service-baseline.md",
+      "source": "standards/bp_dependencies.md#服务技术基线",
+      "reason": "version pair is one selection; upgrade ownership is independent",
+      "replaced_by": [
+        "SERVICE-SPRING-VERSION-PAIR-001",
+        "SERVICE-SPRING-VERSION-UPGRADE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DOCS-STRUCT-001",
+        "text": "Every project provides a root `README.md` and `docs/RESPONSIBILITIES.md`; every business service also provides `docs/DOMAIN.md`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档",
+      "reason": "remove repeated business-service DOMAIN requirement; SERVICE-DOMAIN-DOC-003 remains its canonical rule",
+      "replaced_by": [
+        "DOCS-BASE-FILES-001",
+        "SERVICE-DOMAIN-DOC-003"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DOCS-RESPONSIBILITIES-001",
+        "text": "`docs/RESPONSIBILITIES.md` is the service charter answering what the service owns, what it does not own (each entry naming its owner), which collaboration contracts it honors, and what has been delivered; it is the single home for cross-service collaboration contracts.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "DOCS-RESPONSIBILITY-SCOPE-001",
+        "DOCS-UNOWNED-OWNER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "DOCS-CROSS-SERVICE-001",
+        "text": "Each side of a cross-service contract writes only its own half in its own `docs/RESPONSIBILITIES.md` and links to the other side: the caller owns the end-to-end flow description, the callee owns the endpoint contract and its consumption semantics; never maintain the same contract table or flow in two repositories.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "project-documentation.md",
+      "source": "standards/bp_docs.md#必备文档",
+      "reason": "preserve existing collaboration ownership and cover source update/link requirements explicitly",
+      "replaced_by": [
+        "DOCS-CONTRACT-SPLIT-001",
+        "DOCS-CONTRACT-UPDATE-001",
+        "DOCS-CONTRACT-LINK-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-INTERFACE-001",
+        "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`; use `Abstract*` for abstract classes and reserve `Base*` for framework or shared base types.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "NAME-INTERFACE-ROLE-001",
+        "NAME-ABSTRACT-BASE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-RESPONSE-001",
+        "text": "Only API payloads may use `*ApiResponse`, and only application return types may use `*Response`; other layers must not use a `*Response` suffix.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定",
+      "reason": "remove compound API/application response naming; existing NAME-APPLICATION-RESPONSE-001 owns the application case",
+      "replaced_by": [
+        "NAME-API-SHARED-RESPONSE-001",
+        "NAME-APPLICATION-RESPONSE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-MAPPER-001",
+        "text": "Name mapper contracts by layer responsibility, place MapStruct implementations in the contract package's `mapstruct` subpackage, and name them `*MapStructMapper`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "NAME-MAPPER-TYPE-001",
+        "NAME-MAPPER-PACKAGE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-MYBATIS-MAPPER-001",
+        "text": "Name concrete mapper XML files `<Aggregate>Mapper.xml` and reference shared `<sql>` elements with fully qualified `refid`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence-naming.md",
+      "source": "standards/bp_naming.md#命名约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "NAME-MYBATIS-MAPPER-FILE-001",
+        "NAME-MYBATIS-REFID-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-KEY-RESOLVER-001",
+        "text": "Name each concrete scenario resource-key handler `*KeyResolver` and make it extend `AbstractKeyResolver`; its runtime behavior follows the resource-key rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "NAME-KEY-RESOLVER-SUFFIX-001",
+        "NAME-KEY-RESOLVER-BASE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-DOMAIN-001",
+        "text": "Allocate local codes `000-599` to `DomainError`: reserve `000-099` for shared domain errors and partition `100-599` into aligned 50-code blocks. Each aggregate is assigned one or more adjacent complete blocks according to its required capacity.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001",
+        "ERROR-DOMAIN-CAPACITY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-APPLICATION-001",
+        "text": "Allocate local codes `600-699` to `ApplicationError` and prefix names with `APP_`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-INFRA-001",
+        "text": "Allocate local codes `700-899` to `InfrastructureError`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-INFRA-TECH-001",
+        "text": "Reserve `700-799` for failures of technical mechanisms owned by the service, such as local persistence, caching, locking, serialization, files, event storage, and outbox processing; prefix names with `INFRA_TECH_`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-INFRA-ACL-001",
+        "text": "Use local codes 800–899 and the `INFRA_ACL_` prefix for failures at an external-integration adapter boundary; ACL names the anti-corruption responsibility and does not require a separately named module.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-RESERVED-001",
+        "text": "Keep local codes `900-999` reserved and unallocated.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "replace fragmented category alternatives with one classification mapping",
+      "replaced_by": [
+        "ERROR-CATEGORY-MAPPING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-DOMAIN-COMMON-001",
+        "text": "Prefix shared domain errors with `DOMAIN_`; fix local code `000` as `DOMAIN_ENTITY_ID_INVALID`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ERROR-DOMAIN-ID-FIXED-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ERROR-AGGREGATE-001",
+        "text": "Prefix aggregate errors with the aggregate name; the first two are `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ERROR-AGGREGATE-FIRST-CODES-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-NAMESPACE-004",
+        "text": "Business code works only with business keys; a scenario `*KeyResolver` owns the business prefix and key segments and delegates resolution to an injected `ResourceNameResolver` without parsing or assembling a namespace.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间",
+      "reason": "merge duplicated business-key resolution responsibilities",
+      "replaced_by": [
+        "NAME-BUSINESS-KEY-BOUNDARY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-RESOURCE-001",
+        "text": "Resolve every external resource name or key through `ResourceNameResolver`; inject its namespace either during scenario assembly or at the final resource-adapter boundary.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间",
+      "reason": "merge duplicated business-key resolution responsibilities",
+      "replaced_by": [
+        "NAME-BUSINESS-KEY-BOUNDARY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "NAME-RESOURCE-002",
+        "text": "Business code, business configuration, and adapters must not repeat or hand-assemble namespace prefixes for individual resources. Unified infrastructure configuration provides application namespace identity, and a resource namespace must still be injected exactly once.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "resource-naming.md",
+      "source": "standards/bp_resource_naming.md#资源键与命名空间",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "NAME-NAMESPACE-CONFIG-001",
+        "NAME-NAMESPACE-MANUAL-PREFIX-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SERVICE-CALL-INTERNAL-API-001",
+        "text": "Internal service calls prefer the callee's published API module and reuse its request and response contracts instead of redefining equivalent objects; depend only on the public API, never on the callee's application, interfaces, or implementation modules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部服务调用",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "SERVICE-CALL-INTERNAL-REUSE-001",
+        "SERVICE-CALL-INTERNAL-DEPENDENCY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SERVICE-CALL-INTERNAL-FALLBACK-001",
+        "text": "Define local adapter types only when the callee's API module cannot be referenced or its public contract does not fit the call boundary. The local request implements `Request` and follows the internal-request naming rule; ordinary responses use `Result<T>` and paged responses use `PageResult<T>`. Prefer a `T` type name consistent with the corresponding published contract, but use local semantic naming when an anti-corruption layer, protocol difference, or semantic difference requires a distinct Java type rather than forcing name or type reuse.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#内部调用降级契约",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "SERVICE-CALL-FALLBACK-CONDITION-001",
+        "SERVICE-CALL-FALLBACK-REQUEST-001",
+        "SERVICE-CALL-FALLBACK-RESPONSE-001",
+        "SERVICE-CALL-FALLBACK-NAME-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "SERVICE-CALL-EXTERNAL-MAP-002",
+        "text": "Use a typed payload when the field set is fixed; do not use a Map merely to avoid defining a type or mapper, reuse a generic request object, or quickly assemble a few fields. When a Map is necessary, confine its construction, conversion, and fixed protocol-field names to the matching infrastructure adapter, use external-service-specific constants for fixed keys, and never expose it through a port or to application or domain.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#Map 使用边界",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "SERVICE-CALL-FIXED-MODEL-001",
+        "SERVICE-CALL-MAP-CONFINEMENT-001",
+        "SERVICE-CALL-MAP-CONSTANT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ID-FAILFAST-001",
+        "text": "Register and validate every generator name before deployment; missing configuration fails startup or the use case and must not silently fall back to a local algorithm or database sequence.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ID-GENERATOR-REGISTRATION-001",
+        "ID-GENERATOR-MISSING-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ID-BOUNDARY-001",
+        "text": "Generate aggregate and other business IDs through framework ports in application/infrastructure and pass them into domain; generate domain-event persistence IDs at the EventStore infrastructure boundary when building envelopes. Domain must not depend on `LongIdGenerator`, CosId, or starter implementation types.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ID-BUSINESS-BOUNDARY-001",
+        "ID-EVENTSTORE-BOUNDARY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "ID-STRING-001",
+        "text": "Non-Long string identifiers such as UUIDs or external-system identities are outside the `LongIdGenerator` scope; business code must not invent new generation algorithms, the identifier source is defined by the project domain document, and identifier types extend the project-level `EntityId` bases.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "distributed-id.md",
+      "source": "standards/bp_ids.md#分布式 ID",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "ID-STRING-SOURCE-001",
+        "ID-STRING-TYPE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOCK-KEY-001",
+        "text": "Pass stable business key segments as `lockNames` that together identify the contended resource; the lock starter resolves them internally through `ResourceNameResolver` (key-segment `String.join` and namespace injection), so callers must not resolve, assemble, or pre-prefix lock keys themselves.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOCK-KEY-STABILITY-001",
+        "LOCK-KEY-RESOLUTION-001",
+        "LOCK-KEY-SENSITIVE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOCK-KEY-002",
+        "text": "`lockNames` must not contain sensitive data or random values, and the same resource must never appear under multiple key formats.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOCK-KEY-STABILITY-001",
+        "LOCK-KEY-RESOLUTION-001",
+        "LOCK-KEY-SENSITIVE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOCK-WAIT-001",
+        "text": "Bound lock wait time by the use-case SLA, prefer immediate acquisition, and return an explicit retry/conflict/degradation result on failure; never wait indefinitely or spin without backoff.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOCK-WAIT-BOUND-001",
+        "LOCK-WAIT-IMMEDIATE-001",
+        "LOCK-WAIT-FAILURE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "LOCK-LEASE-001",
+        "text": "Configure a lease longer than the normal critical-section bound, keep critical sections short, and avoid remote calls, bulk work, and long transactions even when automatic renewal is enabled.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-lock.md",
+      "source": "standards/bp_lock.md#分布式锁",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "LOCK-LEASE-BOUND-001",
+        "LOCK-CRITICAL-SECTION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-OUTBOX-001",
+        "text": "Application submits integration events only through `IntegrationEventOutbox`; persist state and outbox in one local transaction and signal publication only after commit.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-OUTBOX-PORT-001",
+        "MESSAGE-OUTBOX-TRANSACTION-001",
+        "MESSAGE-OUTBOX-SIGNAL-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-CONTRACT-001",
+        "text": "Integration events are stable service contracts with unique event ID, event type, aggregate type, aggregate ID, and occurrence time; never serialize domain entities directly.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-CONTRACT-FIELDS-001",
+        "MESSAGE-CONTRACT-MODEL-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-IDEMPOTENCY-ATOMIC-001",
+        "text": "Atomically commit the completed-consumption deduplication record with local business writes in the same transaction; never mark a message processed before separate fallible writes. Nontransactional external effects require a recoverable idempotency protocol preventing lost processing or repeated side effects.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-LOCAL-IDEMPOTENCY-ATOMIC-001",
+        "MESSAGE-EXTERNAL-IDEMPOTENCY-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-ACK-001",
+        "text": "Acknowledge only after business processing and the local transaction succeed; use classified bounded retry/backoff and route exhausted or non-recoverable messages to dead-letter or manual handling.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-ACK-COMMIT-001",
+        "MESSAGE-CONSUMER-RETRY-001",
+        "MESSAGE-CONSUMER-DEADLETTER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-OBSERVABILITY-001",
+        "text": "Monitor publisher confirms/returns, outbox backlog, retries, consumer lag, and dead letters with event ID, aggregate ID, and destination trace context.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-METRICS-001",
+        "MESSAGE-TRACE-CONTEXT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-DELAY-CONFIG-001",
+        "text": "When at-least-once delayed delivery is required, use a quorum configuration that supports it and validate delay levels, tick, and maximum TTL at startup.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "MESSAGE-DELAY-QUORUM-001",
+        "MESSAGE-DELAY-PARAMETER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "MESSAGE-DELAY-001",
+        "text": "Use delayed messages only for error-tolerant retry, reminder, and auxiliary workflows, never as a precise timer or sole core-business deadline guarantee; consumers recheck state and idempotency on arrival.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-distributed",
+      "reference": "distributed-messaging.md",
+      "source": "standards/bp_messaging.md#事件与发布",
+      "reason": "align catalog compound purpose/state rule with already separate source rules",
+      "replaced_by": [
+        "MESSAGE-DELAY-PURPOSE-001",
+        "MESSAGE-DELAY-STATE-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JOB-BATCH-001",
+        "text": "Process bounded pages or shards with a stable cursor and bounded runtime; do not load all data or hold a transaction across batches.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JOB-BATCH-BOUND-001",
+        "JOB-BATCH-TRANSACTION-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "COMPENSATION-PARAMETER-001",
+        "text": "Limit compensation parameters to validated business scope, cursors, and switches; never include a secret, and fail fast on a missing or invalid parameter.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "COMPENSATION-PARAMETER-VALIDITY-001",
+        "COMPENSATION-PARAMETER-SECRET-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "JOB-OBSERVABILITY-001",
+        "text": "Configure timeouts, alerts, log retention, and failure handling; log job, executor, shard, batch, count, and result context without sensitive data.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-compensation",
+      "reference": "business-compensation.md",
+      "source": "standards/bp_compensation.md#业务补偿与兜底",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "JOB-OPERATIONS-001",
+        "JOB-LOG-CONTEXT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "TEST-UNIT-NAME-001",
+        "text": "Name unit and module contract test classes `*Test` and execute them with Maven Surefire in the test phase.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "unit-testing.md",
+      "source": "standards/bp_unit_testing.md#单元测试",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "TEST-UNIT-CLASS-NAME-001",
+        "TEST-UNIT-RUNNER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "TEST-INTEGRATION-001",
+        "text": "Treat collaboration among real implementations from multiple modules, full auto-configuration, real databases, or real middleware as integration tests and keep them out of production modules. Merely referencing another module's interface or DTO is not sufficient; service integration tests use the architecture-defined standalone module.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "TEST-INTEGRATION-CLASSIFICATION-001",
+        "TEST-INTEGRATION-PLACEMENT-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "TEST-IT-NAME-001",
+        "text": "Name integration test classes `*IT` and execute them with Maven Failsafe in the integration-test and verify phases.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "TEST-IT-CLASS-NAME-001",
+        "TEST-IT-RUNNER-001"
+      ]
+    },
+    {
+      "rule": {
+        "id": "TEST-DOC-002",
+        "text": "The root README of a standalone test module contains only coverage scope, environment requirements, unified execution, report location, and a documentation index; detailed scenarios live in `docs/<TestClass>.md`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试",
+      "reason": "split independent checks",
+      "replaced_by": [
+        "TEST-MODULE-README-001",
+        "TEST-SCENARIO-DOC-LOCATION-001"
+      ]
+    }
+  ]
+}

@@ -31,13 +31,18 @@
 - **强制 · 主题**：跨能力复用必须通过稳定的 port、契约或明确的公共组件完成；不得通过访问另一个 feature package 的实现类、数据库 DO 或 mapper 建立隐式耦合。
 - **默认 · 主题**：只有在包内类型形成清晰的职责闭包后才继续细分；单个类型不应为了目录整齐单独建立一层包，包过大时应按能力或变化原因拆分，而不是机械按类名拆分。
 - **强制 · 主题**：包内实现默认使用 package-private；只有跨包、跨 module 或框架装配需要的类型才声明为 `public`，公开类型必须有明确契约或适配职责。
-- **默认 · 主题**：测试包路径镜像生产包路径；测试辅助类只在测试源集或测试支持包中提供，不得进入生产包或被生产代码依赖。
+- **默认 · 主题**：测试包路径默认镜像生产包路径。
+- **强制 · 主题**：测试辅助类只在测试源集或测试支持包中提供，不得进入生产包或被生产代码依赖。
 
 ### 依赖方向
 
-- **强制 · 主题**：api 不依赖业务实现；domain 不依赖其他业务层；application 依赖 domain。
+- **强制 · 主题**：api 不依赖业务实现。
+- **强制 · 主题**：domain 不依赖其他业务层。
+- **强制 · 主题**：application 依赖 domain；允许的额外契约依赖遵循本文 application 约定。
 - **强制 · 主题**：infrastructure 实现 domain/application 定义的端口，具体技术实现 module 依赖 infrastructure。
-- **强制 · 主题**：interfaces 依赖 api/application，openfeign-client 依赖 api，boot 只做最终装配。
+- **强制 · 主题**：interfaces 依赖 api/application。
+- **强制 · 主题**：openfeign-client 依赖 api。
+- **强制 · 主题**：boot 依赖运行时装配所需的 module，只负责最终装配。
 - **强制 · 主题**：integration-tests 可以用 test scope 依赖 boot 和被观测的服务 module；该依赖只用于验证，不得形成生产代码依赖方向的一部分。
 - **强制 · 主题**：内层 module 不得反向依赖外层协议、持久化实现、持久化对象或 boot。
 
@@ -47,7 +52,8 @@
 - **默认 · 主题**：项目级 `application.yml`、`application-*.yml` 或对应 properties、MyBatis 共享 SQL 片段与 mapper XML、数据库 schema/迁移脚本、Dubbo XML 等配置优先放在该目录。
 - **强制 · 主题**：不得仅因某个 module 负责装配就把可独立更新的配置资源打入其制品。
 - **强制 · 主题**：外置 SQL、映射文件、schema 和其他配置资源仍须与应用版本建立对应关系，并在部署前验证兼容性；可独立更新不意味着可脱离代码版本管理。
-- **强制 · 主题**：boot 必须通过 `spring.config.location`、`spring.config.additional-location`、`spring.config.import`、框架专属 location 配置或等效启动参数显式加载 `config/` 中的资源；构建、部署和本地启动流程必须保证这些资源可用，并验证缺失或无效配置能够按预期失败。
+- **强制 · 主题**：boot 必须通过 `spring.config.location`、`spring.config.additional-location`、`spring.config.import`、框架专属 location 配置或等效启动参数显式加载 `config/` 中的资源。
+- **强制 · 主题**：构建、部署和本地启动流程必须提供所需外置资源，并验证缺失或无效配置能够按预期失败。
 - **强制 · 主题**：只有框架不支持外部加载、资源与代码在版本和类路径上不可拆分，或制品必须自包含且无法由部署环境提供时，才可以把资源放在对应 module 的 `src/main/resources`。不得为了开发便利牺牲配置的独立发布能力，避免仅修改资源文件就重新打包 module。
 
 ### 项目级配置内容
@@ -69,7 +75,8 @@
 
 - **强制 · 主题**：API 以 Facade 为能力中心，只定义接口和稳定契约，不提供业务实现。
 - **强制 · 主题**：契约可包含 command、query、response、event、enum 和 constants；有限取值放 `api.enums`，固定 header、topic、event type 放 `api.constants`。
-- **强制 · 主题**：Facade 入参必须实现 `Request`，使用状态完整、不可变且与 HTTP 绑定和 Header 回填无关的 command/query `record`；出参使用 `Result<T>` 或分页 `PageResult<T>`，无 payload 使用 `Result<Void>`，非分页集合使用 `Result<List<T>>`。
+- **强制 · 主题**：Facade 入参必须实现 `Request`，使用状态完整、不可变且与 HTTP 绑定和 Header 回填无关的 API command/query `record`。
+- **强制 · 主题**：Facade 出参使用 `Result<T>` 或分页 `PageResult<T>`；无 payload 使用 `Result<Void>`，非分页集合使用 `Result<List<T>>`。
 - **强制 · 主题**：API 集成事件实现 `IntegrationEvent`；可以由领域事件映射，但不得复用领域事件类型。
 
 ### domain
@@ -81,7 +88,8 @@
 - **强制 · 主题**：领域服务返回的 `*Effect` 必须实现 `DomainEffect`，并通过其 `events()` 返回该次领域行为产生的领域事件；没有领域事件时返回空集合，不得返回 `null`。
 - **强制 · 主题**：领域对象和服务不得直接读取系统时钟；application 注入 `Clock`，每个用例取得一次业务时间并传入相关状态变化和事件。
 - **强制 · 主题**：Repository 只表达领域对象存取契约，不暴露持久化技术。
-- **强制 · 主题**：领域行为决定领域事件是否发生及其业务内容。原始领域事件只携带发生时间、事件类型和业务内容，不携带 EventStore 持久化记录 ID，也不依赖 ID 生成端口；EventStore 在封装 `DomainEventEnvelope` 时生成仅用于持久化、发布、追踪和幂等的全局事件 ID。
+- **强制 · 主题**：领域行为决定领域事件是否发生及其业务内容；原始领域事件只携带发生时间、事件类型和业务内容，不携带 EventStore 持久化记录 ID，也不依赖 ID 生成端口。
+- **强制 · 主题**：EventStore 在封装 `DomainEventEnvelope` 时生成仅用于持久化、发布、追踪和幂等的全局事件 ID。
 - **强制 · 主题**：外部能力属于领域模型的一部分并直接服务于领域规则时，由 domain 定义 port；port 契约使用领域语义类型，不得按外部服务协议设计。
 - **强制 · 主题**：domain 不得感知 API payload、application command/output/view、外部服务 Payload、HTTP 或第三方 SDK 类型、持久化 DO、具体技术、`Result<T>` 或 `PageResult<T>`。
 
@@ -99,8 +107,11 @@
 - **强制 · 主题**：infrastructure 提供 repository、ID、事件存储、消息和调度等技术适配，并实现 domain/application 定义的端口，不承载领域规则或用例编排。
 - **强制 · 主题**：领域事件存储必须通过 framework-domain 定义的端口适配；domain 和 application 不得依赖具体的领域事件存储实现。
 - **强制 · 主题**：已由运行框架提供的基础设施 Bean 必须注入复用，不得重复声明同语义 Bean。
-- **强制 · 主题**：JavaBean 配置绑定中的集合和嵌套对象字段声明为 `final`，只暴露 getter，并初始化为空绑定容器；必填集合使用 `@NotEmpty` 使缺失配置启动失败。
-- **强制 · 主题**：`Duration` 独立最小值同时使用 `@NotNull` 和带明确单位的 `@DurationMin`，module 直接依赖 `hibernate-validator`；`@AssertTrue` 等类型级校验只表达字段间关系。
+- **强制 · 主题**：JavaBean 配置绑定中的集合和嵌套对象字段声明为 `final`，只暴露 getter，并初始化为空绑定容器。
+- **强制 · 主题**：必填配置集合使用 `@NotEmpty`，使缺失配置启动失败。
+- **强制 · 主题**：`Duration` 的独立最小值校验同时使用 `@NotNull` 和带明确单位的 `@DurationMin`。
+- **强制 · 主题**：使用 `@DurationMin` 的 module 直接依赖 `hibernate-validator`。
+- **强制 · 主题**：`@AssertTrue` 等类型级校验只表达字段间关系，不替代独立字段约束。
 - **强制 · 主题**：persistence、消息和调度适配分别遵循对应主题最佳实践；本层只约束这些能力属于 infrastructure，不在此重复其实现规则。
 
 ### interfaces、client 与 boot
@@ -124,6 +135,9 @@
 - **强制 · 主题**：API event 在序列化、RPC、OpenFeign 和客户端支持构造器绑定时使用 `record`；存在无法支持构造器绑定的既有消费端时使用普通 JavaBean 类。
 - **强制 · 主题**：公开 Java API 新增 record component 前必须评估构造器二进制兼容性。
 - **强制 · 主题**：interfaces HTTP Request 使用普通可变类以支持绑定和上下文回填，但不得作为 Facade 入参。
-- **默认 · 主题**：领域 ID、值对象、`*Effect` 和不可变领域事件在无需继承时优先使用 `record`；聚合根、实体、可变状态或复杂行为使用普通类。
-- **默认 · 主题**：application 的不可变 command、output、query condition 和 view 优先使用 `record`；service、repository、gateway、mapper 使用普通类。
-- **默认 · 主题**：持久化只读 projection 可以使用 `record`；DO、JPA Entity 和需要无参构造器或 setter 映射的对象使用普通类。
+- **默认 · 主题**：领域 ID、值对象、`*Effect` 和不可变领域事件在无需继承时优先使用 `record`。
+- **强制 · 主题**：聚合根、实体、可变状态或复杂行为使用普通类，具体条件遵循[Java 最佳实践](bp_java.md#java-语言)。
+- **默认 · 主题**：application 的不可变 command、output、query condition 和 view 优先使用 `record`。
+- **强制 · 主题**：service、repository、gateway、mapper 使用普通类或对应接口，不使用 `record`。
+- **默认 · 主题**：持久化只读 projection 可以使用 `record`。
+- **强制 · 主题**：DO、JPA Entity 和需要无参构造器或 setter 映射的对象使用普通类。
