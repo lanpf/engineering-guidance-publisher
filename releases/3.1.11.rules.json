@@ -1,0 +1,80 @@
+{
+  "version": "3.1.11",
+  "previous_version": "3.1.10",
+  "baseline": "a4def8e4bcf6751ce63a3b3172f85e06203db5f3",
+  "status": "released",
+  "date": "2026-10-11",
+  "added": [
+    {
+      "id": "JAVA-CONTAINER-NULL-SEMANTICS-001",
+      "text": "Distinguish null containers, empty containers, and null elements according to the contract. Never substitute NullSafe empty-container normalization for a required non-null input check. When at least one element is required, enforce non-emptiness separately; Require.noNulls and NullSafe.copyTo* element checks alone do not establish it.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-IMPORT-UNUSED-001",
+      "text": "Production and test code must not retain unused type imports or static imports. Check and remove unused imports after creating, changing, or refactoring a Java file; possible future use is not a reason to retain them.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#Java 语言"
+    },
+    {
+      "id": "JAVA-NULLSAFE-COPY-SELECTION-001",
+      "text": "In modules already depending on framework-core, prefer `NullSafe.copyToList`, `copyToSet`, or `copyToMap` according to the required immutable container type, without a redundant `Require.noNulls` check. These methods normalize a null container to an empty container and do not accept a custom exception supplier; use them only when the input contract and technical-exception semantics permit it.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-NO-NULLS-SELECTION-001",
+      "text": "In modules already depending on framework-core, prefer `Require.noNulls` when only collection or Map null-element checking is needed. It rejects null containers, allows empty containers, and checks both Map keys and values. Its exception-supplier overload uses the supplied exception for null containers, elements, keys, and values; business checks follow the business-exception rule.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    }
+  ],
+  "changed": [],
+  "retired": [
+    {
+      "id": "JAVA-NULLSAFE-SELECTION-001",
+      "text": "Prefer `NullSafe.forEach` for null-element checking alone; prefer `NullSafe.copyOf` when an immutable copy is also needed, without a redundant `forEach` check.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Split checking-only and immutable-copy selection into independent rules, update the API names, and define null-container contract boundaries separately.",
+      "replacements": [
+        "JAVA-REQUIRE-NO-NULLS-SELECTION-001",
+        "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "JAVA-CONTAINER-NULL-SEMANTICS-001"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "JAVA-IMPORT-UNUSED-001",
+        "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "JAVA-REQUIRE-NO-NULLS-SELECTION-001"
+      ],
+      "changed": [],
+      "retired": [
+        "JAVA-NULLSAFE-SELECTION-001"
+      ],
+      "non_rule_changes": []
+    }
+  ]
+}

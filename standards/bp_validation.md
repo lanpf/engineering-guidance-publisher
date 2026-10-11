@@ -25,7 +25,9 @@
 - **强制 · 主题**：`Require.valid` 的判定谓词只允许以传入的 `value` 为唯一输入，可调用其方法、引用 `static final` 常量和类字面量，以及在谓词内部使用仅由 `value` 派生的不可变值；不得捕获其他变量、方法参数、`this` 字段或外部可变状态。
 - **强制 · 主题**：跨变量判定必须使用显式守卫，不得改写为 `Require.valid` 调用；异常的技术或业务分类由失败语义决定，不得仅因涉及多个变量就认定为技术性前置条件。
 - **强制 · 主题**：技术性检查集合或 Map 的元素非空时，Map 的 key 与 value 均在检查范围内，任一元素为 null 时抛出 `FrameworkException`；该规则只表达技术性元素完整性，不替代领域或业务有效性检查。
-- **默认 · 主题**：仅检查元素非空时优先使用 `NullSafe.forEach`；同时需要不可变拷贝时优先使用 `NullSafe.copyOf`，其已包含元素非空校验，无需再单独调用 `NullSafe.forEach`。
+- **默认 · 主题**：在已依赖 framework-core 的 module 中，仅需检查集合或 Map 的元素非空时，优先使用 `Require.noNulls`；该方法拒绝 null 容器、允许空容器，并同时检查 Map 的 key 与 value。异常供应器重载对 null 容器、null 元素及 null key/value 均使用调用方提供的异常供应器；业务检查的异常语义遵循本节业务条件规则。
+- **默认 · 主题**：在已依赖 framework-core 的 module 中，需要不可变容器拷贝时，根据目标类型优先使用 `NullSafe.copyToList`、`NullSafe.copyToSet` 或 `NullSafe.copyToMap`；其已包含元素非空检查，无需重复调用 `Require.noNulls`。这些方法将 null 容器归一为空容器，且不支持自定义异常供应器；仅在符合输入契约和技术性异常语义时使用。
+- **强制 · 主题**：必须按契约区分 null 容器、空容器和 null 元素：输入要求非 null 时，不得以 `NullSafe` 的空容器归一化替代非空检查；要求容器至少包含一个元素时，必须另行保证容器非空，不能仅依赖 `Require.noNulls` 或 `NullSafe.copyTo*` 的元素检查。
 - **强制 · 基础**：不得仅为显式检查引入新依赖，也不得手写已有可用工具已提供且满足失败语义的等价逻辑；工具依赖选择遵循[通用工具最佳实践](bp_common_tools.md#基础工具类)。
 - **默认 · 主题**：API 请求的字段形态约束优先使用 Jakarta Bean Validation；只有 API 契约明确承诺业务错误语义时，对应检查才返回该业务错误；检查的执行位置由检查内容决定，不因错误由 API 对外承诺而前移到协议绑定层。
 - **强制 · 主题**：依赖领域状态、持久化数据或用例上下文的规则由 application 或 domain 校验，不得前移到协议绑定层。
