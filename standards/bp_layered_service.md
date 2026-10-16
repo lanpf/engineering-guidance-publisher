@@ -131,6 +131,8 @@
 
 ## 不可变数据载体
 
+集合状态的保存边界、副本可变性及元素隔离遵循[Java 最佳实践](bp_java.md#集合所有权与防御性复制)；本文只规定各层的数据载体选择。
+
 - **强制 · 主题**：API response 使用 `record`。
 - **强制 · 主题**：API event 在序列化、RPC、OpenFeign 和客户端支持构造器绑定时使用 `record`；存在无法支持构造器绑定的既有消费端时使用普通 JavaBean 类。
 - **强制 · 主题**：公开 Java API 新增 record component 前必须评估构造器二进制兼容性。

@@ -26,7 +26,7 @@
 
 | 文档 | 范围 |
 | --- | --- |
-| [bp_java.md](bp_java.md) | Java 语言、数据设计、常量与字面量 |
+| [bp_java.md](bp_java.md) | Java 语言、数据设计、集合所有权与防御性复制、常量与字面量 |
 | [bp_validation.md](bp_validation.md) | Bean Validation、显式前置条件、业务守卫与异常体系 |
 | [bp_common_tools.md](bp_common_tools.md) | 基础工具类、Lombok、MapStruct |
 | [bp_naming.md](bp_naming.md) | 接口、实现、数据载体、技术适配与 MyBatis XML 命名 |

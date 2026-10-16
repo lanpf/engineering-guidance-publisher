@@ -1,0 +1,49 @@
+{
+  "version": "3.1.12",
+  "previous_version": "3.1.11",
+  "status": "superseded",
+  "integrated_into": "3.1.13",
+  "added": [
+    "JAVA-COLLECTION-OWNERSHIP-001",
+    "JAVA-COLLECTION-COPY-MUTABILITY-001",
+    "JAVA-COLLECTION-ELEMENT-ISOLATION-001"
+  ],
+  "changed": [],
+  "retired": [
+    {
+      "id": "JAVA-RECORD-002",
+      "text": "Defensively copy collection record components with `List.copyOf`, `Set.copyOf`, or the corresponding immutable-copy operation.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#Java 语言",
+      "reason": "Replace the record-specific rule with independently checkable rules for retention-boundary ownership, retained-copy mutability, and element isolation. Record components remain covered by the general immutable-carrier contract.",
+      "replacements": [
+        "JAVA-COLLECTION-OWNERSHIP-001",
+        "JAVA-COLLECTION-COPY-MUTABILITY-001",
+        "JAVA-COLLECTION-ELEMENT-ISOLATION-001"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制",
+      "added": [
+        "JAVA-COLLECTION-OWNERSHIP-001",
+        "JAVA-COLLECTION-COPY-MUTABILITY-001",
+        "JAVA-COLLECTION-ELEMENT-ISOLATION-001"
+      ],
+      "changed": [],
+      "retired": [
+        "JAVA-RECORD-002"
+      ],
+      "non_rule_changes": [
+        "Add a source-traceable baseline section inside the existing java-language.md reference; no workflow or routing change."
+      ]
+    }
+  ]
+}

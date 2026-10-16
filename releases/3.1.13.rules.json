@@ -1,0 +1,131 @@
+{
+  "version": "3.1.13",
+  "previous_version": "3.1.11",
+  "baseline": "511c5c0ccf1d869d8c881226be99de502c1b6546",
+  "status": "released",
+  "date": "2026-10-16",
+  "integrated_drafts": [
+    "3.1.12"
+  ],
+  "added": [
+    {
+      "id": "JAVA-COLLECTION-COPY-MUTABILITY-001",
+      "text": "Choose retained-copy mutability according to the object's state contract. Records and other immutable data carriers retain immutable copies through List.copyOf, Set.copyOf, Map.copyOf, or an equivalent operation; objects owning mutable collection state retain independent mutable copies. Defensive copying does not universally mean freezing. Validation rules own null-container, empty-container, null-element semantics and concrete tool selection.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制"
+    },
+    {
+      "id": "JAVA-COLLECTION-ELEMENT-ISOLATION-001",
+      "text": "Copying a container does not isolate its elements. When the contract requires isolation of mutable elements, nested containers, or Map keys or values, copy the corresponding contents or convert them to explicitly immutable values. An unmodifiable outer container does not establish whole-object immutability; do not mechanically deep-copy already immutable elements.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制"
+    },
+    {
+      "id": "JAVA-COLLECTION-OWNERSHIP-001",
+      "text": "When an object retains an externally mutable collection or Map as its state or for long-term use, defensively copy it at the actual retention boundary, such as its constructor, factory, or state-update method. This applies to records and ordinary classes; do not rely on upstream copying. Temporary reads, traversal, or forwarding do not require copies merely because a collection is passed. Reuse inputs only when an explicit immutable contract guarantees that other aliases cannot change the container contents. An unmodifiable view alone does not isolate changes to the original mutable container.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制"
+    },
+    {
+      "id": "JAVA-CONSTRUCTOR-CONTAINER-NULLABILITY-001",
+      "text": "Constructor collection and Map parameters are non-null by default; allowing an empty container does not imply allowing null. Document each nullable parameter in the constructor Javadoc @param with its null-handling semantics and any conditions under which null is permitted. Never implicitly widen null acceptance by using NullSafe.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    }
+  ],
+  "changed": [
+    {
+      "before": {
+        "id": "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "text": "Distinguish null containers, empty containers, and null elements according to the contract. Never substitute NullSafe empty-container normalization for a required non-null input check. When at least one element is required, enforce non-emptiness separately; Require.noNulls and NullSafe.copyTo* element checks alone do not establish it.",
+        "enforcement": "required",
+        "priority": "topic",
+        "skill": "develop-service",
+        "reference": "service-validation.md",
+        "source": "standards/bp_validation.md#显式检查"
+      },
+      "after": {
+        "id": "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "text": "Distinguish null containers, empty containers, and null elements by contract. Use NullSafe collection or Map APIs, including traversal, normalization, and copying, only when null and empty are both permitted and semantically equivalent. Never use NullSafe when the input must be non-null or non-empty, or an upstream contract or object invariant already guarantees a non-null container; a preceding check does not make it acceptable. Traverse or copy guaranteed non-null containers directly. Enforce non-emptiness separately when at least one element is required; null-element checks do not establish it.",
+        "enforcement": "required",
+        "priority": "topic",
+        "skill": "develop-service",
+        "reference": "service-validation.md",
+        "source": "standards/bp_validation.md#显式检查"
+      }
+    },
+    {
+      "before": {
+        "id": "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "text": "In modules already depending on framework-core, prefer `NullSafe.copyToList`, `copyToSet`, or `copyToMap` according to the required immutable container type, without a redundant `Require.noNulls` check. These methods normalize a null container to an empty container and do not accept a custom exception supplier; use them only when the input contract and technical-exception semantics permit it.",
+        "enforcement": "default",
+        "priority": "topic",
+        "skill": "develop-service",
+        "reference": "service-validation.md",
+        "source": "standards/bp_validation.md#显式检查"
+      },
+      "after": {
+        "id": "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "text": "In modules already depending on framework-core, prefer NullSafe.copyToList, copyToSet, or copyToMap for an immutable container copy only when the contract permits null and empty containers, treats them equivalently, and allows technical exceptions. These methods already check elements for null, so do not add a redundant Require.noNulls check; they do not accept a custom exception supplier.",
+        "enforcement": "default",
+        "priority": "topic",
+        "skill": "develop-service",
+        "reference": "service-validation.md",
+        "source": "standards/bp_validation.md#显式检查"
+      }
+    }
+  ],
+  "retired": [
+    {
+      "id": "JAVA-RECORD-002",
+      "text": "Defensively copy collection record components with `List.copyOf`, `Set.copyOf`, or the corresponding immutable-copy operation.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#Java 语言",
+      "reason": "Replace the record-specific rule with independently checkable general rules for retention-boundary ownership, retained-copy mutability, and element isolation.",
+      "replacements": [
+        "JAVA-COLLECTION-OWNERSHIP-001",
+        "JAVA-COLLECTION-COPY-MUTABILITY-001",
+        "JAVA-COLLECTION-ELEMENT-ISOLATION-001"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "JAVA-COLLECTION-COPY-MUTABILITY-001",
+        "JAVA-COLLECTION-ELEMENT-ISOLATION-001",
+        "JAVA-COLLECTION-OWNERSHIP-001",
+        "JAVA-CONSTRUCTOR-CONTAINER-NULLABILITY-001"
+      ],
+      "changed": [
+        "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "JAVA-NULLSAFE-COPY-SELECTION-001"
+      ],
+      "retired": [
+        "JAVA-RECORD-002"
+      ],
+      "non_rule_changes": [
+        "Add a source-traceable collection-ownership section inside the existing baseline java-language.md reference; no workflow or routing change."
+      ]
+    }
+  ],
+  "blueprint_changes": [],
+  "scope_changes": []
+}
