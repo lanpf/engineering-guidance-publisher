@@ -1,0 +1,817 @@
+{
+  "version": "3.1.14",
+  "previous_version": "3.1.13",
+  "baseline": "0c6a48bc519233a8e55b77973d67acb853355d3d",
+  "status": "released",
+  "date": "2026-11-05",
+  "added": [
+    {
+      "id": "DEP-COMMONS-LANG3-BASELINE-001",
+      "text": "In framework-based projects, prefer centrally managed commons-lang3 as the standard general-purpose utility dependency. A module using it declares the dependency directly with scope matching its delivery contract; dependencyManagement alone does not supply it. Modules satisfied by the JDK or existing preferred framework utilities need not declare it; do not make it a mandatory dependency of every module.",
+      "enforcement": "default",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本"
+    },
+    {
+      "id": "JAVA-BEAN-VALIDATION-CONTAINER-001",
+      "text": "Declare container constraints, element constraints, and element cascading separately under the contract; none substitutes for another. For example, @NotEmpty List<@NotNull @Valid ItemRequest> constrains container non-emptiness, non-null elements, and element validity respectively.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-BEAN-VALIDATION-NULLABILITY-001",
+      "text": "Declare requiredness using each constraint's null semantics. @Valid, @Size, and @Pattern do not reject null and cannot replace a non-null constraint. Combine @NotNull only when the chosen constraint permits null but the contract requires a non-null value.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-BUSINESS-CHECK-TOOL-001",
+      "text": "Choose Require business-exception-supplier overloads or explicit business guards according to the business constraint and readability. Default or string-message overloads must not replace the promised business exception. Availability of a general-purpose check utility does not forbid explicit business guards.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-CHECK-DIAGNOSTIC-CONTENT-001",
+      "text": "Explicit technical diagnostic messages must be nonblank and identify the checked object and violated constraint, rather than generic text such as invalid or required. Protect sensitive values under the logging rules.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-CHECK-ERROR-MESSAGE-001",
+      "text": "Prefer explicit diagnostic messages for technical checks. Use default messages only for a concrete reason, such as equivalent context supplied by a common wrapper; message preference never changes exception semantics.",
+      "enforcement": "default",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-COLLECTION-DUPLICATE-REJECTION-001",
+      "text": "When a business contract rejects duplicates, explicitly check uniqueness; never substitute silent deduplication through Set conversion.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-DEFENSIVE-CHECK-TOOL-001",
+      "text": "For ordinary technical defense, use existing Spring Assert or managed Commons Validate methods matching exception semantics and the NPE prohibition; prefer Assert with an existing Spring dependency and Validate in Spring-decoupled modules. Write explicit technical guards only when available tools cannot satisfy the contract. Require default and string overloads throw FrameworkException.illegalArgument and are reserved for parameter checks whose technical contract explicitly requires that framework code.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-GENERIC-ENVELOPE-OWNERSHIP-001",
+      "text": "An explicitly non-owning generic envelope such as Result<T> retains and returns the original payload reference; do not infer copying from runtime payload types, replace the payload through unchecked copy casts, or promise snapshot or deep immutability. Document this boundary; callers own any snapshot, element-isolation, and publication-stability guarantees required by their payload contracts. API use alone grants no exemption. This exception does not cover collection-owning carriers such as PageResult<T> or PagedList<T>, which copy their containers at retention boundaries.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制"
+    },
+    {
+      "id": "JAVA-METHOD-VALIDATION-GROUP-001",
+      "text": "For method-validation groups, ordinary Beans declare @Validated(Groups.class) on the implementation class or method, with method groups overriding class groups; MVC built-in method validation declares groups on the handler method. Object parameters or returns needing cascading still use @Valid; parameter-level @Validated does not replace a cascade marker.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation"
+    },
+    {
+      "id": "JAVA-NPE-DEFECT-001",
+      "text": "Treat an unexpected NPE as a programming defect to diagnose and fix; never catch it uniformly and disguise it as an expected business rejection. A unified exception boundary may record diagnostics and return a generic system failure without changing its defect classification.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息"
+    },
+    {
+      "id": "JAVA-NULLSAFE-CALLBACK-CONTRACT-001",
+      "text": "NullSafe.visit requires a non-null consumer and checks it even when the container is null; copy methods allow an omitted consumer. A null container skips visit or becomes an empty copy without invoking the element exception supplier.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-NULLSAFE-EXCEPTION-SCOPE-001",
+      "text": "NullSafe exception suppliers handle only null elements or null Map keys/values, not null containers. Business element checks require a business-exception supplier; default technical exceptions are appropriate only when the contract accepts framework error codes.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+      "text": "In modules already depending on framework-core, prefer Require.noNulls with a business-exception supplier when non-null elements or Map keys/values are a business contract; enforce additional business constraints separately.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-REQUIRE-COLLECTION-CONTRACT-001",
+      "text": "Choose collection checks by their distinct contracts: notEmpty rejects null or empty containers but does not check elements; noNulls rejects null containers and null elements or Map keys/values but allows empty containers. noDuplicates also rejects duplicate elements; its keyMapper variant additionally rejects null or duplicate mapped keys. Both uniqueness variants allow empty input and return mutable Set/Map results, not immutable defensive copies; notEmpty and noNulls return the original container. Exception suppliers cover each method's structural check failures, not callback exceptions.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-UTILITY-GUAVA-SCOPE-001",
+      "text": "Use Guava for specifically selected capabilities such as hashing, not as an implicit framework-wide utility baseline. Its incidental presence does not justify choosing Preconditions over a preferred semantics-matching check tool; Commons Lang admission follows the standard dependency baseline.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类"
+    },
+    {
+      "id": "JAVA-VALIDATION-CALLBACK-EXCEPTION-001",
+      "text": "Exception suppliers do not translate exceptions thrown by callbacks. Exceptions thrown by Require predicates or keyMapper and NullSafe consumers propagate unchanged.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    },
+    {
+      "id": "JAVA-VALIDATION-NPE-001",
+      "text": "Never explicitly throw NPE or rely on implicit NPE for validation; do not use Objects.requireNonNull or Validate.notNull as checks. Reject or normalize foreseeable null input under its contract before dereference or a null-rejecting API. Use Validate.notBlank, notEmpty, or similar null-sensitive methods only after non-nullness is established.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    }
+  ],
+  "changed": [
+    {
+      "before": {
+        "id": "DEP-ADMISSION-REVIEW-001",
+        "text": "Before adding dependencies, assess maintenance, security, license, and dependency cost.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-ADMISSION-REVIEW-001",
+        "text": "Before adding dependencies, assess maintenance, security, license, and dependency cost.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Align concise policy wording and method contracts with the latest Require and NullSafe APIs.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "DEP-OPTIONAL-001",
+        "text": "Use optional only for a genuinely optional capability; it is not a replacement for choosing the correct scope.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-OPTIONAL-001",
+        "text": "Use optional only for a genuinely optional capability; it is not a replacement for choosing the correct scope.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Align concise policy wording and method contracts with the latest Require and NullSafe APIs.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "DEP-OVERLAP-001",
+        "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-OVERLAP-001",
+        "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need. Assess overlap by the capabilities actually used: an algorithm-specific Guava dependency does not replace the standardized Commons Lang utility baseline.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Distinguish a capability-specific algorithm dependency from the standardized utility baseline.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "DEP-SCOPE-USAGE-001",
+        "text": "Choose scope by actual use: compile for compilation requirements, test for tests, and provided only for capabilities genuinely supplied by the runtime.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-SCOPE-USAGE-001",
+        "text": "Choose scope by actual use: compile for compilation requirements, test for tests, and provided only for capabilities genuinely supplied by the runtime.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Align concise policy wording and method contracts with the latest Require and NullSafe APIs.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "DEP-SNAPSHOT-001",
+        "text": "SNAPSHOT dependencies are forbidden in release branches and production builds and may only be temporary in local or unpublished iteration branches.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-SNAPSHOT-001",
+        "text": "SNAPSHOT dependencies are forbidden in release branches and production builds and may only be temporary in local or unpublished iteration branches.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Align concise policy wording and method contracts with the latest Require and NullSafe APIs.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "DEP-VERSION-001",
+        "text": "Manage third-party versions centrally; business and feature modules must not override versions independently.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-VERSION-001",
+        "text": "Manage third-party versions centrally; business and feature modules must not override versions independently.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Align concise policy wording and method contracts with the latest Require and NullSafe APIs.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "dependency-rules.md",
+        "source": "standards/bp_dependencies.md#Module 依赖"
+      }
+    },
+    {
+      "before": {
+        "id": "ERROR-MESSAGE-TEMPLATE-001",
+        "text": "Bind each error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply an arbitrary message. Dynamic context may fill only parameters declared by the template and must not change the error meaning.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-MESSAGE-TEMPLATE-001",
+        "text": "Bind each service-defined error code to one stable message template; exception call sites must not replace it, concatenate ad hoc text, or supply arbitrary messages. Dynamic context may fill only declared template parameters without changing error meaning. Customizable diagnostics for common framework technical assertion codes are not business message templates; follow the validation rules for their usage boundaries.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Scope stable templates to service-defined errors and distinguish common framework technical-assertion diagnostics."
+    },
+    {
+      "before": {
+        "id": "INTERFACES-REST-CONTEXT-001",
+        "text": "After header injection and validation, each controller business request converges into one ordinary mutable `@Valid` HTTP request extending `ClientRequest`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "INTERFACES-REST-CONTEXT-001",
+        "text": "Each controller business request converges into one ordinary mutable, validation-enabled HTTP request extending ClientRequest. Select the validation mechanism under the validation policy rather than fixing the annotation in the layering policy.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "infrastructure-interfaces-boot.md",
+      "source": "standards/bp_layered_service.md#层内约定",
+      "reason": "Replace the hard-coded @Valid annotation with a reference to the validation policy while preserving request convergence, mutability and ClientRequest inheritance."
+    },
+    {
+      "before": {
+        "id": "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+        "text": "Translate Jakarta Bean Validation failures into the framework exception hierarchy at the unified exception translation boundary.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+        "text": "At the unified boundary classify validation failures by source: external input violating public constraints yields the promised input-validation error; return-contract violations, invalid constraint declarations, and validator configuration failures are server defects, not caller input errors or expected business rejections. A unified error contract does not require catching and rethrowing framework exceptions before rendering the response.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "Distinguish external input failures from server-side return-contract, constraint-declaration, and validator-configuration defects; relax mandatory framework-exception rethrowing."
+    },
+    {
+      "before": {
+        "id": "JAVA-COLLECTION-NULL-EXCEPTION-001",
+        "text": "Technical null-element checks cover collection elements and both Map keys and values; any null element throws `FrameworkException`. This rule does not replace domain or business validity checks.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-COLLECTION-NULL-EXCEPTION-001",
+        "text": "Technical null-element checks cover collection elements and both Map keys and values and use semantics-matching technical exceptions; they do not replace business validity checks.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Relax the universal FrameworkException requirement for technical element checks in favor of semantics-matching non-NPE technical exceptions."
+    },
+    {
+      "before": {
+        "id": "JAVA-COLLECTION-OWNERSHIP-001",
+        "text": "When an object retains an externally mutable collection or Map as its state or for long-term use, defensively copy it at the actual retention boundary, such as its constructor, factory, or state-update method. This applies to records and ordinary classes; do not rely on upstream copying. Temporary reads, traversal, or forwarding do not require copies merely because a collection is passed. Reuse inputs only when an explicit immutable contract guarantees that other aliases cannot change the container contents. An unmodifiable view alone does not isolate changes to the original mutable container.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-COLLECTION-OWNERSHIP-001",
+        "text": "When an object retains an externally mutable collection or Map as its state or for long-term use, defensively copy it at the actual retention boundary, such as its constructor, factory, or state-update method. This applies to records and ordinary classes; do not rely on upstream copying. Temporary reads, traversal, or forwarding do not require copies merely because a collection is passed. Reuse inputs only when an explicit immutable contract guarantees that other aliases cannot change the container contents. An unmodifiable view alone does not isolate changes to the original mutable container. The explicit non-owning generic-envelope exception follows JAVA-GENERIC-ENVELOPE-OWNERSHIP-001.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#集合所有权与防御性复制",
+      "reason": "Define the explicit non-owning generic-envelope exception."
+    },
+    {
+      "before": {
+        "id": "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "text": "Distinguish null containers, empty containers, and null elements by contract. Use NullSafe collection or Map APIs, including traversal, normalization, and copying, only when null and empty are both permitted and semantically equivalent. Never use NullSafe when the input must be non-null or non-empty, or an upstream contract or object invariant already guarantees a non-null container; a preceding check does not make it acceptable. Traverse or copy guaranteed non-null containers directly. Enforce non-emptiness separately when at least one element is required; null-element checks do not establish it.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "text": "Use NullSafe.visit or copyTo* only when input null and empty containers are both allowed and semantically equivalent. Traverse or copy guaranteed non-null inputs directly; do not precheck non-nullness and then use NullSafe.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Keep the null-versus-empty applicability gate concise; method-specific element and nonempty contracts are defined separately."
+    },
+    {
+      "before": {
+        "id": "JAVA-CROSS-VARIABLE-GUARD-001",
+        "text": "Use explicit guards for cross-variable checks, never `Require.valid`; classify their exceptions by failure semantics rather than treating every cross-variable decision as a technical precondition.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-CROSS-VARIABLE-GUARD-001",
+        "text": "Use explicit guards for cross-variable checks or decisions depending on external state; never disguise them as Require.satisfies calls. Classify failures under the common failure-semantics rule.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Use explicit guards for cross-variable or externally stateful decisions and update the API name to Require.satisfies."
+    },
+    {
+      "before": {
+        "id": "JAVA-DOMAIN-GUARD-001",
+        "text": "Guards expressing domain rules or domain validity throw `DomainException` extending `BaseException`, not generic JDK exceptions. Programming errors and technical preconditions inside domain remain technical exceptions; location alone does not make them business failures.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-DOMAIN-GUARD-001",
+        "text": "Guards expressing domain rules or domain validity throw the corresponding domain's DomainException, not generic IllegalArgumentException or IllegalStateException. Programming errors and technical preconditions inside domain remain technical exceptions.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "Keep domain-specific exception requirements without duplicating the shared business-exception base type or failure-classification rule."
+    },
+    {
+      "before": {
+        "id": "JAVA-EXCEPTION-003",
+        "text": "Handle or propagate business exceptions and never silently ignore an exception; non-business exception logging follows the logging rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-EXCEPTION-003",
+        "text": "Handle, translate, or propagate exceptions under their contracts; never silently swallow them. Follow the logging rules when recording exceptions.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "Clarify that exceptions may be handled, translated, or propagated under their contracts without requiring catch blocks at every layer."
+    },
+    {
+      "before": {
+        "id": "JAVA-EXCEPTION-LANGUAGE-001",
+        "text": "Service business errors use bound Chinese templates; project-authored technical diagnostics and Bean Validation messages use English. Original third-party messages are exempt.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-EXCEPTION-LANGUAGE-001",
+        "text": "Default messages for common framework technical errors such as FrameworkError, project-authored technical diagnostics, and Bean Validation messages use English. Original third-party messages are exempt from this language requirement. Business-template language and stability follow the error-code policy.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "Keep English technical diagnostics authoritative here; business Chinese templates and stability refer to the error-code policy rather than being duplicated."
+    },
+    {
+      "before": {
+        "id": "JAVA-EXCEPTION-SEMANTICS-001",
+        "text": "Classify exceptions by failure semantics rather than merely inheritance from `BaseException`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-EXCEPTION-SEMANTICS-001",
+        "text": "Classify checks and exceptions by failure semantics: business-contract violations are business failures; programming errors and broken technical invariants are technical failures. Do not classify by code location, variable count, utility choice, or BaseException inheritance.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Keep failure semantics authoritative in Explicit checks; remove duplicate wording from Exceptions and logging without changing baseline loading.",
+      "previous_location": {
+        "skill": "develop-service",
+        "reference": "validation.md",
+        "source": "standards/bp_validation.md#异常与消息"
+      }
+    },
+    {
+      "before": {
+        "id": "JAVA-MVC-METHOD-VALIDATION-001",
+        "text": "Direct MVC parameter constraints such as `@NotBlank` or `@Min` use MVC method validation; do not blanket-annotate Controllers with class-level `@Validated` merely to enable it.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-MVC-METHOD-VALIDATION-001",
+        "text": "Use MVC built-in method validation for directly declared parameter or return-value constraints, with @Valid for nested object constraints. Controllers using this mechanism must not have class-level @Validated.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "Clarify MVC built-in validation for direct parameter or return constraints and retain cascade markers without AOP class-level activation."
+    },
+    {
+      "before": {
+        "id": "JAVA-MVC-OBJECT-VALIDATION-001",
+        "text": "Trigger Spring MVC request-object validation through entry-parameter `@Valid`, or `@Validated` for specific groups; follow the entry group-selection rules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-MVC-OBJECT-VALIDATION-001",
+        "text": "For Spring MVC request-object validation at argument binding, use parameter-level @Valid for the default group or @Validated(Groups.class) for selected groups; never stack them indiscriminately. This choice does not apply to ordinary Bean method validation.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "Merge duplicate entry-group guidance and narrow it to MVC argument-binding validation, not ordinary Bean method validation."
+    },
+    {
+      "before": {
+        "id": "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "text": "In modules already depending on framework-core, prefer NullSafe.copyToList, copyToSet, or copyToMap for an immutable container copy only when the contract permits null and empty containers, treats them equivalently, and allows technical exceptions. These methods already check elements for null, so do not add a redundant Require.noNulls check; they do not accept a custom exception supplier.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "text": "In modules already depending on framework-core, prefer NullSafe.copyTo* for immutable shallow copies only when the NullSafe input contract and exception semantics fit. Use copyToOrdered* when input iteration order must be preserved. Built-in null-element checks need no repeated Require.noNulls; Set copies deduplicate.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Reflect current exception-supplier support, immutable shallow copies and ordered variants; avoid redundant null-element checks."
+    },
+    {
+      "before": {
+        "id": "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "text": "Use `Require.notNull`/`allNotNull` only for constructor parameters and public-method parameters, not return values, local variables, or fields.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "text": "Use Require.notNull with a business-exception supplier for business nullability guards, not ordinary technical defense. Applicability of a business guard does not depend on whether it checks a parameter, return value, local variable, or field.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Relax the constructor/public-parameter location restriction for business guards while prohibiting ordinary technical defense through Require.notNull."
+    },
+    {
+      "before": {
+        "id": "JAVA-REQUIRE-VALID-PURITY-001",
+        "text": "A `Require.valid` predicate uses its passed `value` as the sole input: it may call value methods, reference `static final` constants or class literals, and use immutable values derived solely from `value` inside the predicate. Never capture other variables, parameters, instance fields, or mutable external state.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-REQUIRE-VALID-PURITY-001",
+        "text": "Require.satisfies predicates must be side-effect-free and depend only on the current value, immutable static final constants, class literals, and immutable values derived solely from the current value. Never capture other variables, parameters, instance fields, or mutable external state. A null value fails without predicate evaluation.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Update the API name to Require.satisfies and tighten predicate purity to forbid side effects and mutable constants; null values fail without predicate evaluation."
+    },
+    {
+      "before": {
+        "id": "JAVA-UTILITY-SPRING-001",
+        "text": "In modules already depending on Spring, use semantics-matching utilities: `StringUtils.hasLength` for non-empty strings, `hasText` for non-blank strings, and `CollectionUtils.isEmpty` when null and empty collections are equivalent. Use null comparisons or JDK equivalents for null-only checks.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-UTILITY-SPRING-001",
+        "text": "In modules already depending on Spring, use semantics-matching utilities: StringUtils.hasLength for non-empty strings, hasText for non-blank strings, and CollectionUtils.isEmpty when null and empty collections are equivalent. Use null comparisons or Objects.isNull/Objects.nonNull boolean predicates for null-only decisions; throwing checks follow the validation rules, not NPE-based validation APIs.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "Name nonthrowing JDK null predicates explicitly and route exception-producing checks to the validation policy."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-003",
+        "text": "Do not add dependencies solely for explicit checks or hand-write equivalent logic already provided by an available tool that satisfies the failure semantics; dependency selection follows the common-utilities rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-003",
+        "text": "Follow the dependency policy for check-tool admission, including the standardized Commons Lang baseline. Do not add Spring, other framework modules, or arbitrary new utility libraries solely for checks. Do not hand-write general technical checks already satisfied by available tools; explicit business guards remain allowed.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Allow the approved Commons baseline and explicit business guards, while avoiding equivalent ad hoc technical checks."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-CONTRACT-002",
+        "text": "Implementations must not duplicate or strengthen parameter constraints declared by a public API interface.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-CONTRACT-002",
+        "text": "Declare parameter constraints and parameter cascade markers of inherited or implemented methods on the supertype contract; subtypes must not add, redeclare, or strengthen them. This prohibition does not apply to return-value constraints.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "Cover parameter constraints and cascade markers on inherited or implemented methods; keep the prohibition distinct from return-value constraints."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-REQUIRE-001",
+        "text": "Business checks express expected business rejections and must throw an exception extending framework-core `BaseException` with a stable business code, through a Require exception supplier or an explicit throw. Tool fallback must preserve that meaning; ordinary technical preconditions must not use business exception suppliers.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-REQUIRE-001",
+        "text": "Business-contract failures must throw the corresponding business exception with a stable business error code; never replace it with generic FrameworkException plus business prose. The business-exception base-type contract is defined in Exceptions and logging.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Keep business refusal semantics here and reference the single business-exception base-type declaration in Exceptions and logging."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-TECHNICAL-001",
+        "text": "Technical preconditions detect programming errors or protect internal technical invariants. They must not use service business error codes; general technical exceptions or `FrameworkException` with framework-wide technical codes are allowed.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-TECHNICAL-001",
+        "text": "Technical failures must not use business exceptions or codes. Use IllegalArgumentException for invalid technical arguments, IllegalStateException for invalid execution state, or another semantics-matching technical exception. Use FrameworkException only when the technical contract explicitly requires framework error codes.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Separate technical exception selection from utility selection and prohibit business exceptions for programming defects."
+    }
+  ],
+  "retired": [
+    {
+      "id": "JAVA-CHECK-TOOL-ORDER-001",
+      "text": "Choose explicit-check tools by failure semantics first, then available dependencies and capability, in order: framework-core `Require`, Spring `Assert`, managed Commons `Validate`, and JDK checks such as `Objects.requireNonNull`. Advance only when the preceding tool is unavailable or unsuitable; handwrite checks only when existing tools and the JDK cannot satisfy the requirement.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Replace the single Require/Assert/Validate/JDK fallback chain with business-guard and technical-defensive branches; NPE is no longer a validation outcome.",
+      "replacements": [
+        "JAVA-BUSINESS-CHECK-TOOL-001",
+        "JAVA-DEFENSIVE-CHECK-TOOL-001",
+        "JAVA-VALIDATION-NPE-001"
+      ]
+    },
+    {
+      "id": "JAVA-REQUIRE-NO-NULLS-SELECTION-001",
+      "text": "In modules already depending on framework-core, prefer `Require.noNulls` when only collection or Map null-element checking is needed. It rejects null containers, allows empty containers, and checks both Map keys and values. Its exception-supplier overload uses the supplied exception for null containers, elements, keys, and values; business checks follow the business-exception rule.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Retire technical-check-first Require.noNulls selection. Business null-element guards use an exception-supplier-specific rule; technical checks follow the defensive branch.",
+      "replacements": [
+        "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+        "JAVA-DEFENSIVE-CHECK-TOOL-001"
+      ]
+    },
+    {
+      "id": "JAVA-REQUIRE-NONNULL-BATCH-001",
+      "text": "For Require parameter null checks, use `notNull` for one parameter and `allNotNull` for multiple parameters; do not chain repeated `notNull` calls.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "The batch assertion methods were removed from Require. Retire the batch-selection and repeated-notNull prohibition with no replacement constraint.",
+      "replacements": []
+    },
+    {
+      "id": "JAVA-VALIDATION-ENTRY-GROUP-001",
+      "text": "Use `@Valid` for request-object entries with the default validation group and `@Validated` for explicitly selected groups; never stack both indiscriminately at the same entry.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#Bean Validation",
+      "reason": "Merge the duplicate generic entry-group rule into MVC argument binding; ordinary Bean and MVC method groups use the distinct method-validation rule.",
+      "replacements": [
+        "JAVA-MVC-OBJECT-VALIDATION-001",
+        "JAVA-METHOD-VALIDATION-GROUP-001"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "DEP-COMMONS-LANG3-BASELINE-001",
+        "JAVA-BEAN-VALIDATION-CONTAINER-001",
+        "JAVA-BEAN-VALIDATION-NULLABILITY-001",
+        "JAVA-BUSINESS-CHECK-TOOL-001",
+        "JAVA-CHECK-DIAGNOSTIC-CONTENT-001",
+        "JAVA-CHECK-ERROR-MESSAGE-001",
+        "JAVA-COLLECTION-DUPLICATE-REJECTION-001",
+        "JAVA-DEFENSIVE-CHECK-TOOL-001",
+        "JAVA-GENERIC-ENVELOPE-OWNERSHIP-001",
+        "JAVA-METHOD-VALIDATION-GROUP-001",
+        "JAVA-NPE-DEFECT-001",
+        "JAVA-NULLSAFE-CALLBACK-CONTRACT-001",
+        "JAVA-NULLSAFE-EXCEPTION-SCOPE-001",
+        "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+        "JAVA-REQUIRE-COLLECTION-CONTRACT-001",
+        "JAVA-UTILITY-GUAVA-SCOPE-001",
+        "JAVA-VALIDATION-CALLBACK-EXCEPTION-001",
+        "JAVA-VALIDATION-NPE-001"
+      ],
+      "changed": [
+        "DEP-ADMISSION-REVIEW-001",
+        "DEP-OPTIONAL-001",
+        "DEP-OVERLAP-001",
+        "DEP-SCOPE-USAGE-001",
+        "DEP-SNAPSHOT-001",
+        "DEP-VERSION-001",
+        "ERROR-MESSAGE-TEMPLATE-001",
+        "INTERFACES-REST-CONTEXT-001",
+        "JAVA-BEAN-VALIDATION-EXCEPTION-001",
+        "JAVA-COLLECTION-NULL-EXCEPTION-001",
+        "JAVA-COLLECTION-OWNERSHIP-001",
+        "JAVA-CONTAINER-NULL-SEMANTICS-001",
+        "JAVA-CROSS-VARIABLE-GUARD-001",
+        "JAVA-DOMAIN-GUARD-001",
+        "JAVA-EXCEPTION-003",
+        "JAVA-EXCEPTION-LANGUAGE-001",
+        "JAVA-EXCEPTION-SEMANTICS-001",
+        "JAVA-MVC-METHOD-VALIDATION-001",
+        "JAVA-MVC-OBJECT-VALIDATION-001",
+        "JAVA-NULLSAFE-COPY-SELECTION-001",
+        "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "JAVA-REQUIRE-VALID-PURITY-001",
+        "JAVA-UTILITY-SPRING-001",
+        "JAVA-VALIDATION-003",
+        "JAVA-VALIDATION-CONTRACT-002",
+        "JAVA-VALIDATION-REQUIRE-001",
+        "JAVA-VALIDATION-TECHNICAL-001"
+      ],
+      "retired": [
+        "JAVA-CHECK-TOOL-ORDER-001",
+        "JAVA-REQUIRE-NO-NULLS-SELECTION-001",
+        "JAVA-REQUIRE-NONNULL-BATCH-001",
+        "JAVA-VALIDATION-ENTRY-GROUP-001"
+      ],
+      "non_rule_changes": [
+        "Add the precise Scope 与版本 source heading to the dependency scopes section; the utility document routes throwing checks to the validation policy. Skill names, reference routing, workflows and scope remain unchanged."
+      ]
+    }
+  ],
+  "blueprint_changes": [],
+  "scope_changes": [],
+  "updated": "2026-11-05"
+}

@@ -119,7 +119,7 @@
 - **强制 · 主题**：interfaces 提供协议无关 Facade 实现和协议入口，不承载领域规则或用例编排；Facade 实现负责对象转换、调用 application 和统一响应包装。
 - **强制 · 主题**：controller 只处理路由、绑定和协议上下文，将 HTTP Request 转换为 API command/query 后调用 Facade。
 - **强制 · 主题**：Client、Channel、Device 等 Header 上下文只在 interfaces 解析；API、application 和 domain 不得依赖 Header 绑定机制。
-- **强制 · 主题**：controller 的业务请求收敛为一个普通可变 `@Valid` HTTP Request，并继承 `ClientRequest`。
+- **强制 · 主题**：controller 的业务请求收敛为一个启用校验的普通可变 HTTP Request，并继承 `ClientRequest`；校验方式遵循[校验与异常最佳实践](bp_validation.md#Bean-Validation)。
 - **强制 · 主题**：仅在接口确实需要可信渠道或认证会话上下文时，按需实现可组合的 `ChannelContext`、`AuthenticatedSessionContext`。
 - **强制 · 主题**：不得把业务字段拆成 path/query 参数再附加独立客户端上下文参数。
 - **强制 · 主题**：没有业务 body 的接口声明与所需上下文匹配的具体 Request 类型，由统一参数解析器从受保护 Header 构造并校验。
