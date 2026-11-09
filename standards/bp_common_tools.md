@@ -24,7 +24,8 @@
 | 字符串 blank / 非空白 | `org.apache.commons.lang3.StringUtils.isBlank` / `isNotBlank` |
 | 集合 null 或 empty / 非空 | `org.apache.commons.collections4.CollectionUtils.isEmpty` / `isNotEmpty` |
 - **强制 · 基础**：不得手写上述工具已提供的等价逻辑。
-工具依赖的引入与版本治理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)；上表只选择判定方法，抛出异常的检查按[校验与异常最佳实践](bp_validation.md#显式检查)区分业务守卫与技术防御，不授权使用 NPE 型校验方法。
+
+工具依赖的引入与版本治理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)。上表仅适用于布尔判定；抛出异常的检查、工具优先级及禁用项统一遵循[显式检查](bp_validation.md#显式检查)。
 
 ## Lombok
 

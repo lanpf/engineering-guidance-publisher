@@ -8,6 +8,8 @@
 - **强制 · 基础**：module 之间禁止循环依赖；必须通过调整职责边界或抽取公共 module 消除循环，不得用反射或事件隐藏编译期循环。
 - **强制 · 基础**：服务父 POM 必须在 `<dependencyManagement><dependencies>` 中以 `${project.version}` 管理除测试专用 module 和 boot module 外的全部服务 module；不得将它们声明为父 POM 的直接依赖。
 - **强制 · 基础**：只有具体技术实现、运行时适配和最终打包装配 module 可以引入聚合 starter；技术中立的 domain、application 等 module 只依赖最小 framework 契约。
+- **强制 · 基础**：`framework-kernel` 的生产代码只依赖 JDK，不反向依赖 `framework-core`、其它 framework module、Spring 或 starter。
+- **强制 · 基础**：`framework-core` 和其它 module 按实际用途依赖 `framework-kernel`；只需要错误码、异常或 `Require` 时直接依赖 kernel，不为此引入 core 或 starter。
 
 ## Scope 与版本
 
@@ -33,7 +35,8 @@
 
 | 框架契约 | 典型实现 starter | 最佳实践文档 |
 | --- | --- | --- |
-| `framework-core` | — | [校验与异常最佳实践](bp_validation.md#Bean-Validation) |
+| `framework-kernel` | — | [显式检查](bp_validation.md#显式检查)、[错误码](bp_error_codes.md#错误码) |
+| `framework-core` | — | [请求与响应契约](bp_layered_service.md#api)、[集合处理](bp_validation.md#显式检查) |
 | `framework-domain` | — | [服务分层最佳实践](bp_layered_service.md#层内约定) |
 | `framework-id` | `framework-starter-id-cosid` | [分布式 ID 最佳实践](bp_ids.md#分布式 ID) |
 | `framework-lock` | `framework-starter-lock-redis` | [分布式锁最佳实践](bp_lock.md#分布式锁) |

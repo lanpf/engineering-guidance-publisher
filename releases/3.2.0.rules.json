@@ -1,0 +1,371 @@
+{
+  "version": "3.2.0",
+  "previous_version": "3.1.14",
+  "baseline": "2927a045bec35eb6890f6507e78eb9e8ed68ad5d",
+  "status": "released",
+  "date": "2026-11-09",
+  "added": [
+    {
+      "id": "DEP-KERNEL-FOUNDATION-001",
+      "text": "Production code in framework-kernel depends only on the JDK; it must not depend on framework-core, other framework modules, Spring, or starters.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "DEP-KERNEL-MINIMAL-001",
+      "text": "framework-core and other modules may depend on framework-kernel as needed. If only error codes, exceptions, or Require are needed, declare the kernel dependency directly rather than bringing in core or a starter for them.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Module 依赖"
+    },
+    {
+      "id": "ERROR-EDGE-PASSTHROUGH-001",
+      "text": "Preserve the complete original code when an ingress adapter passes through an existing framework or service error. Allocate EDGE codes only to ingress errors the adapter itself defines, not to passed-through errors.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "ERROR-FRAMEWORK-COMMON-001",
+      "text": "Kernel FrameworkError is limited to generic cross-capability errors: INTERNAL_ERROR (100000), ILLEGAL_ARGUMENT (100001), and ILLEGAL_STATE (100002). Define identifiable capability errors in the framework or starter module owning that capability rather than accumulating them in FrameworkError.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "ERROR-NAMESPACE-OWNERSHIP-001",
+      "text": "Select ErrorCodeNamespace by ownership of the error contract, not the layer throwing or returning it: FRAMEWORK prefixes 100–199 for framework-defined generic and capability failures; EDGE prefixes 200–299 for ingress errors defined by gateways or service ingress adapters; BIZ prefixes 300–899 for service-defined domain, application, and infrastructure failures.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "id": "JAVA-VALIDATION-NO-COMMONS-VALIDATE-001",
+      "text": "Do not use org.apache.commons.lang3.Validate in production or test code. Other Commons Lang capabilities are unaffected.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查"
+    }
+  ],
+  "changed": [
+    {
+      "before": {
+        "id": "ERROR-CATEGORY-MAPPING-001",
+        "text": "Choose category, range, prefix, and semantics together: shared DomainError 000-099 / DOMAIN_; aggregate DomainError 100-599 / aggregate name; ApplicationError 600-699 / APP_; own-technology InfrastructureError 700-799 / INFRA_TECH_ (persistence, cache, locks, serialization, files, event storage, outbox); external-adapter InfrastructureError 800-899 / INFRA_ACL_; 900-999 remains unallocated. ACL denotes responsibility, not a required separate module. Aggregate block allocation follows the separate capacity rule.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-CATEGORY-MAPPING-001",
+        "text": "Within BIZ, choose category, local range, name prefix, and semantics together: shared DomainError 000–099 / DOMAIN_; aggregate DomainError 100–599 / aggregate name; ApplicationError 600–699 / APP_; own-technology InfrastructureError 700–799 / INFRA_TECH_ (persistence, cache, locks, serialization, files, event storage, outbox); external-adapter InfrastructureError 800–899 / INFRA_ACL_; local 900–999 remains unallocated. ACL denotes responsibility, not a required separate module. Aggregate block allocation follows the separate capacity rule.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Clarify that the existing local-code ranges apply within BIZ; leave their allocations unchanged."
+    },
+    {
+      "before": {
+        "id": "ERROR-CONTEXT-001",
+        "text": "One service project represents one bounded context and uses one unique service prefix; independently deployed bounded contexts require distinct prefixes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-CONTEXT-001",
+        "text": "One service project represents one bounded context and uses one unique BIZ service prefix; independently deployed bounded contexts require distinct BIZ prefixes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Scope unique service-prefix assignment to BIZ, separate from ingress and framework prefixes."
+    },
+    {
+      "before": {
+        "id": "ERROR-DOCUMENTATION-002",
+        "text": "Document the service prefix, shared-domain range, and every aggregate range in the authoritative domain document declared by the project documentation entry.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-DOCUMENTATION-002",
+        "text": "Document the BIZ service prefix, shared-domain range, and every aggregate range in the authoritative domain document declared by the project documentation entry.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Clarify that the domain document records its BIZ service prefix."
+    },
+    {
+      "before": {
+        "id": "ERROR-ENUM-PLACEMENT-001",
+        "text": "Error enums live in the module owning their semantics: domain errors in domain, application errors in application, and infrastructure errors in the corresponding infrastructure module. An adapter translating and throwing a domain/application exception does not change that ownership.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-ENUM-PLACEMENT-001",
+        "text": "Error enums live in the module owning their semantics: self-defined ingress errors in the corresponding ingress adapter module, domain errors in domain, application errors in application, and infrastructure errors in the corresponding infrastructure module. An adapter translating and throwing a domain/application exception does not change that ownership.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Record the owning ingress adapter for self-defined EDGE errors."
+    },
+    {
+      "before": {
+        "id": "ERROR-FORMAT-001",
+        "text": "A complete error code has six digits: a three-digit service prefix plus a three-digit local code; error enums declare only the local code, and the framework composes and zero-pads the full code.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-FORMAT-001",
+        "text": "A complete error code has six digits: a three-digit numeric prefix plus a three-digit local code (000–999). Use framework-kernel ErrorCodePrefix(namespace, offset) to express the prefix as the namespace's starting prefix plus the offset. BaseError composes and zero-pads the full code; do not concatenate it at call sites.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Use the kernel namespace and numeric prefix API while preserving the six-digit format."
+    },
+    {
+      "before": {
+        "id": "ERROR-PREFIX-REGISTRY-001",
+        "text": "A service prefix must be centrally registered and allocated within the deployment system before use; two services in the same deployment system must never use the same prefix.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-PREFIX-REGISTRY-001",
+        "text": "Within each deployment system, centrally register and allocate numeric prefixes in their namespaces before use. Different services in the same deployment system must not share a BIZ prefix, and no owner may use a prefix allocated to another owner. Multiple error enums under the same owner may share its allocated prefix if they coordinate local-code allocation.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Extend registration to all namespaces while explicitly retaining deployment-system scope and distinct BIZ prefixes for different services. Coordinate local codes across enums sharing one owner's allocated prefix."
+    },
+    {
+      "before": {
+        "id": "ERROR-UNIQUENESS-001",
+        "text": "A complete error code is globally unique within one deployment system; a local code need only be unique within its service prefix.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-UNIQUENESS-001",
+        "text": "A complete error code is globally unique within one deployment system. Each local code must be unique within its numeric prefix, including across enums that share that prefix.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Apply local-code uniqueness across all enums of a numeric prefix, not only BIZ."
+    },
+    {
+      "before": {
+        "id": "JAVA-BUSINESS-CHECK-TOOL-001",
+        "text": "Choose Require business-exception-supplier overloads or explicit business guards according to the business constraint and readability. Default or string-message overloads must not replace the promised business exception. Availability of a general-purpose check utility does not forbid explicit business guards.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-BUSINESS-CHECK-TOOL-001",
+        "text": "Choose kernel Require business-exception-supplier overloads or explicit business guards according to the business constraint and readability. Never substitute a generic technical exception for the promised business exception. Require.state is for technical state checks, not business rejections.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Move Require guidance to the kernel and keep technical state assertions out of business rejection."
+    },
+    {
+      "before": {
+        "id": "JAVA-BUSINESS-EXCEPTION-BASE-001",
+        "text": "Service-defined business exceptions extend framework-core `BaseException`, never JDK `RuntimeException` or other JDK exceptions directly.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-BUSINESS-EXCEPTION-BASE-001",
+        "text": "Service-defined business exceptions extend com.cloud.framework.kernel.error.BaseException, never JDK RuntimeException or other JDK exceptions directly.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#异常与消息",
+      "reason": "Resolve BaseException in its kernel package; preserve the existing inheritance contract."
+    },
+    {
+      "before": {
+        "id": "JAVA-DEFENSIVE-CHECK-TOOL-001",
+        "text": "For ordinary technical defense, use existing Spring Assert or managed Commons Validate methods matching exception semantics and the NPE prohibition; prefer Assert with an existing Spring dependency and Validate in Spring-decoupled modules. Write explicit technical guards only when available tools cannot satisfy the contract. Require default and string overloads throw FrameworkException.illegalArgument and are reserved for parameter checks whose technical contract explicitly requires that framework code.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-DEFENSIVE-CHECK-TOOL-001",
+        "text": "For general technical defense, prefer com.cloud.framework.kernel.validation.Require. Fall back to a semantics-matching org.springframework.util.Assert only when Require is unavailable or cannot satisfy the constraint or exception contract and the module already depends on Spring. Use an explicit technical guard only when neither is suitable; never hand-write an equivalent check an available tool already satisfies.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Prioritize kernel Require; retain already available Spring Assert as the only assertion-library fallback."
+    },
+    {
+      "before": {
+        "id": "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+        "text": "In modules already depending on framework-core, prefer Require.noNulls with a business-exception supplier when non-null elements or Map keys/values are a business contract; enforce additional business constraints separately.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+        "text": "In modules already using framework-kernel, prefer Require.noNulls with a business-exception supplier when non-null elements or Map keys/values are a business contract; enforce additional business constraints separately.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Resolve Require.noNulls in framework-kernel instead of framework-core."
+    },
+    {
+      "before": {
+        "id": "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "text": "Use Require.notNull with a business-exception supplier for business nullability guards, not ordinary technical defense. Applicability of a business guard does not depend on whether it checks a parameter, return value, local variable, or field.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "text": "Use Require.notNull with a business-exception supplier for business nullability guards and follow the technical-failure rule for technical nullability checks. Choose by failure semantics, not by whether the value is a parameter, return value, local variable, or field.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "service-validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Allow kernel Require.notNull for technical checks without weakening the business-exception supplier requirement."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-003",
+        "text": "Follow the dependency policy for check-tool admission, including the standardized Commons Lang baseline. Do not add Spring, other framework modules, or arbitrary new utility libraries solely for checks. Do not hand-write general technical checks already satisfied by available tools; explicit business guards remain allowed.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-003",
+        "text": "Follow the dependency policy for check-tool admission. A module may declare framework-kernel directly as needed; do not add Spring, framework-core, a starter, or another utility library solely for validation.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Allow a direct minimal kernel dependency while avoiding unrelated dependencies solely for validation."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-NPE-001",
+        "text": "Never explicitly throw NPE or rely on implicit NPE for validation; do not use Objects.requireNonNull or Validate.notNull as checks. Reject or normalize foreseeable null input under its contract before dereference or a null-rejecting API. Use Validate.notBlank, notEmpty, or similar null-sensitive methods only after non-nullness is established.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-NPE-001",
+        "text": "Never explicitly throw NPE or rely on implicit NPE for validation; do not use Objects.requireNonNull for parameter or state checks. Reject or normalize foreseeable null input under its contract before dereference or a null-rejecting API.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Preserve the NPE ban; the broader Commons Validate prohibition is owned by a separate rule."
+    },
+    {
+      "before": {
+        "id": "JAVA-VALIDATION-TECHNICAL-001",
+        "text": "Technical failures must not use business exceptions or codes. Use IllegalArgumentException for invalid technical arguments, IllegalStateException for invalid execution state, or another semantics-matching technical exception. Use FrameworkException only when the technical contract explicitly requires framework error codes.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-VALIDATION-TECHNICAL-001",
+        "text": "Do not disguise technical failures as domain or application rejections. For general technical checks, Require argument methods such as notNull, notBlank, and satisfies use FrameworkException.illegalArgument in default or string overloads; use Require.state for invalid execution state, whose string overload uses FrameworkException.illegalState. Preserve IllegalArgumentException or IllegalStateException where an existing contract explicitly requires the corresponding JDK type. Use the corresponding technical exception for a specific capability failure.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "validation.md",
+      "source": "standards/bp_validation.md#显式检查",
+      "reason": "Permit kernel technical assertions by default, distinguish argument from state failures, and preserve explicitly required JDK exception contracts."
+    }
+  ],
+  "retired": [],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "DEP-KERNEL-FOUNDATION-001",
+        "DEP-KERNEL-MINIMAL-001",
+        "ERROR-EDGE-PASSTHROUGH-001",
+        "ERROR-FRAMEWORK-COMMON-001",
+        "ERROR-NAMESPACE-OWNERSHIP-001",
+        "JAVA-VALIDATION-NO-COMMONS-VALIDATE-001"
+      ],
+      "changed": [
+        "ERROR-CATEGORY-MAPPING-001",
+        "ERROR-CONTEXT-001",
+        "ERROR-DOCUMENTATION-002",
+        "ERROR-ENUM-PLACEMENT-001",
+        "ERROR-FORMAT-001",
+        "ERROR-PREFIX-REGISTRY-001",
+        "ERROR-UNIQUENESS-001",
+        "JAVA-BUSINESS-CHECK-TOOL-001",
+        "JAVA-BUSINESS-EXCEPTION-BASE-001",
+        "JAVA-DEFENSIVE-CHECK-TOOL-001",
+        "JAVA-REQUIRE-COLLECTION-BUSINESS-GUARD-001",
+        "JAVA-REQUIRE-NONNULL-SCOPE-001",
+        "JAVA-VALIDATION-003",
+        "JAVA-VALIDATION-NPE-001",
+        "JAVA-VALIDATION-TECHNICAL-001"
+      ],
+      "retired": [],
+      "non_rule_changes": []
+    }
+  ],
+  "blueprint_changes": [],
+  "scope_changes": []
+}

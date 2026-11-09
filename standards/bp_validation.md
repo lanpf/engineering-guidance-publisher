@@ -24,21 +24,22 @@
 
 - **强制 · 基础**：当 Jakarta Bean Validation 无法表达约束、调用路径不能保证触发校验，或必须返回明确的业务错误语义时，使用显式检查；包括不经过框架绑定链路、需要快速失败的构造函数和工厂方法。
 - **强制 · 基础**：按失败语义分类：违反业务契约为业务失败，程序错误或内部技术不变量被破坏为技术失败；不得按代码位置、变量数量、工具或是否继承 `BaseException` 分类。
-- **强制 · 基础**：技术失败不得使用业务异常或业务错误码。非法技术参数使用 `IllegalArgumentException`，非法执行状态使用 `IllegalStateException`，其他情况使用匹配语义的技术异常；技术契约明确要求框架错误码时，才使用对应 `FrameworkException`。
+- **强制 · 基础**：技术失败不得冒充领域或应用业务拒绝。使用 `Require` 做通用技术检查时，非法参数使用参数检查方法（如 `notNull`、`notBlank`、`satisfies`），默认或字符串重载抛 `FrameworkException.illegalArgument`；非法执行状态使用 `Require.state`，字符串重载抛 `FrameworkException.illegalState`。已有契约明确要求 JDK 异常时，保留对应的 `IllegalArgumentException` 或 `IllegalStateException`；特定能力失败使用对应技术异常。
 - **强制 · 主题**：业务契约失败必须抛出携带稳定业务错误码的对应业务异常，不得用通用 `FrameworkException` 加业务文案替代；业务异常基类遵循[异常与消息](#异常与消息)。
-- **强制 · 基础**：业务检查按约束与可读性选择 `Require` 的业务异常供应器重载或显式业务守卫；不得使用默认或字符串重载替代约定的业务异常。
-- **强制 · 基础**：普通技术防御按已有依赖选择 Spring `org.springframework.util.Assert` 或统一管理的 `org.apache.commons.lang3.Validate`，且方法必须符合异常语义及 NPE 禁令；已有 Spring 时优先 Assert，Spring 解耦 module 使用 Validate。可用工具不能满足时，才编写显式技术守卫。`Require` 默认或字符串重载抛出 `FrameworkException.illegalArgument`，仅用于技术契约明确要求该框架错误码的参数检查。
-- **强制 · 基础**：检查工具的依赖准入遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)；不得仅为校验引入 Spring、其他 framework module 或任意新工具库。不得手写已有工具能够满足的等价通用技术检查；此限制不适用于显式业务守卫。
+- **强制 · 基础**：业务检查按约束与可读性选择 kernel `Require` 的业务异常供应器重载或显式业务守卫；不得使用通用技术异常替代约定的业务异常。`Require.state` 只用于技术状态检查，不用于表达业务拒绝。
+- **强制 · 基础**：通用技术防御优先使用 `com.cloud.framework.kernel.validation.Require`；仅当 `Require` 不可用或不能满足约束或异常契约，且 module 已依赖 Spring 时，使用语义匹配的 `org.springframework.util.Assert`。两者都不适用时，使用显式技术守卫；不得手写可用工具已经满足的等价检查。
+- **强制 · 基础**：禁止在生产及测试代码中使用 `org.apache.commons.lang3.Validate`；此禁令不影响 Commons Lang 的其它能力。
+- **强制 · 基础**：检查工具的依赖准入遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)；可以按需直接依赖 `framework-kernel`，不得仅为校验引入 Spring、`framework-core`、starter 或其他工具库。
 
 **诊断消息与 null 防御**
 
 - **默认 · 基础**：技术检查优先提供显式诊断消息；使用默认消息须有具体理由，例如统一封装已提供等价上下文。消息偏好不改变异常语义。
 - **强制 · 基础**：显式技术诊断消息必须非空白，说明检查对象及违反的约束，不得仅写 `invalid`、`required` 等泛化文案；敏感值保护遵循[日志与敏感数据最佳实践](bp_logging.md#日志与敏感数据)。
-- **强制 · 基础**：不得主动抛 NPE 或依赖隐式 NPE 完成校验，禁止用 `Objects.requireNonNull`、`Validate.notNull` 校验。可预见的 null 必须在解引用或调用拒绝 null 的 API 前按契约拒绝或归一化；`Validate.notBlank`、`notEmpty` 等可能对 null 抛 NPE 的方法，只能在已保证非 null 后使用。
+- **强制 · 基础**：不得主动抛 NPE 或依赖隐式 NPE 完成校验，禁止用 `Objects.requireNonNull` 做参数或状态校验。可预见的 null 必须在解引用或调用拒绝 null 的 API 前按契约拒绝或归一化。
 
 **Require 与集合检查**
 
-- **强制 · 主题**：`Require.notNull` 用于业务非空守卫时，必须提供业务异常供应器；不得用于普通技术防御性检查。业务守卫的适用范围不取决于检查的是参数、返回值、局部变量还是字段。
+- **强制 · 主题**：`Require.notNull` 用于业务非空守卫时，必须提供业务异常供应器；用于技术非空检查时，遵循本节技术失败规则。工具选择取决于失败语义，不取决于检查的是参数、返回值、局部变量还是字段。
 - **强制 · 主题**：`Require.satisfies` 的谓词必须无副作用，只依赖当前 `value`、不可变的 `static final` 常量、类字面量及仅由当前值派生的不可变值；不得捕获其他变量、方法参数、`this` 字段或外部可变状态。null 值直接判定失败。
 - **强制 · 主题**：跨变量或依赖外部状态的判断使用显式守卫，不得包装成 `Require.satisfies` 调用；异常分类遵循本节失败语义规则。
 - **强制 · 主题**：选择集合检查方法必须区分容器非 null、非空、元素非 null 与唯一性，遵循下表；不得以其中一项代替其他约束。
@@ -53,7 +54,7 @@
 以上方法的异常供应器覆盖各自的结构校验失败；返回结果不等于已完成不可变防御性复制。
 
 - **强制 · 主题**：技术性元素非空检查必须同时覆盖 Map 的 key/value，失败使用匹配语义的技术异常；不得以技术完整性检查代替业务有效性检查。
-- **默认 · 主题**：已依赖 framework-core，且元素或 Map key/value 非空确为业务契约时，优先使用 `Require.noNulls` 的业务异常供应器重载；额外业务约束另行保证。
+- **默认 · 主题**：已使用 `framework-kernel`，且元素或 Map key/value 非空确为业务契约时，优先使用 `Require.noNulls` 的业务异常供应器重载；额外业务约束另行保证。
 - **强制 · 主题**：业务要求拒绝重复项时，必须检查唯一性，不得以 Set 转换的静默去重代替。
 - **强制 · 主题**：不得假定异常供应器会转换回调异常；`Require` 的谓词、`keyMapper` 及 `NullSafe` 的 consumer 自身抛出的异常原样传播。
 
@@ -81,7 +82,7 @@
 - **强制 · 基础**：`FrameworkError` 等框架通用技术错误的默认消息、工程自行声明的技术诊断消息和 Bean Validation 提示使用英文；第三方原始异常消息不受此语言约束。
 - **强制 · 基础**：调用方以稳定业务错误码判断业务结果，任何异常 message 都不得作为稳定业务协议解析。
 - **强制 · 主题**：校验失败在统一边界按来源转换：外部入参违反公开约束，返回约定的参数校验错误；返回值违反服务契约、约束声明错误或校验器配置错误，按服务端缺陷处理，不得包装为调用方参数错误或预期业务拒绝。统一错误契约不要求先捕获并重抛框架异常再生成响应。
-- **强制 · 主题**：服务自定义业务异常继承 framework-core 的 `BaseException`，不得直接继承 `RuntimeException` 或其他 JDK 异常类。
+- **强制 · 主题**：服务自定义业务异常继承 `com.cloud.framework.kernel.error.BaseException`，不得直接继承 `RuntimeException` 或其他 JDK 异常类。
 - **强制 · 主题**：表达领域规则或领域有效性的守卫抛出对应领域的 `DomainException`，不得使用 `IllegalArgumentException`、`IllegalStateException` 等通用异常替代；领域内部的程序错误或技术性前置条件仍按技术异常处理。
 - **强制 · 主题**：每个领域的 `DomainException` 必须提供 `invalidEntityId()` 静态工厂方法，用于领域实体 ID 有效性校验失败；对应 `DOMAIN_ENTITY_ID_INVALID` 的码位仅由[服务错误码最佳实践](bp_error_codes.md#错误码)定义。
 - **强制 · 基础**：异常按契约处理、转换或继续传播，不得静默吞掉；日志要求遵循[日志与敏感数据最佳实践](bp_logging.md#日志与敏感数据)。

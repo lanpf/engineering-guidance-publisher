@@ -27,7 +27,7 @@
 | 文档 | 范围 |
 | --- | --- |
 | [bp_java.md](bp_java.md) | Java 语言、数据设计、集合所有权与防御性复制、常量与字面量 |
-| [bp_validation.md](bp_validation.md) | Bean Validation、显式前置条件、业务守卫与异常体系 |
+| [bp_validation.md](bp_validation.md) | Bean Validation、kernel Require 与 Assert 的选择、业务守卫与异常体系 |
 | [bp_common_tools.md](bp_common_tools.md) | 基础工具类、Lombok、MapStruct |
 | [bp_naming.md](bp_naming.md) | 接口、实现、数据载体、技术适配与 MyBatis XML 命名 |
 | [bp_resource_naming.md](bp_resource_naming.md) | 资源键、命名空间、Resolver 职责与单次注入边界 |
@@ -37,7 +37,7 @@
 | [bp_dependencies.md](bp_dependencies.md) | Maven 依赖、module 边界、版本管理、服务技术基线 |
 | [bp_persistence.md](bp_persistence.md) | 持久化边界、数据模型、并发写与事务、唯一约束异常、查询与性能 |
 | [bp_logging.md](bp_logging.md) | 日志级别、日志内容、链路上下文、敏感数据定义与脱敏 |
-| [bp_error_codes.md](bp_error_codes.md) | 错误码结构、码段分配、枚举与模板、发布稳定性 |
+| [bp_error_codes.md](bp_error_codes.md) | 错误码命名空间、结构、码段分配、枚举与模板、发布稳定性 |
 | [bp_unit_testing.md](bp_unit_testing.md) | 单元测试与模块契约测试；开发阶段只允许单元测试 |
 | [bp_integration.md](bp_integration.md) | 集成测试；只在测试冒烟阶段编写和执行 |
 | [bp_ids.md](bp_ids.md) | 分布式 Long ID 生成与使用 |
