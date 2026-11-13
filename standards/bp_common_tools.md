@@ -4,8 +4,8 @@
 
 ## 基础工具类
 
-- **默认 · 基础**：通用技术能力优先使用 JDK、工程已有框架或成熟且持续维护的社区库。
-- **强制 · 基础**：Guava 只因哈希等明确选定的能力按需引入，不作为 framework 工程隐含的通用工具基线；不得仅因它已在依赖中，就用 Preconditions 替代语义匹配的优先检查工具。Commons Lang 的准入遵循依赖管理中的统一基础工具政策。
+- **默认 · 基础**：通用技术能力优先使用 JDK 和 module 已依赖的框架工具；两者不足以满足需求时，再按依赖准入规则评估成熟且持续维护的社区库。
+- **强制 · 基础**：Guava 只因哈希等明确选定的能力按需引入，不作为 framework 工程隐含的通用工具基线；不得仅因它已在依赖中，就用 Preconditions 替代语义匹配的优先检查工具。
 - **强制 · 基础**：字符串与集合判定必须先区分纯 null、非空（不为 null 且长度非零）、非空白（至少含一个非空白字符），不得为统一工具改变判断语义；只有允许将 null 与空集合等同处理时才使用统一的集合空判定。
 - **强制 · 基础**：module 已因自身职责依赖 Spring Framework 时，复用语义匹配的 Spring 工具；字符串与集合判定按下表选择。
 
@@ -16,14 +16,8 @@
 | 字符串非空白 | `org.springframework.util.StringUtils.hasText` |
 | 集合 null 或 empty | `org.springframework.util.CollectionUtils.isEmpty` |
 - **强制 · 基础**：与 Spring 解耦的 module 不得仅为工具方法引入 Spring Framework。
-- **强制 · 基础**：与 Spring 解耦的 module 在 JDK 不足以满足需求时，使用工程统一管理的 Apache Commons，并按既定判定语义选择对应方法。
-
-| 判定语义 | 方法 |
-| --- | --- |
-| 字符串 empty / 非空 | `org.apache.commons.lang3.StringUtils.isEmpty` / `isNotEmpty` |
-| 字符串 blank / 非空白 | `org.apache.commons.lang3.StringUtils.isBlank` / `isNotBlank` |
-| 集合 null 或 empty / 非空 | `org.apache.commons.collections4.CollectionUtils.isEmpty` / `isNotEmpty` |
-- **强制 · 基础**：不得手写上述工具已提供的等价逻辑。
+- **强制 · 基础**：已有依赖提供语义匹配的工具时应复用，不重复实现。
+- **强制 · 基础**：仅需简单字符串或集合判定时，不得为避免直接使用 JDK API 而新增依赖或通用封装。
 
 工具依赖的引入与版本治理遵循[依赖管理最佳实践](bp_dependencies.md#scope-与版本)。上表仅适用于布尔判定；抛出异常的检查、工具优先级及禁用项统一遵循[显式检查](bp_validation.md#显式检查)。
 

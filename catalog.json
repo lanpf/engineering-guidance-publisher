@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints. Preload and recheck baseline rules, but apply conditional rules only when their type or technology is relevant; never introduce unnecessary types, modules, or dependencies solely to satisfy an inapplicable rule.", "enforcement": "required", "priority": "baseline"},
@@ -42,8 +42,8 @@
               "source": "standards/bp_dependencies.md#Scope 与版本",
               "rules": [
                 {"id": "DEP-ADMISSION-REVIEW-001", "text": "Before adding dependencies, assess maintenance, security, license, and dependency cost.", "enforcement": "required", "priority": "baseline"},
-                {"id": "DEP-COMMONS-LANG3-BASELINE-001", "text": "In framework-based projects, prefer centrally managed commons-lang3 as the standard general-purpose utility dependency. A module using it declares the dependency directly with scope matching its delivery contract; dependencyManagement alone does not supply it. Modules satisfied by the JDK or existing preferred framework utilities need not declare it; do not make it a mandatory dependency of every module.", "enforcement": "default", "priority": "baseline"},
-                {"id": "DEP-OVERLAP-001", "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need. Assess overlap by the capabilities actually used: an algorithm-specific Guava dependency does not replace the standardized Commons Lang utility baseline.", "enforcement": "required", "priority": "baseline"},
+                {"id": "DEP-MANAGED-DEPENDENCY-DECLARATION-001", "text": "dependencyManagement does not automatically introduce dependencies; a module using a library API declares the required dependency directly with scope matching its use.", "enforcement": "required", "priority": "baseline"},
+                {"id": "DEP-OVERLAP-001", "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need.", "enforcement": "required", "priority": "baseline"},
                 {"id": "DEP-SCOPE-USAGE-001", "text": "Choose scope by actual use: compile for compilation requirements, test for tests, and provided only for capabilities genuinely supplied by the runtime.", "enforcement": "required", "priority": "baseline"},
                 {"id": "DEP-OPTIONAL-001", "text": "Use optional only for a genuinely optional capability; it is not a replacement for choosing the correct scope.", "enforcement": "required", "priority": "baseline"},
                 {"id": "DEP-SNAPSHOT-001", "text": "SNAPSHOT dependencies are forbidden in release branches and production builds and may only be temporary in local or unpublished iteration branches.", "enforcement": "required", "priority": "baseline"},
@@ -140,13 +140,13 @@
             {
               "title": "Selection and reuse",
               "rules": [
-                {"id": "JAVA-UTILITY-001", "text": "Prefer the JDK, an already-used framework, or a mature maintained library over reimplementing general technical capabilities.", "enforcement": "default", "priority": "baseline"},
-                {"id": "JAVA-UTILITY-GUAVA-SCOPE-001", "text": "Use Guava for specifically selected capabilities such as hashing, not as an implicit framework-wide utility baseline. Its incidental presence does not justify choosing Preconditions over a preferred semantics-matching check tool; Commons Lang admission follows the standard dependency baseline.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-UTILITY-001", "text": "Prefer the JDK and framework tools already used by the module for general technical capabilities. Only when they are insufficient, assess a mature maintained community library under the dependency-admission policy.", "enforcement": "default", "priority": "baseline"},
+                {"id": "JAVA-UTILITY-GUAVA-SCOPE-001", "text": "Use Guava for specifically selected capabilities such as hashing, not as an implicit framework-wide utility baseline. Its incidental presence does not justify choosing Preconditions over a preferred semantics-matching check tool.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-PREDICATE-SEMANTICS-001", "text": "Distinguish null-only, non-empty, and non-blank before selecting a predicate; never change semantics to standardize tools. Treat null and empty collections alike only when the scenario allows it.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-UTILITY-SPRING-001", "text": "In modules already depending on Spring, use semantics-matching utilities: StringUtils.hasLength for non-empty strings, hasText for non-blank strings, and CollectionUtils.isEmpty when null and empty collections are equivalent. Use null comparisons or Objects.isNull/Objects.nonNull boolean predicates for null-only decisions; throwing checks follow the validation rules, not NPE-based validation APIs.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-UTILITY-004", "text": "A module decoupled from Spring must not add Spring Framework only for utility methods.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-UTILITY-005", "text": "When the JDK is insufficient in a Spring-decoupled module, use managed Commons tools matching the predicate semantics: strings use `isEmpty`/`isNotEmpty` or `isBlank`/`isNotBlank`; collections use collections4 `isEmpty`/`isNotEmpty` only when null and empty are equivalent.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-UTILITY-006", "text": "Do not hand-write logic equivalent to the utilities above.", "enforcement": "required", "priority": "baseline"}
+                {"id": "JAVA-UTILITY-006", "text": "Reuse a semantics-matching utility already provided by existing dependencies instead of reimplementing it.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-SIMPLE-PREDICATE-DEPENDENCY-001", "text": "Do not introduce a dependency or general-purpose wrapper merely to avoid direct JDK API use for simple string or collection predicates.", "enforcement": "required", "priority": "baseline"}
               ]
             }
           ]
@@ -1001,7 +1001,9 @@
                 {"id": "TEST-INTEGRATION-CLASSIFICATION-001", "text": "Tests of real implementation collaboration across modules, full auto-configuration, real databases, or real middleware are integration tests; merely referencing another module's interface or DTO is insufficient.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-INTEGRATION-PLACEMENT-001", "text": "Put service integration tests in the architecture-defined standalone test module, never in a production module.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-CONTAINERS-001", "text": "Prefer Testcontainers for isolated and repeatable real-infrastructure scenarios.", "enforcement": "default", "priority": "topic"},
-                {"id": "TEST-CONTAINER-IMAGE-001", "text": "When integration tests use containers, prefer an officially maintained lightweight image variant when its functionality, version, and target architecture satisfy the test; use the standard image only when the lightweight variant lacks required tools or capabilities.", "enforcement": "default", "priority": "topic"},
+                {"id": "TEST-CONTAINER-IMAGE-001", "text": "For container-based integration tests, prefer officially maintained standard image variants, not lightweight variants by default; also satisfy the production-parity and target-architecture requirements.", "enforcement": "default", "priority": "topic"},
+                {"id": "TEST-CONTAINER-PRODUCTION-PARITY-001", "text": "Database, middleware, and similar test images must match the production-agreed distribution source, version, and variant, with an explicit selected image version. Do not substitute latest, arbitrary local tags, or lightweight variants for production-agreed standard images. Handle target architectures under the manifest rule rather than changing image variants.", "enforcement": "required", "priority": "topic"},
+                {"id": "TEST-CONTAINER-LOCAL-CACHE-001", "text": "After selecting a production-aligned standard image, prefer reusing the same image already available locally. Pull only when the local cache lacks it, does not satisfy the selected version or target architecture, or an explicit refresh is required. Do not force a fresh pull on every test by default, or change the selected source, version, or variant merely to hit the cache.", "enforcement": "default", "priority": "topic"},
                 {"id": "TEST-CONTAINER-ARCH-001", "text": "Confirm that each image manifest supports the target architectures of local development and CI runners.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-CONTAINER-MULTIARCH-001", "text": "Prefer one multi-architecture image that supports both local development and CI runners.", "enforcement": "default", "priority": "topic"}
               ]

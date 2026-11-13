@@ -1,0 +1,202 @@
+{
+  "version": "3.2.1",
+  "previous_version": "3.2.0",
+  "baseline": "3b2fbe08278c8d70d8e521de26db6307d705cc74",
+  "status": "released",
+  "date": "2026-11-13",
+  "added": [
+    {
+      "id": "DEP-MANAGED-DEPENDENCY-DECLARATION-001",
+      "text": "dependencyManagement does not automatically introduce dependencies; a module using a library API declares the required dependency directly with scope matching its use.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本"
+    },
+    {
+      "id": "JAVA-SIMPLE-PREDICATE-DEPENDENCY-001",
+      "text": "Do not introduce a dependency or general-purpose wrapper merely to avoid direct JDK API use for simple string or collection predicates.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类"
+    },
+    {
+      "id": "TEST-CONTAINER-LOCAL-CACHE-001",
+      "text": "After selecting a production-aligned standard image, prefer reusing the same image already available locally. Pull only when the local cache lacks it, does not satisfy the selected version or target architecture, or an explicit refresh is required. Do not force a fresh pull on every test by default, or change the selected source, version, or variant merely to hit the cache.",
+      "enforcement": "default",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "id": "TEST-CONTAINER-PRODUCTION-PARITY-001",
+      "text": "Database, middleware, and similar test images must match the production-agreed distribution source, version, and variant, with an explicit selected image version. Do not substitute latest, arbitrary local tags, or lightweight variants for production-agreed standard images. Handle target architectures under the manifest rule rather than changing image variants.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    }
+  ],
+  "changed": [
+    {
+      "before": {
+        "id": "DEP-OVERLAP-001",
+        "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need. Assess overlap by the capabilities actually used: an algorithm-specific Guava dependency does not replace the standardized Commons Lang utility baseline.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "DEP-OVERLAP-001",
+        "text": "Do not add functionally overlapping dependencies when existing dependencies meet the need.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Remove the Commons Lang baseline exception; existing suitable dependencies no longer permit an automatic Commons addition."
+    },
+    {
+      "before": {
+        "id": "JAVA-UTILITY-001",
+        "text": "Prefer the JDK, an already-used framework, or a mature maintained library over reimplementing general technical capabilities.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-UTILITY-001",
+        "text": "Prefer the JDK and framework tools already used by the module for general technical capabilities. Only when they are insufficient, assess a mature maintained community library under the dependency-admission policy.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "Prefer JDK and already-used framework tools before assessing third-party libraries, rather than presenting them as coequal defaults."
+    },
+    {
+      "before": {
+        "id": "JAVA-UTILITY-006",
+        "text": "Do not hand-write logic equivalent to the utilities above.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-UTILITY-006",
+        "text": "Reuse a semantics-matching utility already provided by existing dependencies instead of reimplementing it.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "Limit reuse requirements to utilities actually supplied by existing dependencies; unavailable libraries do not force new dependencies."
+    },
+    {
+      "before": {
+        "id": "JAVA-UTILITY-GUAVA-SCOPE-001",
+        "text": "Use Guava for specifically selected capabilities such as hashing, not as an implicit framework-wide utility baseline. Its incidental presence does not justify choosing Preconditions over a preferred semantics-matching check tool; Commons Lang admission follows the standard dependency baseline.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-UTILITY-GUAVA-SCOPE-001",
+        "text": "Use Guava for specifically selected capabilities such as hashing, not as an implicit framework-wide utility baseline. Its incidental presence does not justify choosing Preconditions over a preferred semantics-matching check tool.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "Remove the obsolete Commons Lang baseline cross-reference while preserving Guava capability boundaries."
+    },
+    {
+      "before": {
+        "id": "TEST-CONTAINER-IMAGE-001",
+        "text": "When integration tests use containers, prefer an officially maintained lightweight image variant when its functionality, version, and target architecture satisfy the test; use the standard image only when the lightweight variant lacks required tools or capabilities.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-CONTAINER-IMAGE-001",
+        "text": "For container-based integration tests, prefer officially maintained standard image variants, not lightweight variants by default; also satisfy the production-parity and target-architecture requirements.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试",
+      "reason": "Reverse the preferred image variant from lightweight to official standard images and require the separately defined production-parity gate."
+    }
+  ],
+  "retired": [
+    {
+      "id": "DEP-COMMONS-LANG3-BASELINE-001",
+      "text": "In framework-based projects, prefer centrally managed commons-lang3 as the standard general-purpose utility dependency. A module using it declares the dependency directly with scope matching its delivery contract; dependencyManagement alone does not supply it. Modules satisfied by the JDK or existing preferred framework utilities need not declare it; do not make it a mandatory dependency of every module.",
+      "enforcement": "default",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "dependency-rules.md",
+      "source": "standards/bp_dependencies.md#Scope 与版本",
+      "reason": "Withdraw the preferred Commons Lang dependency baseline. Preserve only generic dependency-declaration semantics under a new ID; do not reuse this ID for a non-Commons meaning.",
+      "replacements": [
+        "DEP-MANAGED-DEPENDENCY-DECLARATION-001"
+      ]
+    },
+    {
+      "id": "JAVA-UTILITY-005",
+      "text": "When the JDK is insufficient in a Spring-decoupled module, use managed Commons tools matching the predicate semantics: strings use `isEmpty`/`isNotEmpty` or `isBlank`/`isNotBlank`; collections use collections4 `isEmpty`/`isNotEmpty` only when null and empty are equivalent.",
+      "enforcement": "required",
+      "priority": "baseline",
+      "skill": "develop-service",
+      "reference": "common-utilities.md",
+      "source": "standards/bp_common_tools.md#基础工具类",
+      "reason": "Withdraw mandatory Commons Lang and Commons Collections selection for Spring-decoupled modules; apply general utility selection and dependency admission instead.",
+      "replacements": [
+        "JAVA-UTILITY-001",
+        "JAVA-SIMPLE-PREDICATE-DEPENDENCY-001"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "DEP-MANAGED-DEPENDENCY-DECLARATION-001",
+        "JAVA-SIMPLE-PREDICATE-DEPENDENCY-001"
+      ],
+      "changed": [
+        "DEP-OVERLAP-001",
+        "JAVA-UTILITY-001",
+        "JAVA-UTILITY-006",
+        "JAVA-UTILITY-GUAVA-SCOPE-001"
+      ],
+      "retired": [
+        "DEP-COMMONS-LANG3-BASELINE-001",
+        "JAVA-UTILITY-005"
+      ],
+      "non_rule_changes": []
+    },
+    {
+      "skill": "test-integration",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "TEST-CONTAINER-LOCAL-CACHE-001",
+        "TEST-CONTAINER-PRODUCTION-PARITY-001"
+      ],
+      "changed": [
+        "TEST-CONTAINER-IMAGE-001"
+      ],
+      "retired": [],
+      "non_rule_changes": []
+    }
+  ],
+  "blueprint_changes": [],
+  "scope_changes": []
+}
