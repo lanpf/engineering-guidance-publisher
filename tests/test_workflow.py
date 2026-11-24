@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import copy
 import json
+import os
 import re
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from engineering_guidance.catalog import ProjectLayout, load_catalog, project_root
 from engineering_guidance.render import artifact_digest, build
@@ -94,7 +97,7 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
                 if not rule.startswith("- "):
                     continue
                 self.assertRegex(rule, classification, f"unclassified standard bullet in {standard}")
-                rule = classification.sub("- ", rule)
+                rule = classification.sub("- ", rule).partition(" <!-- ")[0]
                 self.assertNotIn(
                     rule,
                     owners,
@@ -186,6 +189,113 @@ class EngineeringGuidancePublisherTest(unittest.TestCase):
             collision.mkdir(parents=True)
             with self.assertRaises(SyncConflict):
                 synchronize(self.layout, self.catalog, target)
+
+            self.assertFalse((target / "AGENTS.md").exists())
+            self.assertFalse((target / LOCK_PATH).exists())
+
+    def test_upgrade_preserves_newly_colliding_skill_until_explicit_adoption(self) -> None:
+        old = copy.deepcopy(self.catalog)
+        old["skills"] = [s for s in old["skills"] if s["name"] != "refactor-service"]
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary)
+            synchronize(self.layout, old, target)
+            local = target / ".agents/skills/refactor-service/local.md"
+            local.parent.mkdir()
+            local.write_text("user-owned")
+            before = artifact_digest(target)
+            with self.assertRaises(SyncConflict):
+                synchronize(self.layout, self.catalog, target)
+            self.assertEqual(before, artifact_digest(target))
+            synchronize(self.layout, self.catalog, target, force=True)
+            self.assertFalse(local.exists())
+            self.assertTrue((local.parent / "SKILL.md").is_file())
+
+    def test_sync_rolls_back_when_final_lock_write_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary).resolve()
+            synchronize(self.layout, self.catalog, target)
+            before = artifact_digest(target)
+            newer = copy.deepcopy(self.catalog)
+            newer["version"] = "9.9.9"
+            newer["skills"] = [s for s in newer["skills"] if s["name"] != "refactor-service"]
+            replace = os.replace
+
+            def fail_lock(source, destination):
+                if Path(destination) == target / LOCK_PATH and Path(source).parent.name == "new":
+                    raise OSError("injected lock write failure")
+                return replace(source, destination)
+
+            with patch("engineering_guidance.transaction.os.replace", side_effect=fail_lock):
+                with self.assertRaisesRegex(OSError, "injected"):
+                    synchronize(self.layout, newer, target)
+            self.assertEqual(before, artifact_digest(target))
+            synchronize(self.layout, newer, target)
+            self.assertFalse((target / ".agents/skills/refactor-service").exists())
+
+    def test_retry_recovers_an_interrupted_upgrade_before_conflict_checks(self) -> None:
+        old = copy.deepcopy(self.catalog)
+        old["skills"] = [s for s in old["skills"] if s["name"] != "refactor-service"]
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary)
+            synchronize(self.layout, old, target)
+            replace = os.replace
+
+            def interrupt(source, destination):
+                if Path(destination).name == "AGENTS.md" and Path(source).parent.name == "new":
+                    raise KeyboardInterrupt()
+                return replace(source, destination)
+
+            # Simulate process death by leaving the on-disk journal for the next caller.
+            with patch("engineering_guidance.transaction.os.replace", side_effect=interrupt), \
+                    patch("engineering_guidance.transaction.recover"):
+                with self.assertRaises(KeyboardInterrupt):
+                    synchronize(self.layout, self.catalog, target)
+            synchronize(self.layout, self.catalog, target)
+            self.assertIn("refactor-service", json.loads((target / LOCK_PATH).read_text())["managed_skills"])
+            self.assertEqual(1, (target / "AGENTS.md").read_text().count("engineering-standards:begin"))
+
+    def test_build_preserves_unknown_modified_and_source_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "out"
+            output.mkdir()
+            local = output / "local.txt"
+            local.write_text("keep")
+            with self.assertRaises(ValueError):
+                build(self.layout, self.catalog, output)
+            self.assertEqual("keep", local.read_text())
+            local.unlink()
+            build(self.layout, self.catalog, output)
+            build(self.layout, self.catalog, output)
+            local = output / "skills/develop-service/SKILL.md"
+            local.write_text("my edits")
+            with self.assertRaises(ValueError):
+                build(self.layout, self.catalog, output)
+            self.assertEqual("my edits", local.read_text())
+            for protected in (self.layout.root, self.layout.root / "standards" / "new-directory"):
+                with self.assertRaises(ValueError):
+                    build(self.layout, self.catalog, protected)
+
+    def test_build_render_failure_preserves_previous_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "dist"
+            build(self.layout, self.catalog, output)
+            before = artifact_digest(output)
+            with patch("engineering_guidance.render.render_reference", side_effect=OSError("render failed")):
+                with self.assertRaises(OSError):
+                    build(self.layout, self.catalog, output)
+            self.assertEqual(before, artifact_digest(output))
+
+    def test_validate_detects_source_grade_priority_and_coverage_drift(self) -> None:
+        catalog = copy.deepcopy(self.catalog)
+        rules = catalog["skills"][0]["references"][0]["sections"][0]["rules"]
+        rules[0]["enforcement"] = "advisory"
+        rules[1]["priority"] = "topic"
+        missing = rules.pop()["id"]
+        errors = "\n".join(validate(self.layout, catalog))
+        self.assertIn(f"{rules[0]['id']} differs from BP source", errors)
+        self.assertIn(f"{rules[1]['id']} differs from BP source", errors)
+        self.assertIn(f"{missing}: BP rule missing", errors)
+
 
 if __name__ == "__main__":
     unittest.main()

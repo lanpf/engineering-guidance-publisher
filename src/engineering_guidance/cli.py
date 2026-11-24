@@ -44,13 +44,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"valid engineering guidance {catalog['version']}")
         return 0
     if args.command == "build":
-        output = build(layout, catalog, args.output.resolve())
+        try:
+            output = build(layout, catalog, args.output)
+        except (OSError, ValueError) as error:
+            print(f"error: {error}", file=sys.stderr)
+            return 2
         print(json.dumps({"output": str(output), "sha256": artifact_digest(output)}, indent=2))
         return 0
     if args.command == "sync":
         try:
             lock = synchronize(layout, catalog, args.target, force=args.force)
-        except SyncConflict as error:
+        except (SyncConflict, OSError, ValueError) as error:
             print(f"error: {error}", file=sys.stderr)
             return 3
         print(json.dumps(lock, ensure_ascii=False, indent=2))
@@ -58,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "install-publisher-skills":
         try:
             lock = install_publisher_skills(layout, catalog, force=args.force)
-        except SyncConflict as error:
+        except (SyncConflict, OSError, ValueError) as error:
             print(f"error: {error}", file=sys.stderr)
             return 3
         print(json.dumps(lock, ensure_ascii=False, indent=2))

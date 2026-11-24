@@ -1,7 +1,7 @@
 {
   "name": "engineering-guidance-publisher",
   "source": "https://github.com/lanpf/engineering-guidance-publisher.git",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "agents": {
     "rules": [
       {"id": "STD-HIERARCHY-001", "text": "Shared rules apply to every project; service rules additionally apply to service projects, and project-specific authoritative documents may only add or tighten constraints. Preload and recheck baseline rules, but apply conditional rules only when their type or technology is relevant; never introduce unnecessary types, modules, or dependencies solely to satisfy an inapplicable rule.", "enforcement": "required", "priority": "baseline"},
@@ -84,7 +84,7 @@
               "title": "Language and data design",
               "rules": [
                 {"id": "JAVA-VERSION-002", "text": "Compile and run with Java 17.", "enforcement": "required", "priority": "baseline"},
-                {"id": "JAVA-IMPORT-UNUSED-001", "text": "Production and test code must not retain unused type imports or static imports. Check and remove unused imports after creating, changing, or refactoring a Java file; possible future use is not a reason to retain them.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-IMPORT-UNUSED-001", "text": "Production and test code must not retain unused type imports or static imports. Check and remove unused imports after creating, changing, or refactoring a Java file; possible future use is not a reason to retain them.", "enforcement": "default", "priority": "baseline"},
                 {"id": "JAVA-VAR-001", "text": "Production code must not use `var`, including local variables, loop variables, try-with-resources variables, and lambda parameters; use an explicit type wherever a type declaration is needed.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-VAR-002", "text": "Only test source sets may use `var`, and only when the initializer itself clearly shows the concrete type; declare the type explicitly when determining it requires reading a called method declaration or relying on generic type inference. Test source sets include unit tests, integration tests, and dedicated test support; a type in production sources is not exempt merely because its name contains `Test`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "JAVA-RECORD-001", "text": "Prefer `record` for data carriers whose state is complete at construction, remains immutable, and does not require inheritance, proxies, or JavaBean setter binding.", "enforcement": "default", "priority": "baseline"},
@@ -105,7 +105,7 @@
             {
               "title": "Readable modern Java",
               "rules": [
-                {"id": "JAVA-BRACES-001", "text": "In both production and test code, always use braces for the bodies of `if`, `else`, `for` (including enhanced for), `while`, and `do-while`, even for a single statement or an empty body; never use a lone semicolon as an empty body. An `else if` chain is allowed, but every conditional branch body must still use braces.", "enforcement": "required", "priority": "baseline"},
+                {"id": "JAVA-BRACES-001", "text": "In both production and test code, always use braces for the bodies of `if`, `else`, `for` (including enhanced for), `while`, and `do-while`, even for a single statement or an empty body; never use a lone semicolon as an empty body. An `else if` chain is allowed, but every conditional branch body must still use braces.", "enforcement": "default", "priority": "baseline"},
                 {"id": "JAVA-STYLE-001", "text": "For simple collection traversal, `forEach` is an available concise style; choose it only when it remains immediately readable.", "enforcement": "advisory", "priority": "baseline"},
                 {"id": "JAVA-STYLE-002", "text": "For simple transformations and callbacks, Stream, lambdas, and method references are available concise styles; choose them only when they remain immediately readable.", "enforcement": "advisory", "priority": "baseline"},
                 {"id": "JAVA-OPTIONAL-001", "text": "Prefer `Optional` for possibly absent return values and chained handling.", "enforcement": "default", "priority": "baseline"},
@@ -254,20 +254,20 @@
             {
               "title": "General use",
               "rules": [
-                {"id": "LOMBOK-EXPERIMENTAL-001", "text": "Do not use annotations from `lombok.experimental`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-BUILDER-001", "text": "Do not use `@Builder`; use explicit constructors or factory methods for staged or fluent construction.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-CONSTRUCTOR-001", "text": "Generate constructors that only assign fields and contain no validation, transformation, or initialization logic with Lombok constructor annotations rather than writing them manually; write an explicit constructor when such logic exists.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-ACCESSOR-001", "text": "Generate getters and setters that only read or assign fields and contain no validation, transformation, or other behavior with Lombok `@Getter` or `@Setter`; write methods explicitly when behavior exists.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-LOG-001", "text": "Use `@Slf4j` instead of declaring a Logger field manually.", "enforcement": "required", "priority": "baseline"}
+                {"id": "LOMBOK-EXPERIMENTAL-001", "text": "Do not use annotations from `lombok.experimental`.", "enforcement": "required", "priority": "topic"},
+                {"id": "LOMBOK-BUILDER-001", "text": "Prefer constructors or factories in Lombok projects. A builder may be appropriate when its benefit is explicit.", "enforcement": "default", "priority": "topic"},
+                {"id": "LOMBOK-CONSTRUCTOR-001", "text": "In Lombok modules, prefer generated constructors for field assignment alone. Write constructors with validation, transformation or initialization logic explicitly.", "enforcement": "default", "priority": "topic"},
+                {"id": "LOMBOK-ACCESSOR-001", "text": "In Lombok modules, prefer @Getter or @Setter for plain field access. Write methods with validation, transformation or other behavior explicitly.", "enforcement": "default", "priority": "topic"},
+                {"id": "LOMBOK-LOG-001", "text": "Prefer @Slf4j for logger declarations in modules using Lombok.", "enforcement": "default", "priority": "topic"}
               ]
             },
             {
               "title": "Type-specific use",
               "rules": [
-                {"id": "LOMBOK-ENTITY-ACCESS-001", "text": "Aggregate roots and entities use only `@Getter` for field access; prohibit `@Data` and externally exposed setters without domain behavior.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-ENTITY-EQUALITY-001", "text": "Implement aggregate-root and entity equality explicitly from unique identity; do not use Lombok `@EqualsAndHashCode`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-VALUE-001", "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality.", "enforcement": "required", "priority": "baseline"},
-                {"id": "LOMBOK-SPRING-001", "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`.", "enforcement": "required", "priority": "baseline"}
+                {"id": "LOMBOK-ENTITY-ACCESS-001", "text": "Aggregate roots and entities use only `@Getter` for field access; prohibit `@Data` and externally exposed setters without domain behavior.", "enforcement": "required", "priority": "topic"},
+                {"id": "LOMBOK-ENTITY-EQUALITY-001", "text": "Implement aggregate-root and entity equality explicitly from unique identity; do not use Lombok `@EqualsAndHashCode`.", "enforcement": "required", "priority": "topic"},
+                {"id": "LOMBOK-VALUE-001", "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality.", "enforcement": "required", "priority": "topic"},
+                {"id": "LOMBOK-SPRING-001", "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`.", "enforcement": "required", "priority": "topic"}
               ]
             }
           ]
@@ -280,7 +280,7 @@
             {
               "title": "Logging usage",
               "rules": [
-                {"id": "LOG-PARAMETERIZED-001", "text": "Declare loggers under the Lombok rules and use SLF4J placeholders instead of concatenating message text.", "enforcement": "required", "priority": "baseline"},
+                {"id": "LOG-PARAMETERIZED-001", "text": "Use SLF4J placeholders instead of concatenating log messages. Apply the logger declaration convention when Lombok is in use.", "enforcement": "required", "priority": "baseline"},
                 {"id": "LOG-EXCEPTION-ARGUMENT-001", "text": "When logging an exception, pass the exception object as the last argument instead of embedding it in message text.", "enforcement": "required", "priority": "baseline"},
                 {"id": "LOG-SEVERITY-001", "text": "Choose severity by impact and handling: ERROR for failures requiring human intervention such as exhausted retries, unrecoverable or unclassified integrity failures; WARN for noteworthy abnormal contention, recovery, or degradation; INFO for normal idempotency and key business/external-interaction audit points; DEBUG for diagnosis. Exception translation alone does not make a normal idempotent hit WARN.", "enforcement": "required", "priority": "baseline"},
                 {"id": "LOG-PRODUCTION-DEBUG-001", "text": "Disable DEBUG in production by default.", "enforcement": "required", "priority": "baseline"},
@@ -310,20 +310,20 @@
             {
               "title": "Conversion contracts",
               "rules": [
-                {"id": "MAPSTRUCT-CONVERSION-001", "text": "Use MapStruct for structural mappings between data carriers with corresponding fields; do not hand-write field copying or use `BeanUtils.copyProperties`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-SEMANTIC-001", "text": "Use explicit semantic methods for domain construction, business validation, state transitions, and protocol encoding; a MapStruct mapper may call those methods but must not hide them in automatic field mapping.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-CONTRACT-BINDING-001", "text": "Define a conversion contract independently; a handwritten `@Mapper` interface extends it or abstract class implements it, using `@Override` when redeclaring contract methods. The handwritten mapper follows the naming rules.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-GENERATED-001", "text": "MapStruct generates concrete implementations at compile time; never handwrite or modify generated classes.", "enforcement": "required", "priority": "baseline"}
+                {"id": "MAPSTRUCT-CONVERSION-001", "text": "Where MapStruct is used, prefer it for structured groups of corresponding fields. Simple local mappings may use a constructor or factory.", "enforcement": "default", "priority": "topic"},
+                {"id": "MAPSTRUCT-SEMANTIC-001", "text": "Use explicit semantic methods for domain construction, business validation, state transitions, and protocol encoding; a MapStruct mapper may call those methods but must not hide them in automatic field mapping.", "enforcement": "required", "priority": "topic"},
+                {"id": "MAPSTRUCT-CONTRACT-BINDING-001", "text": "Define a separate conversion contract for interchangeable implementations or a shared cross-module boundary. A single local mapper may declare its mapping methods directly.", "enforcement": "default", "priority": "topic"},
+                {"id": "MAPSTRUCT-GENERATED-001", "text": "MapStruct generates concrete implementations at compile time; never handwrite or modify generated classes.", "enforcement": "required", "priority": "topic"}
               ]
             },
             {
               "title": "Reuse and configuration",
               "rules": [
-                {"id": "MAPSTRUCT-REUSE-001", "text": "Reuse existing mappers through `@Mapper(uses = {...})` instead of duplicating field-level conversions.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-SHARED-CONFIG-001", "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in shared `@MapperConfig`, reference it via each mapper's `config`, and retain these shared defaults.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-EXPLICIT-IGNORE-001", "text": "For ordinary mappings, explicitly declare `ignore = true` for each intentionally unmapped target field.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-WHITELIST-001", "text": "For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicit allowed mappings; never substitute local `unmappedTargetPolicy = IGNORE` or disable missing-mapping checks.", "enforcement": "required", "priority": "baseline"},
-                {"id": "MAPSTRUCT-HELPER-001", "text": "Keep generic converters and helpers private to mapper use and do not expose them as business components.", "enforcement": "required", "priority": "baseline"}
+                {"id": "MAPSTRUCT-REUSE-001", "text": "Reuse existing mappers through `@Mapper(uses = {...})` instead of duplicating field-level conversions.", "enforcement": "required", "priority": "topic"},
+                {"id": "MAPSTRUCT-SHARED-CONFIG-001", "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in shared `@MapperConfig`, reference it via each mapper's `config`, and retain these shared defaults.", "enforcement": "required", "priority": "topic"},
+                {"id": "MAPSTRUCT-EXPLICIT-IGNORE-001", "text": "For ordinary mappings, explicitly declare `ignore = true` for each intentionally unmapped target field.", "enforcement": "required", "priority": "topic"},
+                {"id": "MAPSTRUCT-WHITELIST-001", "text": "For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicit allowed mappings; never substitute local `unmappedTargetPolicy = IGNORE` or disable missing-mapping checks.", "enforcement": "required", "priority": "topic"},
+                {"id": "MAPSTRUCT-HELPER-001", "text": "Keep generic converters and helpers private to mapper use and do not expose them as business components.", "enforcement": "required", "priority": "topic"}
               ]
             }
           ]
@@ -398,13 +398,13 @@
             {
               "title": "Project configuration",
               "rules": [
-                {"id": "ARCH-PROJECT-CONFIG-001", "text": "Create a root-level `config/` directory beside service modules as the preferred home for independently updateable resources.", "enforcement": "required", "priority": "topic"},
-                {"id": "ARCH-PROJECT-CONFIG-003", "text": "Prefer the project-root `config/` directory for project-level application configuration, MyBatis SQL/XML, database schema or migrations, Dubbo XML, and other independently updateable resources.", "enforcement": "default", "priority": "topic"},
+                {"id": "ARCH-PROJECT-CONFIG-001", "text": "When configuration is deployed independently, prefer a project-root config/ directory.", "enforcement": "default", "priority": "topic"},
+                {"id": "ARCH-PROJECT-CONFIG-003", "text": "Choose resource placement by ownership, effective time and rollback unit. Prefer external configuration for environment endpoints and operational settings. Inject credentials through deployment secret management.", "enforcement": "default", "priority": "topic"},
                 {"id": "ARCH-PROJECT-CONFIG-PACKAGING-001", "text": "Do not package an independently updateable configuration resource in a module artifact merely because that module assembles the capability.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-PROJECT-CONFIG-COMPAT-001", "text": "Associate external SQL, mappings, schema, and other configuration resources with application versions and verify compatibility before deployment; independent deployment never removes code-version compatibility requirements.", "enforcement": "required", "priority": "topic"},
-                {"id": "ARCH-CONFIG-LOAD-001", "text": "Explicitly load root-level `config/` resources through `spring.config.location`, `spring.config.additional-location`, `spring.config.import`, technology-specific location settings, or equivalent startup parameters.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-CONFIG-LOAD-001", "text": "When using external config/, explicitly load required resources via Spring configuration locations, technology-specific settings or equivalent startup parameters.", "enforcement": "required", "priority": "topic"},
                 {"id": "ARCH-CONFIG-VERIFY-001", "text": "Build, deployment, and local startup must provide required external resources and verify expected failure for missing or invalid configuration.", "enforcement": "required", "priority": "topic"},
-                {"id": "ARCH-CONFIG-CLASSPATH-EXCEPTION-001", "text": "Package resources in module `src/main/resources` only when external loading is unsupported, resource/code versions or classpaths are inseparable, or deployment cannot provide an artifact's mandatory self-contained resources. Development convenience alone is not sufficient.", "enforcement": "required", "priority": "topic"},
+                {"id": "ARCH-CONFIG-CLASSPATH-EXCEPTION-001", "text": "Code-coupled mapper XML, schemas and migrations may ship as module resources or in a versioned migration artifact. Classpath-only loading or self-contained deployments also justify packaging resources.", "enforcement": "required", "priority": "topic"},
                 {"id": "CONFIG-DEFAULT-001", "text": "When a `*Properties` type already provides a default value and the configuration file does not change it, the configuration file must not restate the property; configuration files carry only explicit decisions that differ from code defaults and externally varying values.", "enforcement": "required", "priority": "topic"},
                 {"id": "CONFIG-PLACEHOLDER-001", "text": "Configuration properties must not introduce environment-variable placeholders by default and must not require the deployment environment to provide a variable by default; when injection is genuinely needed, the deployment configuration or a dedicated profile carries it, and a missing value must fail fast.", "enforcement": "required", "priority": "topic"}
               ]
@@ -528,33 +528,33 @@
             {
               "title": "General names",
               "rules": [
-                {"id": "NAME-INTERFACE-ROLE-001", "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-ABSTRACT-BASE-001", "text": "Name abstract classes `Abstract*`; reserve `Base*` for framework or shared base types.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-AUTO-CONFIGURATION-001", "text": "Spring Boot auto-configuration entry classes must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix, except component-scanned wiring classes.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-CONFIGURATION-001", "text": "Name component-scanned wiring classes with the `*Configuration` suffix.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-PROPERTIES-001", "text": "Name configuration-property binding classes with the `*Properties` suffix.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-API-SHARED-RESPONSE-001", "text": "Use `*ApiResponse` only for a shared API payload return type.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-INTERNAL-REQUEST-001", "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-MAPPER-TYPE-001", "text": "Name conversion contracts by layer responsibility and handwritten MapStruct mapper types `*MapStructMapper`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-MAPPER-PACKAGE-001", "text": "Place the handwritten MapStruct mapper in its contract package's `mapstruct` subpackage.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-KEY-RESOLVER-SUFFIX-001", "text": "Name each concrete business-scenario resource-key handler `*KeyResolver`.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-KEY-RESOLVER-BASE-001", "text": "Concrete scenario key resolvers extend `AbstractKeyResolver`; runtime responsibilities follow resource-key rules.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-PACKAGE-001", "text": "Use lowercase package names that express a stable responsibility or change boundary; do not use `misc`, `temp`, or `other`, and do not place business types in generic `util` or `common` packages. Package hierarchy and grouping follow the service layer rules.", "enforcement": "required", "priority": "baseline"}
+                {"id": "NAME-INTERFACE-ROLE-001", "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-ABSTRACT-BASE-001", "text": "Name abstract classes `Abstract*`; reserve `Base*` for framework or shared base types.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-IMPLEMENTATION-001", "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-AUTO-CONFIGURATION-001", "text": "Spring Boot auto-configuration entry classes must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix, except component-scanned wiring classes.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-CONFIGURATION-001", "text": "Name component-scanned wiring classes with the `*Configuration` suffix.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-PROPERTIES-001", "text": "Name configuration-property binding classes with the `*Properties` suffix.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-RESULT-001", "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-API-SHARED-RESPONSE-001", "text": "Use `*ApiResponse` only for a shared API payload return type.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-REMOTE-PAYLOAD-001", "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-INTERNAL-REQUEST-001", "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-MAPPER-TYPE-001", "text": "Name conversion contracts by layer responsibility and handwritten MapStruct mapper types `*MapStructMapper`.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-MAPPER-PACKAGE-001", "text": "With a separate contract, prefer its mapstruct subpackage for the handwritten mapper. A standalone mapper can live with the owning feature.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-KEY-RESOLVER-SUFFIX-001", "text": "Name each concrete business-scenario resource-key handler `*KeyResolver`.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-KEY-RESOLVER-BASE-001", "text": "Concrete scenario key resolvers extend `AbstractKeyResolver`; runtime responsibilities follow resource-key rules.", "enforcement": "required", "priority": "topic"},
+                {"id": "NAME-PACKAGE-001", "text": "Use lowercase package names that express a stable responsibility or change boundary; do not use `misc`, `temp`, or `other`, and do not place business types in generic `util` or `common` packages. Package hierarchy and grouping follow the service layer rules.", "enforcement": "default", "priority": "topic"}
               ]
             },
             {
               "title": "Layer names",
               "rules": [
-                {"id": "NAME-API-001", "text": "Use `*ApiCommand`, `*ApiOutput`, `*ApiQuery`, `*ApiView`, `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, `*CommandFacade`, and `*QueryFacade` in API.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-APPLICATION-001", "text": "Use `*CommandService`, `*Command`, `*Output`, `*QueryService`, `*Query`, and `*View` in application; follow the application layering rules for paged return contracts.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceAutoConfiguration` in infrastructure.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters.", "enforcement": "required", "priority": "baseline"},
-                {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`.", "enforcement": "required", "priority": "baseline"}
+                {"id": "NAME-API-001", "text": "Use `*ApiCommand`, `*ApiOutput`, `*ApiQuery`, `*ApiView`, `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, `*CommandFacade`, and `*QueryFacade` in API.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-DOMAIN-001", "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-APPLICATION-001", "text": "Use `*CommandService`, `*Command`, `*Output`, `*QueryService`, `*Query`, and `*View` in application; follow the application layering rules for paged return contracts.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-APPLICATION-RESPONSE-001", "text": "Use `*Response` only when an application command and query return type must be reused.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-INFRA-001", "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceAutoConfiguration` in infrastructure.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-INTERFACES-001", "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters.", "enforcement": "default", "priority": "topic"},
+                {"id": "NAME-CLIENT-001", "text": "Name OpenFeign clients `*FeignClient`.", "enforcement": "default", "priority": "topic"}
               ]
             }
           ]
@@ -602,6 +602,15 @@
                 {"id": "SERVICE-CALL-MAP-CONFINEMENT-001", "text": "When Map adaptation is necessary, confine construction and conversion to the matching infrastructure adapter; never expose it through ports or to application/domain.", "enforcement": "required", "priority": "topic"},
                 {"id": "SERVICE-CALL-MAP-CONSTANT-001", "text": "Use external-service-specific constants for fixed Map protocol keys and keep them in the corresponding infrastructure adapter.", "enforcement": "required", "priority": "topic"}
               ]
+            },
+            {
+              "source": "standards/bp_service_calls.md#超时与失败恢复",
+              "title": "Deadlines and recovery",
+              "rules": [
+                {"id": "SERVICE-CALL-DEADLINE-001", "text": "Define an end-to-end deadline covering connection, response and retry backoff. A verified shared client policy may supply the budget.", "enforcement": "required", "priority": "topic"},
+                {"id": "SERVICE-CALL-RETRY-001", "text": "Bound retries to explicitly retryable failures and the original deadline. Retried writes require natural idempotence or a stable idempotency key enforced by the callee.", "enforcement": "required", "priority": "topic"},
+                {"id": "SERVICE-CALL-UNKNOWN-OUTCOME-001", "text": "After a dispatched write times out or disconnects, treat its outcome as unknown. Query by the original request identity, reconcile or recover manually before issuing a new operation.", "enforcement": "required", "priority": "topic"}
+              ]
             }
           ]
         },
@@ -640,10 +649,10 @@
                 {"id": "ERROR-NAMESPACE-OWNERSHIP-001", "text": "Select ErrorCodeNamespace by ownership of the error contract, not the layer throwing or returning it: FRAMEWORK prefixes 100–199 for framework-defined generic and capability failures; EDGE prefixes 200–299 for ingress errors defined by gateways or service ingress adapters; BIZ prefixes 300–899 for service-defined domain, application, and infrastructure failures.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-EDGE-PASSTHROUGH-001", "text": "Preserve the complete original code when an ingress adapter passes through an existing framework or service error. Allocate EDGE codes only to ingress errors the adapter itself defines, not to passed-through errors.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-FRAMEWORK-COMMON-001", "text": "Kernel FrameworkError is limited to generic cross-capability errors: INTERNAL_ERROR (100000), ILLEGAL_ARGUMENT (100001), and ILLEGAL_STATE (100002). Define identifiable capability errors in the framework or starter module owning that capability rather than accumulating them in FrameworkError.", "enforcement": "required", "priority": "topic"},
-                {"id": "ERROR-CONTEXT-001", "text": "One service project represents one bounded context and uses one unique BIZ service prefix; independently deployed bounded contexts require distinct BIZ prefixes.", "enforcement": "required", "priority": "topic"},
+                {"id": "ERROR-CONTEXT-001", "text": "One service project represents one bounded context and owns its BIZ prefixes exclusively. Start with one prefix and register another when a category exhausts its capacity. Existing prefixes and full codes stay valid.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-PREFIX-REGISTRY-001", "text": "Within each deployment system, centrally register and allocate numeric prefixes in their namespaces before use. Different services in the same deployment system must not share a BIZ prefix, and no owner may use a prefix allocated to another owner. Multiple error enums under the same owner may share its allocated prefix if they coordinate local-code allocation.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-CATEGORY-MAPPING-001", "text": "Within BIZ, choose category, local range, name prefix, and semantics together: shared DomainError 000–099 / DOMAIN_; aggregate DomainError 100–599 / aggregate name; ApplicationError 600–699 / APP_; own-technology InfrastructureError 700–799 / INFRA_TECH_ (persistence, cache, locks, serialization, files, event storage, outbox); external-adapter InfrastructureError 800–899 / INFRA_ACL_; local 900–999 remains unallocated. ACL denotes responsibility, not a required separate module. Aggregate block allocation follows the separate capacity rule.", "enforcement": "required", "priority": "topic"},
-                {"id": "ERROR-DOMAIN-CAPACITY-001", "text": "Aggregate code blocks align to 50-code boundaries (100–149, 150–199, …, 550–599) and 50 codes is the minimum allocation unit. An aggregate exclusively owns every code in all of its assigned blocks and may use one or multiple adjacent blocks. Capacity expansion must reserve additional adjacent, currently unallocated complete blocks; blocks must not be split, shared, or reassigned between aggregates.", "enforcement": "required", "priority": "topic"},
+                {"id": "ERROR-DOMAIN-CAPACITY-001", "text": "Allocate individual codes or small ranges in 100–599 according to actual aggregate errors, without overlap within a prefix. Honor existing block reservations and ownership.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-INFRA-TRANSLATION-001", "text": "Translate an external rejection into `DomainError` or `ApplicationError` when it has a stable local business meaning; do not classify it as infrastructure solely because it originated from another system.", "enforcement": "required", "priority": "topic"}
               ]
             },
@@ -651,12 +660,11 @@
               "title": "Domain allocation",
               "rules": [
                 {"id": "ERROR-DOMAIN-ID-FIXED-001", "text": "Fix common-domain local code 000 as `DOMAIN_ENTITY_ID_INVALID`; use the category mapping for the shared-domain prefix.", "enforcement": "required", "priority": "topic"},
-                {"id": "ERROR-AGGREGATE-FIRST-CODES-001", "text": "Fix the first two codes of each aggregate's allocated range as `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`; the category mapping owns the name prefix.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-ENUM-PLACEMENT-001", "text": "Error enums live in the module owning their semantics: self-defined ingress errors in the corresponding ingress adapter module, domain errors in domain, application errors in application, and infrastructure errors in the corresponding infrastructure module. An adapter translating and throwing a domain/application exception does not change that ownership.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-ENUM-NAMING-001", "text": "Organize and name error enums by owning aggregate, technical mechanism, or the shared-domain segment; do not create one enum mixing code segments from different layers.", "enforcement": "required", "priority": "topic"},
                 {"id": "ERROR-UNIQUENESS-001", "text": "A complete error code is globally unique within one deployment system. Each local code must be unique within its numeric prefix, including across enums that share that prefix.", "enforcement": "required", "priority": "topic"},
-                {"id": "ERROR-RANGE-001", "text": "Unallocated complete aggregate ranges remain available, but unused codes inside an assigned aggregate range remain owned by that aggregate and must not be reassigned.", "enforcement": "required", "priority": "topic"},
-                {"id": "ERROR-DOCUMENTATION-002", "text": "Document the BIZ service prefix, shared-domain range, and every aggregate range in the authoritative domain document declared by the project documentation entry.", "enforcement": "required", "priority": "topic"}
+                {"id": "ERROR-RANGE-001", "text": "Expand into unallocated positions in the same category, including noncontiguous positions. Preserve exclusive ownership of earlier reservations. Register an extension prefix if capacity is exhausted.", "enforcement": "required", "priority": "topic"},
+                {"id": "ERROR-DOCUMENTATION-002", "text": "Document all service BIZ prefixes, shared-domain ranges and individual codes or ranges allocated to each aggregate in the authoritative domain document.", "enforcement": "required", "priority": "topic"}
               ]
             },
             {
@@ -685,22 +693,22 @@
                 {"id": "PERSISTENCE-MODULE-TECHNOLOGY-001", "text": "Each persistence implementation module uses one technology; alternative JPA, MyBatis, and MyBatis-Plus implementations may exist in distinct modules but never coexist within one implementation module.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-RUNTIME-IMPLEMENTATION-001", "text": "A runtime artifact assembles only one implementation of each repository contract; choose it under the boot packaging-dependency rules.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-MYBATIS-COMPAT-001", "text": "Replacing MyBatis-Plus with MyBatis must preserve the database schema, table and column names, query semantics, and observable repository behavior.", "enforcement": "required", "priority": "topic"},
-                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "MyBatis and MyBatis-Plus implementations must load the same shared SQL XML fragments from the project-root `config/` directory.", "enforcement": "required", "priority": "topic"},
+                {"id": "PERSISTENCE-MYBATIS-SQL-001", "text": "Coexisting MyBatis and MyBatis-Plus alternatives must load the same shared SQL fragments. Choose their location under the project resource versioning and rollback policy.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-MYBATIS-SQL-002", "text": "Declare table names, column lists, and reusable predicates only in shared fragments; concrete mapper statements reference them with `<include>` and must not duplicate them across the two implementations.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-DO-PORTABILITY-001", "text": "For the same logical persistence model, technology-specific JPA, MyBatis, and MyBatis-Plus DOs keep identical business-property names and Java types.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-DO-COLLECTION-001", "text": "DOs must not declare collection properties or collection-mapping annotations such as `@ElementCollection` and `@CollectionTable`; model multi-value relationships as master/detail DOs and association tables.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-DO-COLLECTION-002", "text": "Only when the multi-value content is always read and written as a whole and needs no independent query, index, or foreign-key constraint may each technology's DO conversion mapper serialize it into a single string column under consistent conversion rules.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-TABLE-NAMING-001", "text": "A persistence mapping may declare a logical table name without runtime prefix or suffix; resolve the physical prefix and suffix through the shared naming strategy and never hard-code a deployment-specific physical table name in business code.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-SCHEMA-001", "text": "Enforce primary keys, business uniqueness, and database-expressible nullability, referential-integrity, and range invariants with schema constraints; application validation and distributed coordination do not replace those constraints, while cross-aggregate, cross-service, and temporal rules remain in domain or application.", "enforcement": "required", "priority": "topic"},
-                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules.", "enforcement": "default", "priority": "topic"},
+                {"id": "PERSISTENCE-SCHEMA-LOCATION-001", "text": "Prefer shipping schema.sql and migrations with the corresponding application or versioned migration artifact. Externalize independently operated resources under the project configuration policy.", "enforcement": "default", "priority": "topic"},
                 {"id": "PERSISTENCE-SCHEMA-PREFIX-COMMENT-001", "text": "Begin `schema.sql` with a comment requiring table prefix and suffix to match runtime configuration.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-SCHEMA-NAMING-CHANGE-001", "text": "A table-prefix or suffix change is a schema change: update DDL or migration configuration along with runtime settings.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-CONCURRENCY-SCENARIO-001", "text": "Before choosing a concurrency control, assess business risk, actual conflict probability, contention scope, and failure consequences.", "enforcement": "required", "priority": "topic"},
-                {"id": "PERSISTENCE-CONCURRENCY-LOW-001", "text": "For a very-low-contention operational API, omit versions, distributed locks, and pessimistic database locks by default.", "enforcement": "default", "priority": "topic"},
+                {"id": "PERSISTENCE-CONCURRENCY-LOW-001", "text": "For low-contention operational APIs, omit additional locks or version fields when database protections suffice or overwrites are permitted. Protect against lost updates when they would violate the contract, even if contention is rare.", "enforcement": "default", "priority": "topic"},
                 {"id": "PERSISTENCE-CONCURRENCY-STATE-001", "text": "When a business state machine or explicit precondition exists, prefer a conditional update on the current state or business condition.", "enforcement": "default", "priority": "topic"},
                 {"id": "PERSISTENCE-CONCURRENCY-AFFECTED-ROWS-001", "text": "Treat an unexpected conditional-update affected-row count as a state change or concurrency conflict; never overwrite silently.", "enforcement": "required", "priority": "topic"},
-                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "For a real cross-instance conflict not resolved by business conditions, prefer a distributed lock to reduce contention.", "enforcement": "default", "priority": "topic"},
-                {"id": "PERSISTENCE-CONCURRENCY-VERSION-001", "text": "Add version-based optimistic concurrency only when residual conflicts still require detection.", "enforcement": "default", "priority": "topic"},
+                {"id": "PERSISTENCE-CONCURRENCY-001", "text": "For writes in one database, first assess atomic updates, unique constraints, version checks and database locks. Evaluate distributed locking for cross-resource coordination or a demonstrated need to reduce contention.", "enforcement": "default", "priority": "topic"},
+                {"id": "PERSISTENCE-CONCURRENCY-VERSION-001", "text": "When a write based on a stale snapshot must be detected, consider a version check and define the conflict result or retry semantics.", "enforcement": "default", "priority": "topic"},
                 {"id": "PERSISTENCE-CONCURRENCY-TEMPLATE-001", "text": "Never apply versions, pessimistic database locks, or distributed locks as a default template for every write.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-TRANSACTION-001", "text": "Keep local-database transactions short and limited to necessary reads and writes; do not perform avoidable RPC, direct message publication, long computation, lock waiting, or multi-batch work inside them.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-RETRY-IDEMPOTENT-001", "text": "Every retried write must be idempotent.", "enforcement": "required", "priority": "topic"},
@@ -726,7 +734,7 @@
               "rules": [
                 {"id": "PERSISTENCE-DUPLICATE-001", "text": "At the persistence-adapter boundary, translate a known business unique-constraint conflict into an explicit domain/application exception or, after verifying equivalent existing data, an idempotent success; do not leak the database exception.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-DATA-INTEGRITY-001", "text": "A shared `DataIntegrityViolationException` catch may cover JPA and Spring-translated MyBatis `DuplicateKeyException`, which is a subclass of it.", "enforcement": "advisory", "priority": "topic"},
-                {"id": "PERSISTENCE-DATA-INTEGRITY-002", "text": "After the shared catch, confirm the violation is the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify not-null, foreign-key, or check-constraint violations as duplicate keys.", "enforcement": "required", "priority": "topic"},
+                {"id": "PERSISTENCE-DATA-INTEGRITY-002", "text": "Identify the error class from SQLState or a vendor code, then identify the target constraint by name or discriminating business evidence. A generic uniqueness code alone cannot distinguish multiple unique constraints.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-JPA-FLUSH-001", "text": "To catch a JPA unique-constraint failure inside an adapter, flush within that catch boundary; otherwise translate the deferred exception at a boundary that covers transaction commit.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-IDEMPOTENT-RECOVERY-001", "text": "After a unique-constraint failure, never reread and report idempotent success using a failed or rollback-only transaction or an unreliable persistence context. Especially after JPA/Hibernate persistence exceptions, end the failed transaction before verifying existing outcomes through a valid new transaction or independent query boundary. A nested call inside the failed transaction alone is not recovery; propagate verification failures.", "enforcement": "required", "priority": "topic"},
                 {"id": "PERSISTENCE-CONFLICT-LOG-001", "text": "Record known uniqueness-conflict outcomes once at the translation boundary with constraint/scene, sanitized business key, and outcome; severity, aggregation, and audit exceptions follow logging rules.", "enforcement": "required", "priority": "topic"},
@@ -786,7 +794,7 @@
             {
               "title": "Phase and boundaries",
               "rules": [
-                {"id": "TEST-PHASE-001", "text": "During the development phase, write and run only unit tests and module-contract tests; the code is not yet stable, so do not write or run integration tests during development and never substitute them for unit tests.", "enforcement": "required", "priority": "baseline"},
+                {"id": "TEST-PHASE-001", "text": "Prefer fast unit and module-contract tests during development. Write and run a focused integration regression with the change when SQL, transaction commit, wiring, or middleware semantics matter.", "enforcement": "default", "priority": "baseline"},
                 {"id": "TEST-LOCATION-001", "text": "Keep unit and module contract tests in the tested module's `src/test`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "TEST-BEHAVIOR-001", "text": "Verify observable behavior and public contracts rather than unnecessary implementation details.", "enforcement": "required", "priority": "baseline"},
                 {"id": "TEST-MOCK-001", "text": "In unit tests, mock only injected external collaborators; do not partially mock or spy on the subject under test.", "enforcement": "required", "priority": "baseline"}
@@ -798,7 +806,7 @@
                 {"id": "TEST-REUSE-001", "text": "Extract test support only for stable and meaningful reuse; do not create a common test base merely to remove small duplication.", "enforcement": "default", "priority": "baseline"},
                 {"id": "TEST-UNIT-CLASS-NAME-001", "text": "Name unit and module contract tests `*Test`.", "enforcement": "required", "priority": "baseline"},
                 {"id": "TEST-UNIT-RUNNER-001", "text": "Run unit and module contract tests with Maven Surefire in the test phase.", "enforcement": "required", "priority": "baseline"},
-                {"id": "TEST-METHOD-NAME-001", "text": "Name test methods `should<ExpectedBehavior>` to state the observable behavior directly.", "enforcement": "required", "priority": "baseline"}
+                {"id": "TEST-METHOD-NAME-001", "text": "Name test methods `should<ExpectedBehavior>` to state the observable behavior directly.", "enforcement": "default", "priority": "baseline"}
               ]
             }
           ]
@@ -987,7 +995,7 @@
     {
       "name": "test-integration",
       "scope": "consumer",
-      "when": "Writing, running, or reviewing integration tests in the smoke-test phase",
+      "when": "Writing, running, or reviewing focused integration regressions or smoke tests",
       "references": [
         {
           "file": "integration-testing.md",
@@ -997,7 +1005,7 @@
             {
               "title": "Phase and boundaries",
               "rules": [
-                {"id": "TEST-PHASE-002", "text": "Write and execute integration tests only in the smoke-test phase to verify cross-module collaboration and real infrastructure behavior after code stabilization; development-phase testing follows the unit-test rules.", "enforcement": "required", "priority": "topic"},
+                {"id": "TEST-PHASE-002", "text": "Select integration tests by purpose. Development and PR checks may exercise the affected integration boundary. Smoke testing verifies critical paths and the deployment environment.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-INTEGRATION-CLASSIFICATION-001", "text": "Tests of real implementation collaboration across modules, full auto-configuration, real databases, or real middleware are integration tests; merely referencing another module's interface or DTO is insufficient.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-INTEGRATION-PLACEMENT-001", "text": "Put service integration tests in the architecture-defined standalone test module, never in a production module.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-CONTAINERS-001", "text": "Prefer Testcontainers for isolated and repeatable real-infrastructure scenarios.", "enforcement": "default", "priority": "topic"},
@@ -1016,10 +1024,10 @@
                 {"id": "TEST-IT-RUNNER-001", "text": "Run integration tests with Maven Failsafe in integration-test and verify phases.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-CLEANUP-001", "text": "Prefer `@Testcontainers` and `@Container` to manage external infrastructure.", "enforcement": "default", "priority": "topic"},
                 {"id": "TEST-RESOURCE-CLEANUP-001", "text": "Release application contexts, executors, containers, and other created resources in `@AfterEach` or an equivalent lifecycle boundary.", "enforcement": "required", "priority": "topic"},
-                {"id": "TEST-DOC-001", "text": "Every integration test has same-named documentation covering its purpose, conditions, execution, manual observation steps, observation entry points, and expected result.", "enforcement": "required", "priority": "topic"},
+                {"id": "TEST-DOC-001", "text": "Provide same-named scenario documentation for fault drills and tests requiring human interpretation, including purpose, setup, commands, observation points and expected results. Automated regressions may rely on their test reports.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-MODULE-README-001", "text": "A standalone test module README contains only coverage, environment requirements, unified execution, report location, and documentation index.", "enforcement": "required", "priority": "topic"},
                 {"id": "TEST-SCENARIO-DOC-LOCATION-001", "text": "Put detailed integration scenarios in the standalone test module's `docs/<TestClass>.md`.", "enforcement": "required", "priority": "topic"},
-                {"id": "TEST-OBSERVABLE-001", "text": "Integration tests must allow manual observation of the key process and final result; automatic assertions or source reading alone are insufficient.", "enforcement": "required", "priority": "topic"}
+                {"id": "TEST-OBSERVABLE-001", "text": "Provide observation steps for fault drills and scenarios requiring manual interpretation. For automated regressions, use reproducible assertions and failure diagnostics.", "enforcement": "required", "priority": "topic"}
               ]
             }
           ]
@@ -1075,7 +1083,7 @@
               "title": "Lock integration",
               "rules": [
                 {"id": "TEST-LOCK-INTEGRATION-001", "text": "Use real Redis in the smoke-test phase to verify exclusion, acquisition failure, exceptional release, lease or renewal, and namespace isolation.", "enforcement": "required", "priority": "topic"},
-                {"id": "TEST-LOCK-CORRECTNESS-001", "text": "In a concurrent-write smoke test, prove both that one business result takes effect and that a database uniqueness constraint blocks a duplicate that bypasses the lock.", "enforcement": "required", "priority": "topic"}
+                {"id": "TEST-LOCK-CORRECTNESS-001", "text": "Exercise concurrent writes with the lock bypassed or expired. Verify the actual invariant, such as a single creation or a nonnegative balance after conditional updates.", "enforcement": "required", "priority": "topic"}
               ]
             }
           ]

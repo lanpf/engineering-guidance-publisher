@@ -1,4 +1,6 @@
-# Engineering Guidance Publisher
+# Java 服务工程规范与 Agent 指引发布器
+
+面向采用内部 `framework-*`、Java 17、Maven 与 Spring 的服务工程。
 
 This repository turns versioned engineering best practices into deterministic Skills and managed guidance for coding agents. The `standards/bp_*.md` series contains the human-authored policy sources; `catalog.json` is their structured publishing representation and the direct source of generated `AGENTS.md` guidance and Skill references.
 
@@ -28,7 +30,7 @@ The current consumer Skill set separates daily development guidance from phase-s
 
 - `develop-service` owns the shared development guidance for dependencies, layering, naming, Java language, common tools, logging, error codes, persistence, distributed IDs, and unit testing.
 - `develop-distributed` and `develop-compensation` own distributed lock/message and compensation workflows.
-- `test-integration` owns smoke-phase integration testing; during development only unit tests are allowed.
+- `test-integration` covers focused integration regressions during development and critical paths and environment checks during smoke testing.
 - `refactor-service` coordinates the other consumer Skills and requires plan confirmation before changing consumer code.
 
 For local development without installing the package, set `PYTHONPATH=src` before the command.

@@ -1,0 +1,1257 @@
+{
+  "version": "3.3.0",
+  "previous_version": "3.2.1",
+  "baseline": "019bb12e61046052b5000b5f570004353c233747",
+  "status": "released",
+  "date": "2026-11-24",
+  "added": [
+    {
+      "id": "SERVICE-CALL-DEADLINE-001",
+      "text": "Define an end-to-end deadline covering connection, response and retry backoff. A verified shared client policy may supply the budget.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#超时与失败恢复"
+    },
+    {
+      "id": "SERVICE-CALL-RETRY-001",
+      "text": "Bound retries to explicitly retryable failures and the original deadline. Retried writes require natural idempotence or a stable idempotency key enforced by the callee.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#超时与失败恢复"
+    },
+    {
+      "id": "SERVICE-CALL-UNKNOWN-OUTCOME-001",
+      "text": "After a dispatched write times out or disconnects, treat its outcome as unknown. Query by the original request identity, reconcile or recover manually before issuing a new operation.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "service-calls.md",
+      "source": "standards/bp_service_calls.md#超时与失败恢复"
+    }
+  ],
+  "changed": [
+    {
+      "before": {
+        "id": "JAVA-IMPORT-UNUSED-001",
+        "text": "Production and test code must not retain unused type imports or static imports. Check and remove unused imports after creating, changing, or refactoring a Java file; possible future use is not a reason to retain them.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-IMPORT-UNUSED-001",
+        "text": "Production and test code must not retain unused type imports or static imports. Check and remove unused imports after creating, changing, or refactoring a Java file; possible future use is not a reason to retain them.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#Java 语言"
+    },
+    {
+      "before": {
+        "id": "JAVA-BRACES-001",
+        "text": "In both production and test code, always use braces for the bodies of `if`, `else`, `for` (including enhanced for), `while`, and `do-while`, even for a single statement or an empty body; never use a lone semicolon as an empty body. An `else if` chain is allowed, but every conditional branch body must still use braces.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "JAVA-BRACES-001",
+        "text": "In both production and test code, always use braces for the bodies of `if`, `else`, `for` (including enhanced for), `while`, and `do-while`, even for a single statement or an empty body; never use a lone semicolon as an empty body. An `else if` chain is allowed, but every conditional branch body must still use braces.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "java-language.md",
+      "source": "standards/bp_java.md#Java 语言"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-EXPERIMENTAL-001",
+        "text": "Do not use annotations from `lombok.experimental`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-EXPERIMENTAL-001",
+        "text": "Do not use annotations from `lombok.experimental`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-BUILDER-001",
+        "text": "Do not use `@Builder`; use explicit constructors or factory methods for staged or fluent construction.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-BUILDER-001",
+        "text": "Prefer constructors or factories in Lombok projects. A builder may be appropriate when its benefit is explicit.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-CONSTRUCTOR-001",
+        "text": "Generate constructors that only assign fields and contain no validation, transformation, or initialization logic with Lombok constructor annotations rather than writing them manually; write an explicit constructor when such logic exists.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-CONSTRUCTOR-001",
+        "text": "In Lombok modules, prefer generated constructors for field assignment alone. Write constructors with validation, transformation or initialization logic explicitly.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-ACCESSOR-001",
+        "text": "Generate getters and setters that only read or assign fields and contain no validation, transformation, or other behavior with Lombok `@Getter` or `@Setter`; write methods explicitly when behavior exists.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-ACCESSOR-001",
+        "text": "In Lombok modules, prefer @Getter or @Setter for plain field access. Write methods with validation, transformation or other behavior explicitly.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-LOG-001",
+        "text": "Use `@Slf4j` instead of declaring a Logger field manually.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-LOG-001",
+        "text": "Prefer @Slf4j for logger declarations in modules using Lombok.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-ENTITY-ACCESS-001",
+        "text": "Aggregate roots and entities use only `@Getter` for field access; prohibit `@Data` and externally exposed setters without domain behavior.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-ENTITY-ACCESS-001",
+        "text": "Aggregate roots and entities use only `@Getter` for field access; prohibit `@Data` and externally exposed setters without domain behavior.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-ENTITY-EQUALITY-001",
+        "text": "Implement aggregate-root and entity equality explicitly from unique identity; do not use Lombok `@EqualsAndHashCode`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-ENTITY-EQUALITY-001",
+        "text": "Implement aggregate-root and entity equality explicitly from unique identity; do not use Lombok `@EqualsAndHashCode`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-VALUE-001",
+        "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-VALUE-001",
+        "text": "When a value object is an ordinary class, use final fields, getters, an appropriate all-arguments constructor, and full-field equality.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOMBOK-SPRING-001",
+        "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOMBOK-SPRING-001",
+        "text": "Spring Beans use final dependencies and constructor injection, normally through `@RequiredArgsConstructor`.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "lombok.md",
+      "source": "standards/bp_common_tools.md#Lombok"
+    },
+    {
+      "before": {
+        "id": "LOG-PARAMETERIZED-001",
+        "text": "Declare loggers under the Lombok rules and use SLF4J placeholders instead of concatenating message text.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "LOG-PARAMETERIZED-001",
+        "text": "Use SLF4J placeholders instead of concatenating log messages. Apply the logger declaration convention when Lombok is in use.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "logging.md",
+      "source": "standards/bp_logging.md#日志与敏感数据"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-CONVERSION-001",
+        "text": "Use MapStruct for structural mappings between data carriers with corresponding fields; do not hand-write field copying or use `BeanUtils.copyProperties`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-CONVERSION-001",
+        "text": "Where MapStruct is used, prefer it for structured groups of corresponding fields. Simple local mappings may use a constructor or factory.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-SEMANTIC-001",
+        "text": "Use explicit semantic methods for domain construction, business validation, state transitions, and protocol encoding; a MapStruct mapper may call those methods but must not hide them in automatic field mapping.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-SEMANTIC-001",
+        "text": "Use explicit semantic methods for domain construction, business validation, state transitions, and protocol encoding; a MapStruct mapper may call those methods but must not hide them in automatic field mapping.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-CONTRACT-BINDING-001",
+        "text": "Define a conversion contract independently; a handwritten `@Mapper` interface extends it or abstract class implements it, using `@Override` when redeclaring contract methods. The handwritten mapper follows the naming rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-CONTRACT-BINDING-001",
+        "text": "Define a separate conversion contract for interchangeable implementations or a shared cross-module boundary. A single local mapper may declare its mapping methods directly.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-GENERATED-001",
+        "text": "MapStruct generates concrete implementations at compile time; never handwrite or modify generated classes.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-GENERATED-001",
+        "text": "MapStruct generates concrete implementations at compile time; never handwrite or modify generated classes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-REUSE-001",
+        "text": "Reuse existing mappers through `@Mapper(uses = {...})` instead of duplicating field-level conversions.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-REUSE-001",
+        "text": "Reuse existing mappers through `@Mapper(uses = {...})` instead of duplicating field-level conversions.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-SHARED-CONFIG-001",
+        "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in shared `@MapperConfig`, reference it via each mapper's `config`, and retain these shared defaults.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-SHARED-CONFIG-001",
+        "text": "Declare `componentModel = spring` and `unmappedTargetPolicy = ERROR` in shared `@MapperConfig`, reference it via each mapper's `config`, and retain these shared defaults.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-EXPLICIT-IGNORE-001",
+        "text": "For ordinary mappings, explicitly declare `ignore = true` for each intentionally unmapped target field.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-EXPLICIT-IGNORE-001",
+        "text": "For ordinary mappings, explicitly declare `ignore = true` for each intentionally unmapped target field.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-WHITELIST-001",
+        "text": "For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicit allowed mappings; never substitute local `unmappedTargetPolicy = IGNORE` or disable missing-mapping checks.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-WHITELIST-001",
+        "text": "For partial-update or projection whitelists, use method-level `@BeanMapping(ignoreByDefault = true)` and explicit allowed mappings; never substitute local `unmappedTargetPolicy = IGNORE` or disable missing-mapping checks.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "MAPSTRUCT-HELPER-001",
+        "text": "Keep generic converters and helpers private to mapper use and do not expose them as business components.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "MAPSTRUCT-HELPER-001",
+        "text": "Keep generic converters and helpers private to mapper use and do not expose them as business components.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "mapstruct.md",
+      "source": "standards/bp_common_tools.md#MapStruct"
+    },
+    {
+      "before": {
+        "id": "ARCH-PROJECT-CONFIG-001",
+        "text": "Create a root-level `config/` directory beside service modules as the preferred home for independently updateable resources.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ARCH-PROJECT-CONFIG-001",
+        "text": "When configuration is deployed independently, prefer a project-root config/ directory.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "before": {
+        "id": "ARCH-PROJECT-CONFIG-003",
+        "text": "Prefer the project-root `config/` directory for project-level application configuration, MyBatis SQL/XML, database schema or migrations, Dubbo XML, and other independently updateable resources.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ARCH-PROJECT-CONFIG-003",
+        "text": "Choose resource placement by ownership, effective time and rollback unit. Prefer external configuration for environment endpoints and operational settings. Inject credentials through deployment secret management.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "before": {
+        "id": "ARCH-CONFIG-LOAD-001",
+        "text": "Explicitly load root-level `config/` resources through `spring.config.location`, `spring.config.additional-location`, `spring.config.import`, technology-specific location settings, or equivalent startup parameters.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ARCH-CONFIG-LOAD-001",
+        "text": "When using external config/, explicitly load required resources via Spring configuration locations, technology-specific settings or equivalent startup parameters.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "before": {
+        "id": "ARCH-CONFIG-CLASSPATH-EXCEPTION-001",
+        "text": "Package resources in module `src/main/resources` only when external loading is unsupported, resource/code versions or classpaths are inseparable, or deployment cannot provide an artifact's mandatory self-contained resources. Development convenience alone is not sufficient.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ARCH-CONFIG-CLASSPATH-EXCEPTION-001",
+        "text": "Code-coupled mapper XML, schemas and migrations may ship as module resources or in a versioned migration artifact. Classpath-only loading or self-contained deployments also justify packaging resources.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "architecture.md",
+      "source": "standards/bp_layered_service.md#分层结构"
+    },
+    {
+      "before": {
+        "id": "NAME-INTERFACE-ROLE-001",
+        "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-INTERFACE-ROLE-001",
+        "text": "Name interfaces by business role, port, or technical contract without `I*` or `*Interface`.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-ABSTRACT-BASE-001",
+        "text": "Name abstract classes `Abstract*`; reserve `Base*` for framework or shared base types.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-ABSTRACT-BASE-001",
+        "text": "Name abstract classes `Abstract*`; reserve `Base*` for framework or shared base types.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-IMPLEMENTATION-001",
+        "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-IMPLEMENTATION-001",
+        "text": "Do not use generic `*Impl`; name implementations by default role, technology, adapter responsibility, or strategy.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-AUTO-CONFIGURATION-001",
+        "text": "Spring Boot auto-configuration entry classes must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix, except component-scanned wiring classes.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-AUTO-CONFIGURATION-001",
+        "text": "Spring Boot auto-configuration entry classes must use the `*AutoConfiguration` suffix. All other types must be named by their actual responsibility without the `Configuration` suffix, except component-scanned wiring classes.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-CONFIGURATION-001",
+        "text": "Name component-scanned wiring classes with the `*Configuration` suffix.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-CONFIGURATION-001",
+        "text": "Name component-scanned wiring classes with the `*Configuration` suffix.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-PROPERTIES-001",
+        "text": "Name configuration-property binding classes with the `*Properties` suffix.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-PROPERTIES-001",
+        "text": "Name configuration-property binding classes with the `*Properties` suffix.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-RESULT-001",
+        "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-RESULT-001",
+        "text": "Do not suffix payloads, command outputs, query views, or effects with `*Result`; reserve `Result<T>` and `PageResult<T>` for framework response wrappers.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-API-SHARED-RESPONSE-001",
+        "text": "Use `*ApiResponse` only for a shared API payload return type.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-API-SHARED-RESPONSE-001",
+        "text": "Use `*ApiResponse` only for a shared API payload return type.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-REMOTE-PAYLOAD-001",
+        "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-REMOTE-PAYLOAD-001",
+        "text": "Name a locally owned external-service protocol type with the external service name, action or resource, and `RequestPayload` or `ResponsePayload` suffix, such as `GithubSearchRepositoriesRequestPayload`; do not use names such as `RequestPayload` or `CreateRequestPayload` that omit the external-service identity or call semantics.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-INTERNAL-REQUEST-001",
+        "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-INTERNAL-REQUEST-001",
+        "text": "Name a locally defined internal-service request type `*InternalRequest` when the callee's published API contract cannot be reused.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-MAPPER-TYPE-001",
+        "text": "Name conversion contracts by layer responsibility and handwritten MapStruct mapper types `*MapStructMapper`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-MAPPER-TYPE-001",
+        "text": "Name conversion contracts by layer responsibility and handwritten MapStruct mapper types `*MapStructMapper`.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-MAPPER-PACKAGE-001",
+        "text": "Place the handwritten MapStruct mapper in its contract package's `mapstruct` subpackage.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-MAPPER-PACKAGE-001",
+        "text": "With a separate contract, prefer its mapstruct subpackage for the handwritten mapper. A standalone mapper can live with the owning feature.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-KEY-RESOLVER-SUFFIX-001",
+        "text": "Name each concrete business-scenario resource-key handler `*KeyResolver`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-KEY-RESOLVER-SUFFIX-001",
+        "text": "Name each concrete business-scenario resource-key handler `*KeyResolver`.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-KEY-RESOLVER-BASE-001",
+        "text": "Concrete scenario key resolvers extend `AbstractKeyResolver`; runtime responsibilities follow resource-key rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-KEY-RESOLVER-BASE-001",
+        "text": "Concrete scenario key resolvers extend `AbstractKeyResolver`; runtime responsibilities follow resource-key rules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-PACKAGE-001",
+        "text": "Use lowercase package names that express a stable responsibility or change boundary; do not use `misc`, `temp`, or `other`, and do not place business types in generic `util` or `common` packages. Package hierarchy and grouping follow the service layer rules.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-PACKAGE-001",
+        "text": "Use lowercase package names that express a stable responsibility or change boundary; do not use `misc`, `temp`, or `other`, and do not place business types in generic `util` or `common` packages. Package hierarchy and grouping follow the service layer rules.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-API-001",
+        "text": "Use `*ApiCommand`, `*ApiOutput`, `*ApiQuery`, `*ApiView`, `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, `*CommandFacade`, and `*QueryFacade` in API.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-API-001",
+        "text": "Use `*ApiCommand`, `*ApiOutput`, `*ApiQuery`, `*ApiView`, `*ApiEnum`, `*ApiConstants`, `*ApiEvent`, `*CommandFacade`, and `*QueryFacade` in API.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-DOMAIN-001",
+        "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-DOMAIN-001",
+        "text": "Use `*Effect` for domain-service results, `*Repository` for repository contracts, and `*Event` for domain events.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-APPLICATION-001",
+        "text": "Use `*CommandService`, `*Command`, `*Output`, `*QueryService`, `*Query`, and `*View` in application; follow the application layering rules for paged return contracts.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-APPLICATION-001",
+        "text": "Use `*CommandService`, `*Command`, `*Output`, `*QueryService`, `*Query`, and `*View` in application; follow the application layering rules for paged return contracts.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-APPLICATION-RESPONSE-001",
+        "text": "Use `*Response` only when an application command and query return type must be reused.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-APPLICATION-RESPONSE-001",
+        "text": "Use `*Response` only when an application command and query return type must be reused.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-INFRA-001",
+        "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceAutoConfiguration` in infrastructure.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-INFRA-001",
+        "text": "Use `*RepositoryAdapter`, technology-specific `*PersistenceRepository`, `*DO`, and `*PersistenceAutoConfiguration` in infrastructure.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-INTERFACES-001",
+        "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-INTERFACES-001",
+        "text": "Place protocol-neutral Facade implementations in `interfaces.facade` as `Default*Facade`; use `*RpcAdapter` only for necessary technology-specific RPC adapters.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "NAME-CLIENT-001",
+        "text": "Name OpenFeign clients `*FeignClient`.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "NAME-CLIENT-001",
+        "text": "Name OpenFeign clients `*FeignClient`.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "naming.md",
+      "source": "standards/bp_naming.md#命名约定"
+    },
+    {
+      "before": {
+        "id": "ERROR-CONTEXT-001",
+        "text": "One service project represents one bounded context and uses one unique BIZ service prefix; independently deployed bounded contexts require distinct BIZ prefixes.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-CONTEXT-001",
+        "text": "One service project represents one bounded context and owns its BIZ prefixes exclusively. Start with one prefix and register another when a category exhausts its capacity. Existing prefixes and full codes stay valid.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "before": {
+        "id": "ERROR-DOMAIN-CAPACITY-001",
+        "text": "Aggregate code blocks align to 50-code boundaries (100–149, 150–199, …, 550–599) and 50 codes is the minimum allocation unit. An aggregate exclusively owns every code in all of its assigned blocks and may use one or multiple adjacent blocks. Capacity expansion must reserve additional adjacent, currently unallocated complete blocks; blocks must not be split, shared, or reassigned between aggregates.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-DOMAIN-CAPACITY-001",
+        "text": "Allocate individual codes or small ranges in 100–599 according to actual aggregate errors, without overlap within a prefix. Honor existing block reservations and ownership.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "before": {
+        "id": "ERROR-RANGE-001",
+        "text": "Unallocated complete aggregate ranges remain available, but unused codes inside an assigned aggregate range remain owned by that aggregate and must not be reassigned.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-RANGE-001",
+        "text": "Expand into unallocated positions in the same category, including noncontiguous positions. Preserve exclusive ownership of earlier reservations. Register an extension prefix if capacity is exhausted.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "before": {
+        "id": "ERROR-DOCUMENTATION-002",
+        "text": "Document the BIZ service prefix, shared-domain range, and every aggregate range in the authoritative domain document declared by the project documentation entry.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "ERROR-DOCUMENTATION-002",
+        "text": "Document all service BIZ prefixes, shared-domain ranges and individual codes or ranges allocated to each aggregate in the authoritative domain document.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-MYBATIS-SQL-001",
+        "text": "MyBatis and MyBatis-Plus implementations must load the same shared SQL XML fragments from the project-root `config/` directory.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-MYBATIS-SQL-001",
+        "text": "Coexisting MyBatis and MyBatis-Plus alternatives must load the same shared SQL fragments. Choose their location under the project resource versioning and rollback policy.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-SCHEMA-LOCATION-001",
+        "text": "Prefer the project-root `config/` directory for `schema.sql` and database migration configuration and load it under the layered-service external-resource rules.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-SCHEMA-LOCATION-001",
+        "text": "Prefer shipping schema.sql and migrations with the corresponding application or versioned migration artifact. Externalize independently operated resources under the project configuration policy.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-CONCURRENCY-LOW-001",
+        "text": "For a very-low-contention operational API, omit versions, distributed locks, and pessimistic database locks by default.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-CONCURRENCY-LOW-001",
+        "text": "For low-contention operational APIs, omit additional locks or version fields when database protections suffice or overwrites are permitted. Protect against lost updates when they would violate the contract, even if contention is rare.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-CONCURRENCY-001",
+        "text": "For a real cross-instance conflict not resolved by business conditions, prefer a distributed lock to reduce contention.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-CONCURRENCY-001",
+        "text": "For writes in one database, first assess atomic updates, unique constraints, version checks and database locks. Evaluate distributed locking for cross-resource coordination or a demonstrated need to reduce contention.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-CONCURRENCY-VERSION-001",
+        "text": "Add version-based optimistic concurrency only when residual conflicts still require detection.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-CONCURRENCY-VERSION-001",
+        "text": "When a write based on a stale snapshot must be detected, consider a version check and define the conflict result or retry semantics.",
+        "enforcement": "default",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "PERSISTENCE-DATA-INTEGRITY-002",
+        "text": "After the shared catch, confirm the violation is the intended unique constraint by known constraint name, SQLState/vendor code, or a business-key reread; never classify not-null, foreign-key, or check-constraint violations as duplicate keys.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "PERSISTENCE-DATA-INTEGRITY-002",
+        "text": "Identify the error class from SQLState or a vendor code, then identify the target constraint by name or discriminating business evidence. A generic uniqueness code alone cannot distinguish multiple unique constraints.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "develop-service",
+      "reference": "persistence.md",
+      "source": "standards/bp_persistence.md#持久化边界"
+    },
+    {
+      "before": {
+        "id": "TEST-PHASE-001",
+        "text": "During the development phase, write and run only unit tests and module-contract tests; the code is not yet stable, so do not write or run integration tests during development and never substitute them for unit tests.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "TEST-PHASE-001",
+        "text": "Prefer fast unit and module-contract tests during development. Write and run a focused integration regression with the change when SQL, transaction commit, wiring, or middleware semantics matter.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "unit-testing.md",
+      "source": "standards/bp_unit_testing.md#单元测试"
+    },
+    {
+      "before": {
+        "id": "TEST-METHOD-NAME-001",
+        "text": "Name test methods `should<ExpectedBehavior>` to state the observable behavior directly.",
+        "enforcement": "required",
+        "priority": "baseline"
+      },
+      "after": {
+        "id": "TEST-METHOD-NAME-001",
+        "text": "Name test methods `should<ExpectedBehavior>` to state the observable behavior directly.",
+        "enforcement": "default",
+        "priority": "baseline"
+      },
+      "skill": "develop-service",
+      "reference": "unit-testing.md",
+      "source": "standards/bp_unit_testing.md#单元测试"
+    },
+    {
+      "before": {
+        "id": "TEST-PHASE-002",
+        "text": "Write and execute integration tests only in the smoke-test phase to verify cross-module collaboration and real infrastructure behavior after code stabilization; development-phase testing follows the unit-test rules.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-PHASE-002",
+        "text": "Select integration tests by purpose. Development and PR checks may exercise the affected integration boundary. Smoke testing verifies critical paths and the deployment environment.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "before": {
+        "id": "TEST-DOC-001",
+        "text": "Every integration test has same-named documentation covering its purpose, conditions, execution, manual observation steps, observation entry points, and expected result.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-DOC-001",
+        "text": "Provide same-named scenario documentation for fault drills and tests requiring human interpretation, including purpose, setup, commands, observation points and expected results. Automated regressions may rely on their test reports.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "before": {
+        "id": "TEST-OBSERVABLE-001",
+        "text": "Integration tests must allow manual observation of the key process and final result; automatic assertions or source reading alone are insufficient.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-OBSERVABLE-001",
+        "text": "Provide observation steps for fault drills and scenarios requiring manual interpretation. For automated regressions, use reproducible assertions and failure diagnostics.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "integration-testing.md",
+      "source": "standards/bp_integration.md#集成测试"
+    },
+    {
+      "before": {
+        "id": "TEST-LOCK-CORRECTNESS-001",
+        "text": "In a concurrent-write smoke test, prove both that one business result takes effect and that a database uniqueness constraint blocks a duplicate that bypasses the lock.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "after": {
+        "id": "TEST-LOCK-CORRECTNESS-001",
+        "text": "Exercise concurrent writes with the lock bypassed or expired. Verify the actual invariant, such as a single creation or a nonnegative balance after conditional updates.",
+        "enforcement": "required",
+        "priority": "topic"
+      },
+      "skill": "test-integration",
+      "reference": "lock-verification.md",
+      "source": "standards/bp_lock.md#验证"
+    }
+  ],
+  "retired": [
+    {
+      "id": "ERROR-AGGREGATE-FIRST-CODES-001",
+      "text": "Fix the first two codes of each aggregate's allocated range as `{AGGREGATE}_NOT_FOUND` and `{AGGREGATE}_ALREADY_EXISTS`; the category mapping owns the name prefix.",
+      "enforcement": "required",
+      "priority": "topic",
+      "skill": "develop-service",
+      "reference": "error-codes.md",
+      "source": "standards/bp_error_codes.md#错误码",
+      "reason": "Allocate aggregate errors as needed and preserve published values.",
+      "replacements": [
+        "ERROR-DOMAIN-CAPACITY-001",
+        "ERROR-STABILITY-002"
+      ]
+    }
+  ],
+  "consumer_changes": [
+    {
+      "skill": "develop-service",
+      "classification": "code-conformance-affecting",
+      "added": [
+        "SERVICE-CALL-DEADLINE-001",
+        "SERVICE-CALL-RETRY-001",
+        "SERVICE-CALL-UNKNOWN-OUTCOME-001"
+      ],
+      "changed": [
+        "JAVA-IMPORT-UNUSED-001",
+        "JAVA-BRACES-001",
+        "LOMBOK-EXPERIMENTAL-001",
+        "LOMBOK-BUILDER-001",
+        "LOMBOK-CONSTRUCTOR-001",
+        "LOMBOK-ACCESSOR-001",
+        "LOMBOK-LOG-001",
+        "LOMBOK-ENTITY-ACCESS-001",
+        "LOMBOK-ENTITY-EQUALITY-001",
+        "LOMBOK-VALUE-001",
+        "LOMBOK-SPRING-001",
+        "LOG-PARAMETERIZED-001",
+        "MAPSTRUCT-CONVERSION-001",
+        "MAPSTRUCT-SEMANTIC-001",
+        "MAPSTRUCT-CONTRACT-BINDING-001",
+        "MAPSTRUCT-GENERATED-001",
+        "MAPSTRUCT-REUSE-001",
+        "MAPSTRUCT-SHARED-CONFIG-001",
+        "MAPSTRUCT-EXPLICIT-IGNORE-001",
+        "MAPSTRUCT-WHITELIST-001",
+        "MAPSTRUCT-HELPER-001",
+        "ARCH-PROJECT-CONFIG-001",
+        "ARCH-PROJECT-CONFIG-003",
+        "ARCH-CONFIG-LOAD-001",
+        "ARCH-CONFIG-CLASSPATH-EXCEPTION-001",
+        "NAME-INTERFACE-ROLE-001",
+        "NAME-ABSTRACT-BASE-001",
+        "NAME-IMPLEMENTATION-001",
+        "NAME-AUTO-CONFIGURATION-001",
+        "NAME-CONFIGURATION-001",
+        "NAME-PROPERTIES-001",
+        "NAME-RESULT-001",
+        "NAME-API-SHARED-RESPONSE-001",
+        "NAME-REMOTE-PAYLOAD-001",
+        "NAME-INTERNAL-REQUEST-001",
+        "NAME-MAPPER-TYPE-001",
+        "NAME-MAPPER-PACKAGE-001",
+        "NAME-KEY-RESOLVER-SUFFIX-001",
+        "NAME-KEY-RESOLVER-BASE-001",
+        "NAME-PACKAGE-001",
+        "NAME-API-001",
+        "NAME-DOMAIN-001",
+        "NAME-APPLICATION-001",
+        "NAME-APPLICATION-RESPONSE-001",
+        "NAME-INFRA-001",
+        "NAME-INTERFACES-001",
+        "NAME-CLIENT-001",
+        "ERROR-CONTEXT-001",
+        "ERROR-DOMAIN-CAPACITY-001",
+        "ERROR-RANGE-001",
+        "ERROR-DOCUMENTATION-002",
+        "PERSISTENCE-MYBATIS-SQL-001",
+        "PERSISTENCE-SCHEMA-LOCATION-001",
+        "PERSISTENCE-CONCURRENCY-LOW-001",
+        "PERSISTENCE-CONCURRENCY-001",
+        "PERSISTENCE-CONCURRENCY-VERSION-001",
+        "PERSISTENCE-DATA-INTEGRITY-002",
+        "TEST-PHASE-001",
+        "TEST-METHOD-NAME-001"
+      ],
+      "retired": [
+        "ERROR-AGGREGATE-FIRST-CODES-001"
+      ],
+      "non_rule_changes": [
+        "Load naming, Lombok and MapStruct by task and route focused integration regressions during development."
+      ]
+    },
+    {
+      "skill": "develop-distributed",
+      "classification": "synchronization-only",
+      "added": [],
+      "changed": [],
+      "retired": [],
+      "non_rule_changes": [
+        "Route real-infrastructure regressions during development and smoke verification."
+      ]
+    },
+    {
+      "skill": "develop-compensation",
+      "classification": "synchronization-only",
+      "added": [],
+      "changed": [],
+      "retired": [],
+      "non_rule_changes": [
+        "Route focused real-runtime regressions during development and smoke verification."
+      ]
+    },
+    {
+      "skill": "test-integration",
+      "classification": "code-conformance-affecting",
+      "added": [],
+      "changed": [
+        "TEST-PHASE-002",
+        "TEST-DOC-001",
+        "TEST-OBSERVABLE-001",
+        "TEST-LOCK-CORRECTNESS-001"
+      ],
+      "retired": [],
+      "non_rule_changes": [
+        "Route development and PR regressions as well as smoke checks. Scope manual documentation to drills and human interpretation. Update routing and UI metadata."
+      ]
+    },
+    {
+      "skill": "refactor-service",
+      "classification": "synchronization-only",
+      "added": [],
+      "changed": [],
+      "retired": [],
+      "non_rule_changes": [
+        "Route refactoring verification to the smallest appropriate integration boundary."
+      ]
+    }
+  ],
+  "blueprint_changes": [
+    "develop-service",
+    "develop-distributed",
+    "develop-compensation",
+    "test-integration",
+    "refactor-service",
+    "update-standards"
+  ],
+  "scope_changes": []
+}

@@ -26,7 +26,7 @@ Keep the human-authored standards documents and the publishable rule catalog sem
 
 ## Reconcile the catalog
 
-1. Map each persistent rule to the narrowest matching Skill reference and section.
+1. Record each policy rule ID in the owning Markdown bullet’s trailing HTML comment. Map each persistent rule to the narrowest matching Skill reference and section.
 2. Reuse an existing rule ID only when its semantic identity remains the same. Add a stable new ID for a new constraint.
 3. Never reuse a retired ID for another meaning. Remove a rule from the active catalog only when the source documents intentionally retire it.
 4. Keep concise catalog text semantically equivalent to the source documents; split independent constraints into separate rules.

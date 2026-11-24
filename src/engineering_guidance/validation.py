@@ -14,6 +14,31 @@ RULE_ENFORCEMENTS = {"required", "default", "advisory"}
 RULE_PRIORITIES = {"baseline", "topic"}
 
 
+SOURCE_BULLET = re.compile(
+    r"^- \*\*(强制|默认|建议) · (基础|主题)\*\*：.+ <!-- ([A-Z0-9-]+) -->$"
+)
+ENFORCEMENT_ZH = {"强制": "required", "默认": "default", "建议": "advisory"}
+PRIORITY_ZH = {"基础": "baseline", "主题": "topic"}
+
+
+def _source_rules(layout: ProjectLayout, errors: list[str]) -> dict[str, tuple[str, str, str]]:
+    sources = {}
+    for path in sorted((layout.root / "standards").rglob("bp_*.md")):
+        document = path.relative_to(layout.root).as_posix()
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.startswith("- "):
+                continue
+            match = SOURCE_BULLET.fullmatch(line)
+            if not match:
+                errors.append(f"{document}:{number}: expected classification and trailing rule ID")
+                continue
+            grade, priority, rule_id = match.groups()
+            if rule_id in sources:
+                errors.append(f"{document}:{number}: duplicate source ID {rule_id}")
+            sources[rule_id] = (document, ENFORCEMENT_ZH[grade], PRIORITY_ZH[priority])
+    return sources
+
+
 def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     version = catalog.get("version")
@@ -33,6 +58,7 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
         if f'__version__ = "{version}"' not in init_text:
             errors.append("package __version__ does not match catalog version")
 
+    source_rules = _source_rules(layout, errors)
     seen_rules: set[str] = set()
     seen_skills: set[str] = set()
     skill_bodies: dict[str, str] = {}
@@ -138,12 +164,23 @@ def validate(layout: ProjectLayout, catalog: dict[str, Any]) -> list[str]:
                     check_rule(rule, f"{section_location}.rules[{rule_index}]")
                     if isinstance(rule, dict) and isinstance(rule.get("priority"), str):
                         reference_priorities.add(rule["priority"])
+                        source = section.get("source", source_document)
+                        document = source.partition("#")[0] if isinstance(source, str) else None
+                        rule_id = rule.get("id")
+                        if isinstance(rule_id, str):
+                            expected = source_rules.pop(rule_id, None)
+                            if expected != (document, rule.get("enforcement"), rule["priority"]):
+                                errors.append(f"{section_location}: {rule_id} differs from BP source {expected}")
+
                 if "baseline" in reference_priorities and f"`references/{filename}`" not in body:
                     errors.append(
                         f"{ref_location}: baseline reference must be explicitly loaded by {name}"
                     )
         if scope == "consumer" and name != "develop-service" and "$develop-service" not in body:
             errors.append(f"{location}: consumer skill must load $develop-service baseline rules")
+
+    for rule_id in sorted(source_rules):
+        errors.append(f"{rule_id}: BP rule missing from catalog references")
 
     blueprint_names = {path.name for path in layout.blueprints.iterdir() if path.is_dir()}
     extra = blueprint_names - seen_skills

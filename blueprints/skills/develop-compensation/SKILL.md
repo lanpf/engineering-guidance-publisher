@@ -18,5 +18,5 @@ description: Use when designing, implementing, or reviewing business compensatio
 5. Keep every entry adapter thin and delegate to an application use case or reusable infrastructure recovery service.
 6. Make processing idempotent, reentrant, bounded, observable, and resumable from committed checkpoints.
 7. During development, test duplicate triggers, partial failure and resume, concurrent execution, empty input, invalid parameters, and timeout behavior with unit or module-contract tests.
-8. Run the affected module build; record real-runtime scenarios and use `$test-integration` to implement and execute them only in the smoke-test phase.
+8. Run the affected module build; use `$test-integration` for focused real-runtime regressions and smoke verification.
 9. Recheck the final diff against the `$develop-service` baseline checklist and the loaded compensation rules before completion.

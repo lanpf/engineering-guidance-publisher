@@ -12,7 +12,8 @@ description: Use when developing, changing, or reviewing service code under the 
 ## Workflow
 
 1. Inspect the target module, nearby types, existing public contracts, and Git changes.
-2. Before planning or editing, always read the baseline references: `references/dependency-rules.md`, `references/service-baseline.md`, `references/java-language.md`, `references/constants-and-literals.md`, `references/common-utilities.md`, `references/validation.md`, `references/lombok.md`, `references/logging.md`, `references/mapstruct.md`, `references/naming.md`, and `references/unit-testing.md`.
+2. Before planning or editing, always read the baseline references: `references/dependency-rules.md`, `references/service-baseline.md`, `references/java-language.md`, `references/constants-and-literals.md`, `references/common-utilities.md`, `references/validation.md`, `references/logging.md`, and `references/unit-testing.md`.
+   Load `references/lombok.md` when using Lombok, `references/mapstruct.md` for structured mappings, and `references/naming.md` when naming or renaming types or packages. Use project static checks for imports, braces and naming patterns where available.
 3. Build a baseline checklist from every applicable `[REQUIRED][BASELINE]` and `[DEFAULT][BASELINE]` rule. A required rule is release-blocking; a default rule applies unless the implementation records a concrete reason to deviate; an advisory rule is optional guidance.
 4. Read `references/architecture.md` before creating or moving modules, packages, or configuration resources, and before changing service behavior even inside existing types. For behavior changes, also read `references/api-domain-application.md` and `references/infrastructure-interfaces-boot.md`; use authoritative project documents to identify the owning layer for each decision and orchestration step before editing.
 5. Read `references/service-validation.md` when changing API, Spring MVC, Facade, application, or domain validation and exceptions; read `references/error-codes.md` when defining or using error codes, `references/persistence-naming.md` before naming a persistence query or mapper resource, and `references/resource-naming.md` before defining cache keys, resource keys, or namespaced configuration.
@@ -20,7 +21,7 @@ description: Use when developing, changing, or reviewing service code under the 
 7. Read `references/persistence.md` before changing data access, transactions, or queries, and `references/distributed-id.md` before generating identifiers.
 8. Read `references/service-calls.md` before changing an internal or external service call.
 9. Read `references/project-documentation.md` before changing service responsibilities, cross-service collaboration contracts, delivery status statements, or the project documentation structure.
-10. Write and run unit tests per `references/unit-testing.md`; integration tests belong to the smoke-test phase and are covered by `$test-integration`.
+10. Write and run unit tests per `references/unit-testing.md`; for focused integration regressions and smoke checks use `$test-integration`.
 11. Preserve compatibility unless the task explicitly authorizes a breaking change.
 12. Compile and run the narrowest relevant tests.
 13. Before completion, trace each changed behavior through its entry point, use case, domain decision, and relevant adapters. Apply the architecture reference's responsibility-cohesion and dependency checks to the affected call chains and modules, including existing callees outside the diff; compilation alone does not establish conformance. Report inspected scope, relevant rule IDs, evidence locations, verification results, and any justified default-rule deviation.

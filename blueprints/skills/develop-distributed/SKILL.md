@@ -17,5 +17,5 @@ description: Use when implementing or reviewing cross-instance locking, reliable
 4. Read `references/distributed-messaging.md` when publishing or consuming events, using outbox, partitioning, dead letters, retries, or delayed messages.
 5. Depend on framework ports from inner layers and keep starter-specific APIs and configuration in technical implementation or boot modules.
 6. Design for duplicate execution, partial failure, retry, timeout, and observability before considering the happy path complete.
-7. During development, run the narrowest unit tests that verify the affected capability. Record real-infrastructure scenarios and use `$test-integration` to implement and run them in the smoke-test phase.
+7. During development, run the narrowest unit tests that verify the affected capability. Use `$test-integration` for focused real-infrastructure regressions and smoke verification.
 8. Recheck the final diff against the `$develop-service` baseline checklist and the loaded distributed rules before completion.
